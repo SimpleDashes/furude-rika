@@ -1,0 +1,28 @@
+{
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  },
+  "name": "furude-rika",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "npm run build && npm run start",
+    "build": "tsc --build tsconfig.json",
+    "start": "node ."
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@discordjs/builders": "^0.9.0",
+    "consola": "^2.15.3",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true
+  }
+}

@@ -1,0 +1,2 @@
+# furude-rika-rewritten
+ 
