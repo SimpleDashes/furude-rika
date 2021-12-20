@@ -9,14 +9,14 @@ import MessageFactory from '../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 export default class Deploy extends FurudeCommand {
-  private commandName: StringOption = this.registerOption(
+  private readonly commandName = this.registerOption(
     new StringOption()
       .setName(CommandOptions.name)
       .setDescription('Name of the command to be deployed')
       .setRequired(true)
   );
 
-  private debug: BooleanOption = this.registerOption(
+  private readonly debug = this.registerOption(
     new BooleanOption()
       .setName(CommandOptions.debug)
       .setDescription('Deploys the command only in development server if true.')

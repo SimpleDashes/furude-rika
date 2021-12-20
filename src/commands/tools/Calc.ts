@@ -7,7 +7,7 @@ import MessageFactory from '../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 export default class Calc extends FurudeCommand {
-  private expression = this.registerOption(
+  private readonly expression = this.registerOption(
     new StringOption()
       .setName('expression')
       .setDescription('The expression for my lazy mind to evaluate')

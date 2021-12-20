@@ -7,7 +7,7 @@ import UserOption from '../../framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 export default class Avatar extends FurudeCommand {
-  private user: UserOption = this.registerOption(
+  private readonly user: UserOption = this.registerOption(
     new UserOption()
       .setName(CommandOptions.user)
       .setDescription('The user you want the avatar from.')

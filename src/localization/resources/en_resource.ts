@@ -20,6 +20,11 @@ export default class extends FurudeResource {
 
       // CALC
       CALC_RESULTS: '[$EXPR] result in: [$RES]',
+
+      // COIN FLIP
+      COIN_FLIP_HEADS: 'Heads',
+      COIN_FLIP_TAILS: 'Tails',
+      COIN_FLIP_RESULT: 'The result is: [$RES]',
     });
   }
 }
