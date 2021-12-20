@@ -20,6 +20,10 @@ export default class extends FurudeResource {
 
       // CALC
       CALC_RESULTS: '[$EXPR] result in: [$RES]',
+      CALC_ADDITIONAL_VARIABLES:
+        'With the variables for the expression being: [$VARS]',
+      CALC_EVALUATE_ERROR:
+        "Maybe i am dumb or whatever, but i don't think [$EXPR] is a mathematical expression.",
 
       // COIN FLIP
       COIN_FLIP_HEADS: 'Heads',

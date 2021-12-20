@@ -45,33 +45,39 @@ export default class Deploy extends FurudeCommand {
       commandName,
       isDebug,
       interaction,
-      onCommandNotFound: async () => {
-        await interaction.editReply({
-          content: MessageFactory.error(
-            client.localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND)
-          ),
-        });
-      },
-      onInvalidCommand: async () => {
-        await interaction.editReply({
-          content: MessageFactory.error(
-            client.localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED)
-          ),
-        });
-      },
-      onError: async () => {
-        await interaction.editReply({
-          content: MessageFactory.error(
-            client.localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_ERROR)
-          ),
-        });
-      },
-      onSuccess: async () => {
-        await interaction.editReply({
-          content: MessageFactory.success(
-            client.localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS)
-          ),
-        });
+      resFunctions: {
+        onCommandNotFound: async () => {
+          await interaction.editReply({
+            content: MessageFactory.error(
+              client.localizer.get(
+                FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND
+              )
+            ),
+          });
+        },
+        onInvalidCommand: async () => {
+          await interaction.editReply({
+            content: MessageFactory.error(
+              client.localizer.get(
+                FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED
+              )
+            ),
+          });
+        },
+        onError: async () => {
+          await interaction.editReply({
+            content: MessageFactory.error(
+              client.localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_ERROR)
+            ),
+          });
+        },
+        onSuccess: async () => {
+          await interaction.editReply({
+            content: MessageFactory.success(
+              client.localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS)
+            ),
+          });
+        },
       },
     });
   }

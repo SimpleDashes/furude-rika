@@ -11,24 +11,19 @@ export default class StringWithVariablesManager {
 
   public addString(withVariable: string, key?: string) {
     key = key ?? withVariable;
-    this.stringsWithVariables = {
-      ...this.stringsWithVariables,
-      [key]: {
-        string: withVariable,
-        args: withVariable
-          .split(' ')
-          .filter((word) => {
-            return (
-              word.startsWith(variablePrefix) && word.includes(variableEnd)
-            );
-          })
-          .map((word) => {
-            return word.slice(
-              variablePrefix.length,
-              word.indexOf(variableEnd) - (variableEnd.length - 1)
-            );
-          }),
-      },
+    this.stringsWithVariables[key] = {
+      string: withVariable,
+      args: withVariable
+        .split(' ')
+        .filter((word) => {
+          return word.startsWith(variablePrefix) && word.includes(variableEnd);
+        })
+        .map((word) => {
+          return word.slice(
+            variablePrefix.length,
+            word.indexOf(variableEnd) - (variableEnd.length - 1)
+          );
+        }),
     };
   }
 

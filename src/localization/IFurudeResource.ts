@@ -12,6 +12,8 @@ export default interface IFurudeResource extends ILocalizerStructure {
   DEPLOY_COMMAND_SUCCESS: string;
 
   CALC_RESULTS: string;
+  CALC_ADDITIONAL_VARIABLES: string;
+  CALC_EVALUATE_ERROR: string;
 
   COIN_FLIP_HEADS: string;
   COIN_FLIP_TAILS: string;

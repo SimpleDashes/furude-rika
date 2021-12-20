@@ -14,6 +14,7 @@ import {
   SlashCommandRoleOption,
   SlashCommandStringOption,
   SlashCommandUserOption,
+  ToAPIApplicationCommandOptions,
 } from '@discordjs/builders';
 import ICommand from './ICommand';
 import ICommandInformation from './ICommandInformation';
@@ -53,14 +54,19 @@ export default abstract class BaseCommand<T extends Client>
   ): Promise<void>;
 
   protected registerOption<C>(option: C): C {
-    this.argumentOptions.push(option);
+    this.addOptionArgument(option);
     return option;
+  }
+
+  private addOptionArgument<O>(option: O) {
+    this.options.push(option as unknown as ToAPIApplicationCommandOptions);
+    this.argumentOptions.push(option);
   }
 
   private addInternalOption<I>(input: I, isOption: (built: I) => boolean) {
     const built = TypeHelpers.isCallback(input, input) ? input() : input;
     if (isOption(built)) {
-      this.argumentOptions.push(built);
+      this.addOptionArgument(built);
     } else {
       throw 'You should use framework classes for handling BaseCommands';
     }

@@ -19,6 +19,10 @@ export default abstract class MessageFactory {
     return `**${value}**`;
   }
 
+  public static block(value: string): string {
+    return `\`${value}\``;
+  }
+
   public static blockQuote(value: string): string {
     return `>>> ${value}`;
   }

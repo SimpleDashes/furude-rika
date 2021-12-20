@@ -21,6 +21,9 @@ export default class extends FurudeResource {
 
       // CALC
       CALC_RESULTS: '[$EXPR] dá: [$RES]',
+      CALC_ADDITIONAL_VARIABLES: 'Com as variaveis sendo: [$VARS]',
+      CALC_EVALUATE_ERROR:
+        'Talvez eu seja burra, MAS, eu não acho que [$EXPR] é uma expressão matemática',
 
       // COIN FLIP
       COIN_FLIP_HEADS: 'Cara',

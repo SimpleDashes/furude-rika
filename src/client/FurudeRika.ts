@@ -24,26 +24,15 @@ export default class FurudeRika extends BaseBot {
       async () => {
         console.log(this.commands.size + ' commands were loaded');
         if (!this.forceDeploy) return;
-        for await (const command of this.commands.values()) {
-          await DeployHandler.deployCommand({
-            client: this,
-            commandName: command.name,
-            isDebug: true,
-            guild: this.devInfo.developmentGuild,
-            onCommandNotFound: () => {
-              consola.error(`Command not found: ${command.name}`);
-            },
-            onInvalidCommand: () => {
-              consola.error(`Invalid command: ${command.name}`);
-            },
-            onError: () => {
-              consola.error(`Error deploying: ${command.name}`);
-            },
-            onSuccess: () => {
-              consola.success(`Deployed command: ${command.name}`);
-            },
-          });
-        }
+        const isDebug = true;
+        await DeployHandler.deployAll(this, isDebug, {
+          onError: () => {
+            consola.error(`Error deploying all commands`);
+          },
+          onSuccess: () => {
+            consola.success(`Deployed all commands`);
+          },
+        });
       },
       new DirectoryMapperFactory(path.join('dist', 'commands'))
     );

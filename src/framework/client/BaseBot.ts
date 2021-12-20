@@ -18,10 +18,10 @@ export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
     new Collection();
   public readonly commandMappers: DirectoryMapper[] = [];
-  protected devInfo: IBotDevInformation;
-  private devOptions: IDevOptions;
+  public readonly devInfo: IBotDevInformation;
+  public readonly devOptions: IDevOptions;
+  private readonly commandMapperFactory?: DirectoryMapperFactory;
   private onCommandsLoaded?: () => void;
-  private commandMapperFactory?: DirectoryMapperFactory;
 
   public constructor(
     options: ClientOptions,
