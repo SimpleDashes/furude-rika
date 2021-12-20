@@ -9,7 +9,7 @@ import FurudeLocales from '../localization/FurudeLocales';
 
 export default class FurudeRika extends BaseBot {
   public readonly localizer = new FurudeLocales();
-  private forceDeploy: boolean = false;
+  private readonly forceDeploy: boolean = false;
 
   public constructor() {
     super(
@@ -19,6 +19,7 @@ export default class FurudeRika extends BaseBot {
       {
         ENV_TOKEN_VAR: 'BOT_TOKEN',
         ENV_DEVELOPMENT_SERVER: 'DEV_GUILD_ID',
+        OWNER_IDS: ['902963589898444800'],
       },
       async () => {
         console.log(this.commands.size + ' commands were loaded');

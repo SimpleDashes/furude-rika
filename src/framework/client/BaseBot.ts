@@ -3,6 +3,7 @@ import {
   ClientOptions,
   Collection,
   CommandInteraction,
+  GuildMember,
 } from 'discord.js';
 import DirectoryMapper from '../io/DirectoryMapper';
 import CommandResolver from '../io/object_resolvers/CommandResolver';
@@ -35,6 +36,7 @@ export default abstract class BaseBot extends Client implements IBot {
     this.commandMapperFactory = commandMapperFactory;
     this.onCommandsLoaded = onCommandsLoaded;
     this.devInfo = {
+      ownerIds: this.devOptions.OWNER_IDS,
       token: process.env[this.devOptions.ENV_TOKEN_VAR],
     };
   }
@@ -72,14 +74,39 @@ export default abstract class BaseBot extends Client implements IBot {
     this.on('interactionCreate', async (interaction) => {
       if (!interaction.isCommand) return;
 
-      const commandInteraction = interaction as CommandInteraction;
-      const command = this.commands.get(commandInteraction.commandName);
+      if (!(interaction instanceof CommandInteraction)) return;
+
+      const command = this.commands.get(interaction.commandName);
 
       if (!command) return;
 
-      await command.run(this, commandInteraction);
+      if (command.information.ownerOnly) {
+        if (!this.devInfo.ownerIds.includes(interaction.user.id)) {
+          await command.onInsufficientPermissions(this, interaction);
+          return;
+        }
+      }
+
+      if (interaction.guild) {
+        if (command.information.permissions) {
+          if (
+            !(interaction.member as GuildMember).permissions.has(
+              command.information.permissions
+            )
+          ) {
+            command.onInsufficientPermissions(
+              this,
+              interaction,
+              command.information.permissions
+            );
+            return;
+          }
+        }
+      }
+
+      await command.run(this, interaction);
       this.onCommandRun({
-        interaction: commandInteraction,
+        interaction,
         command: command,
       });
     });

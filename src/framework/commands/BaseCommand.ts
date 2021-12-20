@@ -1,4 +1,9 @@
-import { CommandInteraction, CacheType, Client } from 'discord.js';
+import {
+  CommandInteraction,
+  CacheType,
+  Client,
+  PermissionResolvable,
+} from 'discord.js';
 import {
   SlashCommandBooleanOption,
   SlashCommandBuilder,
@@ -22,7 +27,6 @@ import NumberOption from '../options/classes/NumberOption';
 import RoleOption from '../options/classes/RoleOption';
 import StringOption from '../options/classes/StringOption';
 import UserOption from '../options/classes/UserOption';
-import consola from 'consola';
 
 export default abstract class BaseCommand<T extends Client>
   extends SlashCommandBuilder
@@ -40,6 +44,12 @@ export default abstract class BaseCommand<T extends Client>
   public abstract run(
     client: T,
     interaction: CommandInteraction<CacheType>
+  ): Promise<void>;
+
+  public abstract onInsufficientPermissions(
+    client: T,
+    interaction: CommandInteraction<CacheType>,
+    missingPermissions?: PermissionResolvable
   ): Promise<void>;
 
   protected registerOption<C>(option: C): C {

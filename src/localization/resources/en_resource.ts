@@ -25,6 +25,12 @@ export default class extends FurudeResource {
       COIN_FLIP_HEADS: 'Heads',
       COIN_FLIP_TAILS: 'Tails',
       COIN_FLIP_RESULT: 'The result is: [$RES]',
+
+      // ERRORS
+      ERROR_MISSING_PERMISSIONS:
+        "You don't have enough permission to be able to execute this command!",
+      ERROR_OWNER_ONLY_COMMAND:
+        'This command can only be executed by my developers!',
     });
   }
 }

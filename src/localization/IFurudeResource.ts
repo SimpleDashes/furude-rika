@@ -16,4 +16,7 @@ export default interface IFurudeResource extends ILocalizerStructure {
   COIN_FLIP_HEADS: string;
   COIN_FLIP_TAILS: string;
   COIN_FLIP_RESULT: string;
+
+  ERROR_MISSING_PERMISSIONS: string;
+  ERROR_OWNER_ONLY_COMMAND: string;
 }

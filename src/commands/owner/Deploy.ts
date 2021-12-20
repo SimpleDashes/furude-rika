@@ -27,6 +27,7 @@ export default class Deploy extends FurudeCommand {
       name: 'deploy',
       description: 'deploys a discord command',
       usage: '',
+      ownerOnly: true,
     });
   }
 
