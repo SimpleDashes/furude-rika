@@ -17,6 +17,9 @@ export default class extends FurudeResource {
       DEPLOY_COMMAND_CORRUPTED: 'The specified command is likely corrupt.',
       DEPLOY_COMMAND_ERROR: 'Error deploying the specified command.',
       DEPLOY_COMMAND_SUCCESS: 'Deployed the specified command successfully.',
+
+      // CALC
+      CALC_RESULTS: '[$EXPR] result in: [$RES]',
     });
   }
 }

@@ -13,10 +13,14 @@ export default class extends FurudeResource {
 
       // DEPLOY
       DEPLOY_COMMAND_NOT_FOUND:
-        "The specified command wasn't found on my commands list.",
-      DEPLOY_COMMAND_CORRUPTED: 'The specified command is likely corrupt.',
-      DEPLOY_COMMAND_ERROR: 'Error deploying the specified command.',
-      DEPLOY_COMMAND_SUCCESS: 'Deployed the specified command successfully.',
+        'Eu não consegui achar o comando especificado na minha lista de comandos...',
+      DEPLOY_COMMAND_CORRUPTED:
+        'O comando especificado está provavelmente corrompido!',
+      DEPLOY_COMMAND_ERROR: 'Tive um erro tentando fazer deploy deste comando!',
+      DEPLOY_COMMAND_SUCCESS: 'Consegui fazer deploy desse comando!',
+
+      // CALC
+      CALC_RESULTS: '[$EXPR] dá: [$RES]',
     });
   }
 }

@@ -8,7 +8,7 @@ export default class StringOption
   implements IDiscordOption<String>
 {
   apiType: ApplicationCommandOptionTypes = ApplicationCommandOptionTypes.STRING;
-  apply(interaction: CommandInteraction): String | null {
+  apply(interaction: CommandInteraction): string | null {
     return interaction.options.getString(this.name, this.required);
   }
 }

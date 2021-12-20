@@ -1,6 +1,6 @@
 import Localizer from '../framework/localization/Localizer';
 import StringWithVariablesManager from '../framework/localization/StringWithVariablesManager';
-import IFurudeLocale from './IFurudeTranslation';
+import IFurudeResource from './IFurudeResource';
 import SupportedFurudeLocales from './SupportedFurudeLocales';
 import { variablePrefix } from '../framework/localization/StringWithVariablesManager';
 import IVariableManagerGetter from '../framework/localization/IVariableManagerGetter';
@@ -18,7 +18,7 @@ const defaultFurudeLocale = SupportedFurudeLocales.pt_br;
 
 const translations: FurudeResource[] = [];
 
-export default class FurudeLocales extends Localizer<IFurudeLocale> {
+export default class FurudeLocales extends Localizer<IFurudeResource> {
   public readonly stringWithVariablesManager = new StringWithVariablesManager();
 
   public constructor() {

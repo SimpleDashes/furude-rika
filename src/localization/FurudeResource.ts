@@ -1,15 +1,18 @@
 import ILocalizerResource from '../framework/localization/ILocalizerResource';
-import IFurudeLocale from './IFurudeTranslation';
+import IFurudeResource from './IFurudeResource';
 import SupportedFurudeLocales from './SupportedFurudeLocales';
 
 export default class FurudeResource
-  implements ILocalizerResource<IFurudeLocale>
+  implements ILocalizerResource<IFurudeResource>
 {
   public readonly furudeLocale: SupportedFurudeLocales;
   public readonly locale: string;
-  public readonly structure: IFurudeLocale;
+  public readonly structure: IFurudeResource;
 
-  public constructor(locale: SupportedFurudeLocales, structure: IFurudeLocale) {
+  public constructor(
+    locale: SupportedFurudeLocales,
+    structure: IFurudeResource
+  ) {
     this.furudeLocale = locale;
     this.locale = locale;
     this.structure = structure;

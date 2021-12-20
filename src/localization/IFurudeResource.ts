@@ -1,6 +1,6 @@
 import ILocalizerStructure from '../framework/localization/ILocalizerStructure';
 
-export default interface IFurudeLocale extends ILocalizerStructure {
+export default interface IFurudeResource extends ILocalizerStructure {
   AVATAR_RESPONSE: string;
 
   PING_TO_PING: string;
@@ -10,4 +10,6 @@ export default interface IFurudeLocale extends ILocalizerStructure {
   DEPLOY_COMMAND_CORRUPTED: string;
   DEPLOY_COMMAND_ERROR: string;
   DEPLOY_COMMAND_SUCCESS: string;
+
+  CALC_RESULTS: string;
 }
