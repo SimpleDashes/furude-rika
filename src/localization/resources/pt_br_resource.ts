@@ -5,7 +5,7 @@ export default class extends FurudeResource {
   public constructor() {
     super(SupportedFurudeLocales.pt_br, {
       // AVATAR
-      AVATAR_RESPONSE: 'Aqui, toma o avatar do [$USER]',
+      AVATAR_RESPONSE: 'Aqui, toma o avatar do(a) [$USER]',
 
       // PING
       PING_TO_PING: 'Pinguei em [$PING]ms',

@@ -23,16 +23,15 @@ export default class Localizer<I extends ILocalizerStructure> {
       throw `locales should include the defaultLocale`;
     }
 
-    const resources: Resource = {};
+    const resources: Record<string, ILocalizerStructure> = {};
 
     this.locales.forEach((locale) => {
-      // @ts-ignore
       resources[locale.locale] = locale.structure;
     });
 
     i18next.init({
       lng: this.defaultLocale,
-      resources,
+      resources: resources as Resource,
     });
   }
 }

@@ -1,4 +1,3 @@
-import ILocalizerResource from '../framework/localization/ILocalizerResource';
 import Localizer from '../framework/localization/Localizer';
 import StringWithVariablesManager from '../framework/localization/StringWithVariablesManager';
 import IFurudeLocale from './IFurudeTranslation';

@@ -36,7 +36,7 @@ export default abstract class ClassResolver<T> {
     for await (const file of files) {
       const importPath = path.join(dir, file.name);
       const relativePath = path.relative(__dirname, importPath);
-      consola.log(`Trying to import command at: ${relativePath}`);
+      consola.log(`Trying to import object at: ${relativePath}`);
       const possibleClass = await import(relativePath);
       const classClass: Constructor<T> = possibleClass.default ?? possibleClass;
       const classObject: unknown = new classClass();
