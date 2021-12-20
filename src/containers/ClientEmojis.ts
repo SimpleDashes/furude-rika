@@ -1,6 +1,6 @@
 enum ClientEmojis {
-  success = '❎',
-  negate = '✅',
+  success = '✅',
+  negate = '❎',
 }
 
-export default ClientEmojis
+export default ClientEmojis;

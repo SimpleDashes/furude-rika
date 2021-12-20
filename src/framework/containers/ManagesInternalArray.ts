@@ -1,8 +1,8 @@
 export default abstract class ManagesInternalArray<T> {
-  protected internalArray: T[] = []
+  protected internalArray: T[] = [];
 
   public get InternalArray() {
-    return this.internalArray
+    return this.internalArray;
   }
 
   /**
@@ -12,7 +12,7 @@ export default abstract class ManagesInternalArray<T> {
    * @returns said item
    */
   protected pushGet(item: T) {
-    this.internalArray.push(item)
-    return item
+    this.internalArray.push(item);
+    return item;
   }
 }

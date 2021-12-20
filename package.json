@@ -1,14 +1,12 @@
 {
-  "devDependencies": {
-    "typescript": "^4.5.4"
-  },
   "name": "furude-rika",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
     "dev": "npm run build && npm run start",
     "build": "tsc --build tsconfig.json",
-    "start": "node ."
+    "start": "node dist/index.js",
+    "format": "npx prettier -w src"
   },
   "author": "",
   "license": "ISC",
@@ -17,12 +15,17 @@
     "@discordjs/builders": "^0.9.0",
     "consola": "^2.15.3",
     "discord.js": "^13.3.1",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "i18next": "^21.6.3"
+  },
+  "devDependencies": {
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.4"
   },
   "prettier": {
     "trailingComma": "es5",
     "tabWidth": 2,
-    "semi": false,
+    "semi": true,
     "singleQuote": true
   }
 }

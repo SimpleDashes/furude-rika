@@ -5,6 +5,6 @@ export default class TypeHelpers {
     maybeFunction: any | ((...args: any[]) => T),
     _returnType?: T
   ): maybeFunction is (...args: any[]) => T {
-    return typeof maybeFunction === 'function'
+    return typeof maybeFunction === 'function';
   }
 }

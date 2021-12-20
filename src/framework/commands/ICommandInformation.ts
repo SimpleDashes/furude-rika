@@ -1,5 +1,5 @@
 export default interface ICommandInformation {
-  name: string
-  description: string
-  usage: string
+  name: string;
+  description: string;
+  usage: string;
 }

@@ -3,4 +3,4 @@ enum UserType {
   BOT,
 }
 
-export default UserType
+export default UserType;

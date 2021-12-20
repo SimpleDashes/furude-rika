@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType, Client } from 'discord.js'
+import { CommandInteraction, CacheType, Client } from 'discord.js';
 import {
   SlashCommandBooleanOption,
   SlashCommandBuilder,
@@ -9,44 +9,50 @@ import {
   SlashCommandRoleOption,
   SlashCommandStringOption,
   SlashCommandUserOption,
-} from '@discordjs/builders'
-import ICommand from './ICommand'
-import ICommandInformation from './ICommandInformation'
-import IDiscordOption from '../options/interfaces/IDiscordOption'
-import TypeHelpers from '../helpers/TypeHelpers'
-import BooleanOption from '../options/classes/BooleanOption'
-import ChannelOption from '../options/classes/ChannelOption'
-import IntegerOption from '../options/classes/IntegerOption'
-import MentionableOptions from '../options/classes/MentionableOption'
-import NumberOption from '../options/classes/NumberOption'
-import RoleOption from '../options/classes/RoleOption'
-import StringOption from '../options/classes/StringOption'
-import UserOption from '../options/classes/UserOption'
+} from '@discordjs/builders';
+import ICommand from './ICommand';
+import ICommandInformation from './ICommandInformation';
+import IDiscordOption from '../options/interfaces/IDiscordOption';
+import TypeHelpers from '../helpers/TypeHelpers';
+import BooleanOption from '../options/classes/BooleanOption';
+import ChannelOption from '../options/classes/ChannelOption';
+import IntegerOption from '../options/classes/IntegerOption';
+import MentionableOptions from '../options/classes/MentionableOption';
+import NumberOption from '../options/classes/NumberOption';
+import RoleOption from '../options/classes/RoleOption';
+import StringOption from '../options/classes/StringOption';
+import UserOption from '../options/classes/UserOption';
+import consola from 'consola';
 
 export default abstract class BaseCommand<T extends Client>
   extends SlashCommandBuilder
   implements ICommand<T>
 {
-  public readonly argumentOptions: Partial<IDiscordOption<any>>[] = []
-  public readonly information: ICommandInformation
+  public readonly argumentOptions: Partial<IDiscordOption<any>>[] = [];
+  public readonly information: ICommandInformation;
 
   public constructor(information: ICommandInformation) {
-    super()
-    this.information = information
-    this.setName(information.name).setDescription(information.description)
+    super();
+    this.information = information;
+    this.setName(information.name).setDescription(information.description);
   }
 
   public abstract run(
     client: T,
     interaction: CommandInteraction<CacheType>
-  ): Promise<void>
+  ): Promise<void>;
 
-  private addOption<I>(input: I, isOption: (built: I) => boolean) {
-    const built = TypeHelpers.isCallback(input, input) ? input() : input
+  protected registerOption<C>(option: C): C {
+    this.argumentOptions.push(option);
+    return option;
+  }
+
+  private addInternalOption<I>(input: I, isOption: (built: I) => boolean) {
+    const built = TypeHelpers.isCallback(input, input) ? input() : input;
     if (isOption(built)) {
-      this.argumentOptions.push(built)
+      this.argumentOptions.push(built);
     } else {
-      throw 'You should use framework classes for handling BaseCommands'
+      throw 'You should use framework classes for handling BaseCommands';
     }
   }
 
@@ -55,8 +61,8 @@ export default abstract class BaseCommand<T extends Client>
       | SlashCommandBooleanOption
       | ((builder: SlashCommandBooleanOption) => SlashCommandBooleanOption)
   ): Omit<this, 'addSubcommand' | 'addSubcommandGroup'> {
-    this.addOption(input, (o) => o instanceof BooleanOption)
-    return super.addBooleanOption(input)
+    this.addInternalOption(input, (o) => o instanceof BooleanOption);
+    return super.addBooleanOption(input);
   }
 
   override addChannelOption(
@@ -64,8 +70,8 @@ export default abstract class BaseCommand<T extends Client>
       | SlashCommandChannelOption
       | ((builder: SlashCommandChannelOption) => SlashCommandChannelOption)
   ): Omit<this, 'addSubcommand' | 'addSubcommandGroup'> {
-    this.addOption(input, (o) => o instanceof ChannelOption)
-    return super.addChannelOption(input)
+    this.addInternalOption(input, (o) => o instanceof ChannelOption);
+    return super.addChannelOption(input);
   }
 
   override addIntegerOption(
@@ -80,8 +86,8 @@ export default abstract class BaseCommand<T extends Client>
           | Omit<SlashCommandIntegerOption, 'setAutocomplete'>
           | Omit<SlashCommandIntegerOption, 'addChoice' | 'addChoices'>)
   ): Omit<this, 'addSubcommand' | 'addSubcommandGroup'> {
-    this.addOption(input, (o) => o instanceof IntegerOption)
-    return super.addIntegerOption(input)
+    this.addInternalOption(input, (o) => o instanceof IntegerOption);
+    return super.addIntegerOption(input);
   }
 
   override addMentionableOption(
@@ -91,8 +97,8 @@ export default abstract class BaseCommand<T extends Client>
           builder: SlashCommandMentionableOption
         ) => SlashCommandMentionableOption)
   ): Omit<this, 'addSubcommand' | 'addSubcommandGroup'> {
-    this.addOption(input, (o) => o instanceof MentionableOptions)
-    return super.addMentionableOption(input)
+    this.addInternalOption(input, (o) => o instanceof MentionableOptions);
+    return super.addMentionableOption(input);
   }
 
   override addNumberOption(
@@ -107,8 +113,8 @@ export default abstract class BaseCommand<T extends Client>
           | Omit<SlashCommandNumberOption, 'setAutocomplete'>
           | Omit<SlashCommandNumberOption, 'addChoice' | 'addChoices'>)
   ): Omit<this, 'addSubcommand' | 'addSubcommandGroup'> {
-    this.addOption(input, (o) => o instanceof NumberOption)
-    return super.addNumberOption(input)
+    this.addInternalOption(input, (o) => o instanceof NumberOption);
+    return super.addNumberOption(input);
   }
 
   override addRoleOption(
@@ -116,8 +122,8 @@ export default abstract class BaseCommand<T extends Client>
       | SlashCommandRoleOption
       | ((builder: SlashCommandRoleOption) => SlashCommandRoleOption)
   ): Omit<this, 'addSubcommand' | 'addSubcommandGroup'> {
-    this.addOption(input, (o) => o instanceof RoleOption)
-    return super.addRoleOption(input)
+    this.addInternalOption(input, (o) => o instanceof RoleOption);
+    return super.addRoleOption(input);
   }
 
   override addStringOption(
@@ -132,12 +138,12 @@ export default abstract class BaseCommand<T extends Client>
           | Omit<SlashCommandStringOption, 'setAutocomplete'>
           | Omit<SlashCommandStringOption, 'addChoice' | 'addChoices'>)
   ): Omit<this, 'addSubcommand' | 'addSubcommandGroup'> {
-    this.addOption(
+    this.addInternalOption(
       input,
 
       (o) => o instanceof StringOption
-    )
-    return super.addStringOption(input)
+    );
+    return super.addStringOption(input);
   }
 
   override addUserOption(
@@ -145,7 +151,7 @@ export default abstract class BaseCommand<T extends Client>
       | SlashCommandUserOption
       | ((builder: SlashCommandUserOption) => SlashCommandUserOption)
   ): Omit<this, 'addSubcommand' | 'addSubcommandGroup'> {
-    this.addOption(input, (o) => o instanceof UserOption)
-    return super.addUserOption(input)
+    this.addInternalOption(input, (o) => o instanceof UserOption);
+    return super.addUserOption(input);
   }
 }

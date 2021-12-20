@@ -1,16 +1,16 @@
-import FurudeRika from './client/FurudeRika'
-import dotenv from 'dotenv'
+import FurudeRika from './client/FurudeRika';
+import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      BOT_TOKEN: string
-      DEV_GUILD_ID: string
+      BOT_TOKEN: string;
+      DEV_GUILD_ID: string;
     }
   }
 }
 
-const furudeRika = new FurudeRika()
-furudeRika.start()
+const furudeRika = new FurudeRika();
+furudeRika.start();
