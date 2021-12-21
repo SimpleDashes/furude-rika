@@ -1,10 +1,12 @@
-import { CommandInteraction, CacheType } from 'discord.js';
+import { CommandInteraction, CacheType, Collection } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
 import FurudeCommand from '../../discord/FurudeCommand';
 import StringOption from '../../framework/options/classes/StringOption';
 import { Parser } from 'expr-eval';
+
 import MessageFactory from '../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
+import CollectionHelper from '../../framework/helpers/CollectionHelper';
 
 export default class Calc extends FurudeCommand {
   private readonly expression = this.registerOption(
@@ -36,10 +38,133 @@ export default class Calc extends FurudeCommand {
   ): Promise<void> {
     await interaction.deferReply();
 
-    const gotExpression = this.expression.apply(interaction);
+    const gotExpression = this.expression.apply(interaction)!.replace(' ', '');
     const gotVariablesRaw = this.variables.apply(interaction);
 
-    let gotVariables: Record<string, number> | null = null;
+    const gotVariables = this.getAllInputVariablesCollection(
+      gotVariablesRaw!,
+      gotExpression
+    );
+
+    const allVariables = this.getAllRequiredVariablesArray(gotExpression);
+
+    const missingVariables = this.getAllMissingRequiredVariablesArray(
+      allVariables,
+      gotVariables
+    );
+
+    const expressionText = MessageFactory.block(gotExpression!.trim());
+
+    if (missingVariables.length != 0) {
+      await interaction.editReply(
+        MessageFactory.error(
+          client.localizer.get(FurudeTranslationKeys.CALC_MISSING_VARIABLES, {
+            values: {
+              args: [
+                MessageFactory.block(missingVariables.toString()),
+                expressionText,
+              ],
+            },
+          })
+        )
+      );
+      return;
+    }
+
+    const parsedExpression = Parser.parse(gotExpression!);
+
+    let evaluatedResult: number | null = null;
+    try {
+      evaluatedResult = parsedExpression.evaluate(
+        CollectionHelper.collectionToRecord(gotVariables)
+      );
+    } catch {}
+
+    let displayText;
+    if (evaluatedResult) {
+      displayText = client.localizer.get(FurudeTranslationKeys.CALC_RESULTS, {
+        values: {
+          args: [expressionText, evaluatedResult.toString()],
+        },
+      });
+      if (gotVariables && gotVariablesRaw) {
+        displayText += `, ${client.localizer.get(
+          FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
+          {
+            values: {
+              args: [expressionText],
+            },
+          }
+        )}`;
+      }
+      displayText = MessageFactory.success(displayText);
+    } else {
+      displayText = MessageFactory.error(
+        client.localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, {
+          values: {
+            args: [expressionText],
+          },
+        })
+      );
+    }
+
+    await interaction.editReply({
+      content: displayText,
+    });
+  }
+
+  private getAllMissingRequiredVariablesArray(
+    allVariables: string[],
+    gotVariables: Collection<string, number>
+  ) {
+    const missingVariables = [];
+
+    for (const variable of allVariables) {
+      if (!gotVariables?.has(variable)) {
+        missingVariables.push(variable);
+      }
+    }
+
+    return missingVariables;
+  }
+
+  private getAllRequiredVariablesArray(gotExpression: string) {
+    let currentVariableName = '';
+    const allVariables: string[] = [];
+
+    const tempAllCharacters = Array.from(gotExpression!).filter((char) => {
+      return char.toLowerCase() != char.toUpperCase();
+    });
+
+    for (let i = 0; i < tempAllCharacters.length; i++) {
+      const current = tempAllCharacters[i];
+      const next = tempAllCharacters[i + 1];
+
+      if (current) {
+        const newCurrentVariableName = currentVariableName + current;
+        const nextNewCurrentVariableName = newCurrentVariableName + next;
+        if (
+          gotExpression.includes(newCurrentVariableName) &&
+          gotExpression.includes(nextNewCurrentVariableName)
+        ) {
+          currentVariableName = newCurrentVariableName;
+        } else {
+          if (!gotExpression.includes(nextNewCurrentVariableName)) {
+            currentVariableName = newCurrentVariableName;
+          }
+          allVariables.push(currentVariableName.slice());
+          currentVariableName = '';
+        }
+      }
+    }
+    return allVariables;
+  }
+
+  private getAllInputVariablesCollection(
+    gotVariablesRaw: string,
+    gotExpression: string
+  ) {
+    let gotVariables: Collection<string, number> | null = new Collection();
     if (gotVariablesRaw) {
       const args = gotVariablesRaw.replace(' ', '').split(',');
       args.forEach((rawArg) => {
@@ -52,53 +177,12 @@ export default class Calc extends FurudeCommand {
           } catch {}
           if (value) {
             if (gotExpression?.includes(key)) {
-              if (!gotVariables) {
-                gotVariables = {};
-              }
-              gotVariables[key] = value;
+              gotVariables?.set(key, value);
             }
           }
         }
       });
     }
-
-    const parsedExpression = Parser.parse(gotExpression!);
-
-    let evaluatedResult;
-    try {
-      evaluatedResult = parsedExpression.evaluate(gotVariables ?? undefined);
-    } catch {}
-
-    let displayText;
-    if (evaluatedResult) {
-      displayText = client.localizer.get(FurudeTranslationKeys.CALC_RESULTS, {
-        values: {
-          args: [MessageFactory.block(gotExpression!), evaluatedResult],
-        },
-      });
-      if (gotVariables && gotVariablesRaw) {
-        displayText += `, ${client.localizer.get(
-          FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
-          {
-            values: {
-              args: [MessageFactory.block(gotVariablesRaw.trim())],
-            },
-          }
-        )}`;
-      }
-      displayText = MessageFactory.success(displayText);
-    } else {
-      displayText = MessageFactory.error(
-        client.localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, {
-          values: {
-            args: [MessageFactory.block(gotExpression!.trim())],
-          },
-        })
-      );
-    }
-
-    await interaction.editReply({
-      content: displayText,
-    });
+    return gotVariables;
   }
 }

@@ -14,6 +14,7 @@ export default interface IFurudeResource extends ILocalizerStructure {
   CALC_RESULTS: string;
   CALC_ADDITIONAL_VARIABLES: string;
   CALC_EVALUATE_ERROR: string;
+  CALC_MISSING_VARIABLES: string;
 
   COIN_FLIP_HEADS: string;
   COIN_FLIP_TAILS: string;

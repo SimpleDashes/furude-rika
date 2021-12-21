@@ -24,6 +24,8 @@ export default class extends FurudeResource {
         'With the variables for the expression being: [$VARS]',
       CALC_EVALUATE_ERROR:
         "Maybe i am dumb or whatever, but i don't think [$EXPR] is a mathematical expression.",
+      CALC_MISSING_VARIABLES:
+        'You forgot to add the following variables: [$VARS], for the expression: [$EXPR]',
 
       // COIN FLIP
       COIN_FLIP_HEADS: 'Heads',
