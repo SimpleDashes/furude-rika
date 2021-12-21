@@ -37,6 +37,10 @@ export default class extends FurudeResource {
         "You don't have enough permission to be able to execute this command!",
       ERROR_OWNER_ONLY_COMMAND:
         'This command can only be executed by my developers!',
+
+      // SUBCOMMANDS
+      SUBCOMMAND_ERROR_NOT_FOUND:
+        "Sorry i couldn't find the subcommand you are looking for!",
     });
   }
 }

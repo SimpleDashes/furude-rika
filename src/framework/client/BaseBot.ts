@@ -1,4 +1,5 @@
 import {
+  Base,
   Client,
   ClientOptions,
   Collection,
@@ -6,7 +7,7 @@ import {
   GuildMember,
 } from 'discord.js';
 import DirectoryMapper from '../io/DirectoryMapper';
-import CommandResolver from '../io/object_resolvers/CommandResolver';
+import CommandResolver from '../io/object_resolvers/command_resolvers/CommandResolver';
 import IBot from './IBot';
 import BaseCommand from '../commands/BaseCommand';
 import ICommandRunResponse from './ICommandRunResponse';
@@ -14,10 +15,18 @@ import consola from 'consola';
 import IBotDevInformation from './IBotDevInformation';
 import DirectoryMapperFactory from '../io/DirectoryMapperFactory';
 import path from 'path';
-import fs from 'fs/promises';
+import fsSync from 'fs';
+import SubCommandResolver from '../io/object_resolvers/command_resolvers/SubCommandResolver';
+import ICommand from '../commands/ICommand';
+import SubCommand from '../commands/SubCommand';
+
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
     new Collection();
+  public readonly subCommands: Collection<
+    BaseCommand<BaseBot>,
+    SubCommand<BaseBot>[]
+  > = new Collection();
   public readonly commandMappers: DirectoryMapper[] = [];
   public readonly devInfo: IBotDevInformation;
   public readonly devOptions: IDevOptions;
@@ -51,17 +60,28 @@ export default abstract class BaseBot extends Client implements IBot {
       this.commandMappers.push(...newMappers);
     }
     const commandResolver = new CommandResolver(...this.commandMappers);
-    await commandResolver.getAllObjects().then(async (res) => {
-      for await (const commandRes of res) {
-        this.commands.set(commandRes.object.name, commandRes.object);
-        const subCommandsMapper = new DirectoryMapper(
-          path.join(commandRes.directory.path, this.subCommandsDirectory)
-        );
-        const subCommandsFile = await fs.readFile(subCommandsMapper.path);
-        // TODO: IMPLEMENT SUBCOMMANDS
+    const resolvedCommands = await commandResolver.getAllObjects();
+    for await (const commandRes of resolvedCommands) {
+      this.commands.set(commandRes.object.name, commandRes.object);
+      const subCommandPath = path.join(
+        commandRes.directory.path,
+        this.subCommandsDirectory
+      );
+      if (fsSync.existsSync(subCommandPath)) {
+        const subCommandsMapper = new DirectoryMapper(subCommandPath);
+        const subCommandResolver = new SubCommandResolver(subCommandsMapper);
+        const resolvedSubCommands = await subCommandResolver.getAllObjects();
+        const subCommands = [];
+
+        for await (const subCommandRes of resolvedSubCommands) {
+          commandRes.object.addSubcommand(subCommandRes.object);
+          subCommands.push(subCommandRes.object);
+        }
+
+        this.subCommands.set(commandRes.object, subCommands);
       }
-      if (this.onCommandsLoaded) this.onCommandsLoaded();
-    });
+    }
+    if (this.onCommandsLoaded) this.onCommandsLoaded();
   }
 
   async start() {
@@ -89,31 +109,27 @@ export default abstract class BaseBot extends Client implements IBot {
 
       if (!command) return;
 
-      if (command.information.ownerOnly) {
-        if (!this.devInfo.ownerIds.includes(interaction.user.id)) {
-          await command.onInsufficientPermissions(this, interaction);
-          return;
-        }
+      if (!(await this.verifyPermissionsToRunCommand(interaction, command))) {
+        return;
       }
 
-      if (interaction.guild) {
-        if (command.information.permissions) {
-          if (
-            !(interaction.member as GuildMember).permissions.has(
-              command.information.permissions
-            )
-          ) {
-            command.onInsufficientPermissions(
-              this,
-              interaction,
-              command.information.permissions
-            );
-            return;
-          }
+      const subCommandOption = interaction.options.getSubcommand(
+        !!command.information.requiresSubCommand
+      );
+      if (subCommandOption) {
+        const runnableSubCommand = this.subCommands
+          .get(command)
+          ?.find((sub) => sub.name == subCommandOption);
+        if (runnableSubCommand) {
+          await runnableSubCommand.run(this, interaction);
+        } else {
+          await this.onSubCommandNotFound(interaction);
         }
+        return;
+      } else {
+        await command.run(this, interaction);
       }
 
-      await command.run(this, interaction);
       this.onCommandRun({
         interaction,
         command: command,
@@ -121,7 +137,52 @@ export default abstract class BaseBot extends Client implements IBot {
     });
   }
 
-  onCommandRun(response: ICommandRunResponse) {
+  /**
+   *
+   * @param interaction The context interaction to verify the permissions
+   * @param command the command used on this interaction
+   * @returns wether the user has enough permissions to execute said command
+   */
+  private async verifyPermissionsToRunCommand(
+    interaction: CommandInteraction,
+    command: ICommand<any, any>
+  ): Promise<boolean> {
+    if (command.information.ownerOnly) {
+      if (!this.devInfo.ownerIds.includes(interaction.user.id)) {
+        await command.onInsufficientPermissions(this, interaction);
+        return false;
+      }
+    }
+    if (command.information.permissions) {
+      if (interaction.guild) {
+        if (
+          !(interaction.member as GuildMember).permissions.has(
+            command.information.permissions
+          )
+        ) {
+          await command.onInsufficientPermissions(
+            this,
+            interaction,
+            command.information.permissions
+          );
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public async onSubCommandNotFound(
+    interaction: CommandInteraction
+  ): Promise<void> {
+    consola.log(
+      `Couldn't find subcommand: ${interaction.options.getSubcommand()}`
+    );
+  }
+
+  public onCommandRun(response: ICommandRunResponse) {
     consola.log(`${response.command} command was ran!`);
   }
 }

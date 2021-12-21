@@ -35,9 +35,12 @@ export default class extends FurudeResource {
       // ERROS
       ERROR_MISSING_PERMISSIONS:
         'Você não tem permissões suficientes para executar este comando!',
-
       ERROR_OWNER_ONLY_COMMAND:
         'Esse comando só pode ser executado pelos meus desenvolvedores!',
+
+      // SUBCOMMANDS
+      SUBCOMMAND_ERROR_NOT_FOUND:
+        'Desculpa mas assim eu acho que o subcomando que você me especificou não existe sabe?',
     });
   }
 }

@@ -44,14 +44,6 @@ export default class DeployHandler {
       return;
     }
 
-    const allOptions = command.options.map((o) => o.toJSON());
-
-    const commandData: ApplicationCommandDataResolvable = {
-      name: command.name,
-      description: command.description,
-      options: allOptions,
-    };
-
     let commandReceiver = null;
     if (isDebug) {
       commandReceiver = options.guild?.commands ?? interaction?.guild?.commands;
@@ -63,7 +55,7 @@ export default class DeployHandler {
       commandReceiver = client.application?.commands;
     }
 
-    await commandReceiver?.create(commandData);
+    await commandReceiver?.create(command.toJSON());
     if (onSuccess) onSuccess();
   }
 

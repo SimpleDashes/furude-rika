@@ -1,4 +1,4 @@
-import { Intents } from 'discord.js';
+import { CommandInteraction, Intents } from 'discord.js';
 import BaseBot from '../framework/client/BaseBot';
 import consola from 'consola';
 import ICommandRunResponse from '../framework/client/ICommandRunResponse';
@@ -6,10 +6,11 @@ import DeployHandler from '../framework/rest/DeployHandler';
 import DirectoryMapperFactory from '../framework/io/DirectoryMapperFactory';
 import path from 'path';
 import FurudeLocales from '../localization/FurudeLocales';
+import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 
 export default class FurudeRika extends BaseBot {
   public readonly localizer = new FurudeLocales();
-  private readonly forceDeploy: boolean = false;
+  private readonly forceDeploy: boolean = true;
 
   public constructor() {
     super(
@@ -41,6 +42,14 @@ export default class FurudeRika extends BaseBot {
   override async start(): Promise<void> {
     super.start();
     await this.localizer.build();
+  }
+
+  public override async onSubCommandNotFound(
+    interaction: CommandInteraction
+  ): Promise<void> {
+    await interaction.reply(
+      this.localizer.get(FurudeTranslationKeys.SUBCOMMAND_ERROR_NOT_FOUND)
+    );
   }
 
   public override onCommandRun(response: ICommandRunResponse): void {

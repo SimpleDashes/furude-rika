@@ -6,4 +6,5 @@ export default interface ICommandInformation {
   readonly usage: string;
   readonly permissions?: PermissionResolvable;
   readonly ownerOnly?: boolean;
+  readonly requiresSubCommand?: boolean;
 }

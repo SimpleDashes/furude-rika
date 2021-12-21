@@ -4,10 +4,10 @@ import {
   PermissionResolvable,
 } from 'discord.js';
 import FurudeRika from '../client/FurudeRika';
-import BaseCommand from '../framework/commands/BaseCommand';
+import SubCommand from '../framework/commands/SubCommand';
 import FurudeCommandWrapper from './FurudeCommandWrapper';
 
-export default abstract class FurudeCommand extends BaseCommand<FurudeRika> {
+export default abstract class FurudeSubCommand extends SubCommand<FurudeRika> {
   public override async onInsufficientPermissions(
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>,
