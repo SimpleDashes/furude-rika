@@ -22,19 +22,6 @@ export default class FurudeRika extends BaseBot {
         ENV_DEVELOPMENT_SERVER: 'DEV_GUILD_ID',
         OWNER_IDS: ['902963589898444800'],
       },
-      async () => {
-        console.log(this.commands.size + ' commands were loaded');
-        if (!this.forceDeploy) return;
-        const isDebug = true;
-        await DeployHandler.deployAll(this, isDebug, {
-          onError: () => {
-            consola.error(`Error deploying all commands`);
-          },
-          onSuccess: () => {
-            consola.success(`Deployed all commands`);
-          },
-        });
-      },
       new DirectoryMapperFactory(path.join('dist', 'commands'), ['subcommands'])
     );
   }
@@ -61,5 +48,19 @@ export default class FurudeRika extends BaseBot {
         interaction.channel?.id
       } on server: ${interaction.guild?.name}`
     );
+  }
+
+  public override async onCommandsLoaded(): Promise<void> {
+    console.log(this.commands.size + ' commands were loaded');
+    if (!this.forceDeploy) return;
+    const isDebug = true;
+    await DeployHandler.deployAll(this, isDebug, {
+      onError: () => {
+        consola.error(`Error deploying all commands`);
+      },
+      onSuccess: () => {
+        consola.success(`Deployed all commands`);
+      },
+    });
   }
 }

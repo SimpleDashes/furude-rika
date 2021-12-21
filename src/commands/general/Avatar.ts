@@ -28,7 +28,6 @@ export default class Avatar extends FurudeCommand {
     await interaction.deferReply();
 
     const selectedUser = this.user.apply(interaction) ?? interaction.user;
-    const avatarURL = selectedUser.avatarURL();
 
     const embed = new BaseEmbed(
       {
@@ -41,9 +40,7 @@ export default class Avatar extends FurudeCommand {
       interaction
     );
 
-    if (avatarURL) {
-      embed.setImage(avatarURL);
-    }
+    embed.setImage(selectedUser.avatarURL({ dynamic: true, size: 1024 })!);
 
     await interaction.editReply({
       embeds: [embed],

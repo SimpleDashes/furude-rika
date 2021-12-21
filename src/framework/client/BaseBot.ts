@@ -32,12 +32,10 @@ export default abstract class BaseBot extends Client implements IBot {
   public readonly devOptions: IDevOptions;
   private readonly commandMapperFactory?: DirectoryMapperFactory;
   private readonly subCommandsDirectory: string;
-  private onCommandsLoaded?: () => void;
 
   public constructor(
     options: ClientOptions,
     devOptions: IDevOptions,
-    onCommandsLoaded?: () => void,
     commandMapperFactory?: DirectoryMapperFactory,
     subCommandsDirectory: string = 'subcommands',
     ...commandMappers: DirectoryMapper[]
@@ -47,7 +45,6 @@ export default abstract class BaseBot extends Client implements IBot {
     this.devOptions = devOptions;
     this.commandMappers = commandMappers;
     this.commandMapperFactory = commandMapperFactory;
-    this.onCommandsLoaded = onCommandsLoaded;
     this.devInfo = {
       ownerIds: this.devOptions.OWNER_IDS,
       token: process.env[this.devOptions.ENV_TOKEN_VAR],
@@ -81,7 +78,7 @@ export default abstract class BaseBot extends Client implements IBot {
         this.subCommands.set(commandRes.object, subCommands);
       }
     }
-    if (this.onCommandsLoaded) this.onCommandsLoaded();
+    await this.onCommandsLoaded();
   }
 
   async start() {
@@ -173,6 +170,8 @@ export default abstract class BaseBot extends Client implements IBot {
     }
     return true;
   }
+
+  public async onCommandsLoaded(): Promise<void> {}
 
   public async onSubCommandNotFound(
     interaction: CommandInteraction
