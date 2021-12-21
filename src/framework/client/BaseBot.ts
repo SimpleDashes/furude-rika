@@ -13,7 +13,8 @@ import ICommandRunResponse from './ICommandRunResponse';
 import consola from 'consola';
 import IBotDevInformation from './IBotDevInformation';
 import DirectoryMapperFactory from '../io/DirectoryMapperFactory';
-
+import path from 'path';
+import fs from 'fs/promises';
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
     new Collection();
@@ -21,6 +22,7 @@ export default abstract class BaseBot extends Client implements IBot {
   public readonly devInfo: IBotDevInformation;
   public readonly devOptions: IDevOptions;
   private readonly commandMapperFactory?: DirectoryMapperFactory;
+  private readonly subCommandsDirectory: string;
   private onCommandsLoaded?: () => void;
 
   public constructor(
@@ -28,9 +30,11 @@ export default abstract class BaseBot extends Client implements IBot {
     devOptions: IDevOptions,
     onCommandsLoaded?: () => void,
     commandMapperFactory?: DirectoryMapperFactory,
+    subCommandsDirectory: string = 'subcommands',
     ...commandMappers: DirectoryMapper[]
   ) {
     super(options);
+    this.subCommandsDirectory = subCommandsDirectory;
     this.devOptions = devOptions;
     this.commandMappers = commandMappers;
     this.commandMapperFactory = commandMapperFactory;
@@ -47,10 +51,15 @@ export default abstract class BaseBot extends Client implements IBot {
       this.commandMappers.push(...newMappers);
     }
     const commandResolver = new CommandResolver(...this.commandMappers);
-    await commandResolver.getAllObjects().then((res) => {
-      res.forEach((command) => {
-        this.commands.set(command.name, command);
-      });
+    await commandResolver.getAllObjects().then(async (res) => {
+      for await (const commandRes of res) {
+        this.commands.set(commandRes.object.name, commandRes.object);
+        const subCommandsMapper = new DirectoryMapper(
+          path.join(commandRes.directory.path, this.subCommandsDirectory)
+        );
+        const subCommandsFile = await fs.readFile(subCommandsMapper.path);
+        // TODO: IMPLEMENT SUBCOMMANDS
+      }
       if (this.onCommandsLoaded) this.onCommandsLoaded();
     });
   }

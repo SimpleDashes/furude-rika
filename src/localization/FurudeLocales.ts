@@ -29,7 +29,9 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
   }
 
   public async build() {
-    translations.push(...(await resourceResolver.getAllObjects()));
+    translations.push(
+      ...(await resourceResolver.getAllObjects()).map((r) => r.object)
+    );
     for (const value of translations) {
       for (const key in value.structure) {
         const template = (value.structure as unknown as Record<string, string>)[

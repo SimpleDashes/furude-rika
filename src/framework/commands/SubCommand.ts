@@ -1,17 +1,17 @@
+import { SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import {
-  CommandInteraction,
   CacheType,
   Client,
+  CommandInteraction,
   PermissionResolvable,
 } from 'discord.js';
-import { SlashCommandBuilder } from '@discordjs/builders';
+import CommandHelper from './CommandHelper';
 import ICommand from './ICommand';
 import ICommandInformation from './ICommandInformation';
-import CommandHelper from './CommandHelper';
 
-export default abstract class BaseCommand<T extends Client>
-  extends SlashCommandBuilder
-  implements ICommand<T, BaseCommand<T>>
+export default abstract class SubCommand<T extends Client>
+  extends SlashCommandSubcommandBuilder
+  implements ICommand<T, SubCommand<T>>
 {
   public readonly information: ICommandInformation;
 

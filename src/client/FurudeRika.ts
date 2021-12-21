@@ -34,7 +34,7 @@ export default class FurudeRika extends BaseBot {
           },
         });
       },
-      new DirectoryMapperFactory(path.join('dist', 'commands'))
+      new DirectoryMapperFactory(path.join('dist', 'commands'), ['subcommands'])
     );
   }
 

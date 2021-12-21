@@ -5,6 +5,10 @@ import path from 'path';
 import consola from 'consola';
 import Constructor from '../../interfaces/Constructor';
 
+type resolvedClass<T> = {
+  directory: DirectoryMapper;
+  object: T;
+};
 export default abstract class ClassResolver<T> {
   private directoryMaps: DirectoryMapper[];
 
@@ -12,8 +16,8 @@ export default abstract class ClassResolver<T> {
     this.directoryMaps = directoryMaps;
   }
 
-  public async getAllObjects(): Promise<T[]> {
-    const objects: T[] = [];
+  public async getAllObjects(): Promise<resolvedClass<T>[]> {
+    const objects: resolvedClass<T>[] = [];
     for await (const commandMapper of this.directoryMaps) {
       const mapCommands = await this.getObjectForMapperLoop(commandMapper);
       objects.push(...mapCommands);
@@ -24,8 +28,8 @@ export default abstract class ClassResolver<T> {
   protected async getObjectsForMapper(
     directoryMapper: DirectoryMapper,
     onImportedClass?: (object: T) => void
-  ): Promise<T[]> {
-    const objects: T[] = [];
+  ): Promise<resolvedClass<T>[]> {
+    const objects: resolvedClass<T>[] = [];
     const dir = directoryMapper.path;
     const extension = BaseFileExtensions.instance.js.toString();
     const files = (
@@ -43,7 +47,10 @@ export default abstract class ClassResolver<T> {
       if (this.isInstanceOfT(classObject)) {
         const tClassObject = classObject as T;
         if (onImportedClass) onImportedClass(tClassObject);
-        objects.push(tClassObject);
+        objects.push({
+          directory: directoryMapper,
+          object: tClassObject,
+        });
       }
     }
     return objects;
@@ -51,8 +58,8 @@ export default abstract class ClassResolver<T> {
 
   protected async getObjectForMapperLoop(
     directoryMapper: DirectoryMapper
-  ): Promise<T[]> {
-    const objects: T[] = [];
+  ): Promise<resolvedClass<T>[]> {
+    const objects: resolvedClass<T>[] = [];
     if (directoryMapper.subDirectories?.length == 0) {
       objects.push(...(await this.getObjectsForMapper(directoryMapper)));
       return objects;

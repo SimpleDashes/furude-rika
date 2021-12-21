@@ -1,5 +1,6 @@
 import {
   ApplicationCommandData,
+  ApplicationCommandDataResolvable,
   ApplicationCommandOptionData,
   CacheType,
   CommandInteraction,
@@ -43,37 +44,12 @@ export default class DeployHandler {
       return;
     }
 
-    const commandOptions: ApplicationCommandOptionData[] = [];
-    for (const option of command.argumentOptions) {
-      if (!option.name || !option.description || !option.apiType) {
-        const reportMissing = (string: string) => {
-          consola.error(
-            `Option from command: ${command.name}, missing: ${string}`
-          );
-        };
-        if (!option.name) {
-          reportMissing('name');
-        }
-        if (!option.description) {
-          reportMissing('description');
-        }
-        if (!option.apiType) {
-          reportMissing('type');
-        }
-        if (onInvalidCommand) onInvalidCommand();
-        return;
-      }
-      commandOptions.push({
-        name: option.name,
-        description: option.description,
-        type: option.apiType,
-      });
-    }
+    const allOptions = command.options.map((o) => o.toJSON());
 
-    const commandData: ApplicationCommandData = {
+    const commandData: ApplicationCommandDataResolvable = {
       name: command.name,
       description: command.description,
-      options: commandOptions,
+      options: allOptions,
     };
 
     let commandReceiver = null;

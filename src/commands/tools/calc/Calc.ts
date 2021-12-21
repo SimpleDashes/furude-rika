@@ -1,13 +1,13 @@
 import { CommandInteraction, CacheType, Collection } from 'discord.js';
-import FurudeRika from '../../client/FurudeRika';
-import FurudeCommand from '../../discord/FurudeCommand';
-import StringOption from '../../framework/options/classes/StringOption';
-import { Parser } from 'expr-eval';
 
-import MessageFactory from '../../helpers/MessageFactory';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import CollectionHelper from '../../framework/helpers/CollectionHelper';
-import StringUtils from '../../framework/helpers/StringUtils';
+import { Parser } from 'expr-eval';
+import FurudeRika from '../../../client/FurudeRika';
+import FurudeCommand from '../../../discord/FurudeCommand';
+import CollectionHelper from '../../../framework/helpers/CollectionHelper';
+import StringUtils from '../../../framework/helpers/StringUtils';
+import StringOption from '../../../framework/options/classes/StringOption';
+import MessageFactory from '../../../helpers/MessageFactory';
+import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 
 export default class Calc extends FurudeCommand {
   private readonly expression = this.registerOption(

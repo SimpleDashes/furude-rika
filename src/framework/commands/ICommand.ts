@@ -1,14 +1,20 @@
+import { ToAPIApplicationCommandOptions } from '@discordjs/builders';
 import { Client, CommandInteraction, PermissionResolvable } from 'discord.js';
-import IDiscordOption from '../options/interfaces/IDiscordOption';
 import ICommandInformation from './ICommandInformation';
 
-export default interface ICommand<T extends Client> {
+export default interface ICommand<
+  T extends Client,
+  THIS extends ICommand<T, THIS>
+> {
+  readonly options: ToAPIApplicationCommandOptions[];
   readonly information: ICommandInformation;
-  readonly argumentOptions: Partial<IDiscordOption<any>>[];
   run(client: T, interaction: CommandInteraction): Promise<void>;
   onInsufficientPermissions(
     client: T,
     interaction: CommandInteraction,
     missingPermissions?: PermissionResolvable
   ): Promise<void>;
+  registerOption<C>(option: C): C;
+  setName(name: string): THIS;
+  setDescription(description: string): THIS;
 }
