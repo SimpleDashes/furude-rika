@@ -7,6 +7,7 @@ import { Parser } from 'expr-eval';
 import MessageFactory from '../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import CollectionHelper from '../../framework/helpers/CollectionHelper';
+import StringUtils from '../../framework/helpers/StringUtils';
 
 export default class Calc extends FurudeCommand {
   private readonly expression = this.registerOption(
@@ -170,23 +171,22 @@ export default class Calc extends FurudeCommand {
   ) {
     let gotVariables: Collection<string, number> | null = new Collection();
     if (gotVariablesRaw) {
-      const args = gotVariablesRaw.replace(' ', '').split(',');
-      args.forEach((rawArg) => {
-        const arg = rawArg.split('=');
-        if (arg[0] && arg[1]) {
-          const key = arg[0];
-          let value;
-          try {
-            value = Parser.parse(arg[1]).evaluate();
-          } catch {}
-          if (value) {
-            if (gotExpression?.includes(key)) {
-              gotVariables?.set(key, value);
-            }
+      const split =
+        StringUtils.toCollectionSplittedByEqualSignAsString(gotVariablesRaw);
+
+      for (const set of split) {
+        let value;
+        try {
+          value = Parser.parse(set[1]).evaluate();
+        } catch {}
+        if (value) {
+          if (gotExpression?.includes(set[0])) {
+            gotVariables?.set(set[0], value);
           }
         }
-      });
+      }
     }
+
     return gotVariables;
   }
 }
