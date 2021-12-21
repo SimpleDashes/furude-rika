@@ -73,18 +73,21 @@ export default class Calc extends FurudeCommand {
 
     const parsedExpression = Parser.parse(gotExpression!);
 
+    const recordVariables = CollectionHelper.collectionToRecord(gotVariables);
+
     let evaluatedResult: number | null = null;
     try {
-      evaluatedResult = parsedExpression.evaluate(
-        CollectionHelper.collectionToRecord(gotVariables)
-      );
+      evaluatedResult = parsedExpression.evaluate(recordVariables);
     } catch {}
 
     let displayText;
     if (evaluatedResult) {
       displayText = client.localizer.get(FurudeTranslationKeys.CALC_RESULTS, {
         values: {
-          args: [expressionText, evaluatedResult.toString()],
+          args: [
+            expressionText,
+            MessageFactory.block(evaluatedResult.toString()),
+          ],
         },
       });
       if (gotVariables && gotVariablesRaw) {
@@ -92,7 +95,7 @@ export default class Calc extends FurudeCommand {
           FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
           {
             values: {
-              args: [expressionText],
+              args: [MessageFactory.block(gotVariablesRaw.trim())],
             },
           }
         )}`;
