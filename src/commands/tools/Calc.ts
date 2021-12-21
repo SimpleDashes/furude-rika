@@ -160,6 +160,7 @@ export default class Calc extends FurudeCommand {
         }
       }
     }
+
     return allVariables;
   }
 
