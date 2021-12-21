@@ -73,11 +73,11 @@ export default class Calc extends FurudeCommand {
 
     const parsedExpression = Parser.parse(gotExpression!);
 
-    const recordVariables = CollectionHelper.collectionToRecord(gotVariables);
-
     let evaluatedResult: number | null = null;
     try {
-      evaluatedResult = parsedExpression.evaluate(recordVariables);
+      evaluatedResult = parsedExpression.evaluate(
+        CollectionHelper.collectionToRecord(gotVariables)
+      );
     } catch {}
 
     let displayText;
