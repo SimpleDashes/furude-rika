@@ -22,11 +22,23 @@ export default class FurudeCommandWrapper {
   ): Promise<void> {
     await interaction.reply({
       content: MessageFactory.error(
-        precondition instanceof OwnerPrecondition
-          ? client.localizer.get(FurudeTranslationKeys.ERRO_OWNER_ONLY_COMMAND)
-          : client.localizer.get(
-              FurudeTranslationKeys.ERROR_MISSING_PERMISSIONS
+        await (precondition instanceof OwnerPrecondition
+          ? client.localizer.get(
+              FurudeTranslationKeys.ERRO_OWNER_ONLY_COMMAND,
+              {
+                discord: {
+                  interaction,
+                },
+              }
             )
+          : client.localizer.get(
+              FurudeTranslationKeys.ERROR_MISSING_PERMISSIONS,
+              {
+                discord: {
+                  interaction,
+                },
+              }
+            ))
       ),
     });
   }

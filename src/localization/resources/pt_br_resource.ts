@@ -44,6 +44,10 @@ export default class extends FurudeResource {
 
       SUBCOMMAND_MISSING_REQUIRED:
         'Você precisa escolher um subcomando para executar este comando!',
+
+      // CUSTOMIZE
+      CUSTOMIZE_LOCALE_RESPONSE:
+        'Opa! configurei para eu lhe responder com o idioma: [$LOCALE]',
     });
   }
 }

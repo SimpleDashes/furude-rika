@@ -1,12 +1,9 @@
-import { Snowflake } from 'discord.js';
-import { BaseEntity, Column, Entity, ObjectIdColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import DiscordUser from './DiscordUser';
 
 @Entity()
-export class FurudeUser extends BaseEntity {
-  @ObjectIdColumn()
-  id!: Snowflake;
-
+export class FurudeUser extends DiscordUser {
   @Column()
   preferred_locale?: SupportedFurudeLocales;
 }

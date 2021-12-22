@@ -30,11 +30,17 @@ export default class Avatar extends FurudeCommand {
 
     const embed = new BaseEmbed(
       {
-        title: client.localizer.get(FurudeTranslationKeys.AVATAR_RESPONSE, {
-          values: {
-            args: [selectedUser.username],
-          },
-        }),
+        title: await client.localizer.get(
+          FurudeTranslationKeys.AVATAR_RESPONSE,
+          {
+            discord: {
+              interaction,
+            },
+            values: {
+              args: [selectedUser.username],
+            },
+          }
+        ),
       },
       interaction
     );

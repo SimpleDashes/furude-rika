@@ -1,7 +1,7 @@
 import { PermissionResolvable } from 'discord.js';
 import ArrayHelper from '../../helpers/ArrayHelper';
 import Constructor from '../../interfaces/Constructor';
-import BaseCommand from '../BaseCommand';
+import ICommand from '../ICommand';
 import CommandPrecondition from '../preconditions/abstracts/CommandPrecondition';
 import GuildPermissionsPreconditions from '../preconditions/GuildPermissionsPreconditions';
 import IHasPreconditions from '../preconditions/interfaces/IHasPreconditions';
@@ -13,8 +13,8 @@ function initOwnerPrecondition(ownerCondition: OwnerPrecondition) {
   ownerPrecondition = ownerCondition;
 }
 
-function pushIfPreconditionsExistsElseCreate<T extends BaseCommand<any>>(
-  target: Constructor<T>,
+function pushIfPreconditionsExistsElseCreate(
+  target: Constructor<ICommand<any, any>>,
   precondition: CommandPrecondition
 ) {
   const prototype = target.prototype as Partial<IHasPreconditions>;
@@ -24,14 +24,12 @@ function pushIfPreconditionsExistsElseCreate<T extends BaseCommand<any>>(
   );
 }
 
-function OwnerOnly<T extends BaseCommand<any>>(target: Constructor<T>) {
+function OwnerOnly(target: Constructor<ICommand<any, any>>) {
   pushIfPreconditionsExistsElseCreate(target, ownerPrecondition);
 }
 
-function RequirePermissions<T extends BaseCommand<any>>(
-  requiredPermissions: PermissionResolvable
-) {
-  return (target: Constructor<T>) => {
+function RequirePermissions(requiredPermissions: PermissionResolvable) {
+  return (target: Constructor<ICommand<any, any>>) => {
     pushIfPreconditionsExistsElseCreate(
       target,
       new GuildPermissionsPreconditions(requiredPermissions)
@@ -39,9 +37,7 @@ function RequirePermissions<T extends BaseCommand<any>>(
   };
 }
 
-function RequiresSubCommands<T extends BaseCommand<any>>(
-  target: Constructor<T>
-) {
+function RequiresSubCommands(target: Constructor<ICommand<any, any>>) {
   (target.prototype as unknown as IHasPreconditions).requiresSubCommands = true;
 }
 

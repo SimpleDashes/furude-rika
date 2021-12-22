@@ -58,14 +58,20 @@ export default class Calc extends FurudeCommand {
     if (missingVariables.length != 0) {
       await interaction.editReply(
         MessageFactory.error(
-          client.localizer.get(FurudeTranslationKeys.CALC_MISSING_VARIABLES, {
-            values: {
-              args: [
-                MessageFactory.block(missingVariables.toString()),
-                expressionText,
-              ],
-            },
-          })
+          await client.localizer.get(
+            FurudeTranslationKeys.CALC_MISSING_VARIABLES,
+            {
+              discord: {
+                interaction,
+              },
+              values: {
+                args: [
+                  MessageFactory.block(missingVariables.toString()),
+                  expressionText,
+                ],
+              },
+            }
+          )
         )
       );
       return;
@@ -82,18 +88,27 @@ export default class Calc extends FurudeCommand {
 
     let displayText;
     if (evaluatedResult) {
-      displayText = client.localizer.get(FurudeTranslationKeys.CALC_RESULTS, {
-        values: {
-          args: [
-            expressionText,
-            MessageFactory.block(evaluatedResult.toString()),
-          ],
-        },
-      });
+      displayText = await client.localizer.get(
+        FurudeTranslationKeys.CALC_RESULTS,
+        {
+          discord: {
+            interaction,
+          },
+          values: {
+            args: [
+              expressionText,
+              MessageFactory.block(evaluatedResult.toString()),
+            ],
+          },
+        }
+      );
       if (gotVariables && gotVariablesRaw) {
-        displayText += `, ${client.localizer.get(
+        displayText += `, ${await client.localizer.get(
           FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
           {
+            discord: {
+              interaction,
+            },
             values: {
               args: [MessageFactory.block(gotVariablesRaw.trim())],
             },
@@ -103,7 +118,10 @@ export default class Calc extends FurudeCommand {
       displayText = MessageFactory.success(displayText);
     } else {
       displayText = MessageFactory.error(
-        client.localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, {
+        await client.localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, {
+          discord: {
+            interaction,
+          },
           values: {
             args: [expressionText],
           },

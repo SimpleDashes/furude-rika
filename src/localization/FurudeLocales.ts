@@ -9,6 +9,9 @@ import FurudeTranslationKeys from './FurudeTranslationKeys';
 import ResourceResolver from './ResourceResolver';
 import DirectoryMapper from '../framework/io/DirectoryMapper';
 import path from 'path';
+import { CommandInteraction } from 'discord.js';
+import { FurudeUser } from '../database/entity/FurudeUser';
+import FurudeRika from '../client/FurudeRika';
 
 const resourceResolver = new ResourceResolver(
   new DirectoryMapper(path.join(__dirname, 'resources'))
@@ -19,13 +22,15 @@ const defaultFurudeLocale = SupportedFurudeLocales.pt_br;
 const translations: FurudeResource[] = [];
 
 export default class FurudeLocales extends Localizer<IFurudeResource> {
+  private readonly client: FurudeRika;
   public readonly stringWithVariablesManager = new StringWithVariablesManager();
 
-  public constructor() {
+  public constructor(client: FurudeRika) {
     super({
       defaultLocale: defaultFurudeLocale,
       locales: translations,
     });
+    this.client = client;
   }
 
   public async build() {
@@ -58,14 +63,28 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
    * @param options lng: selected language, values: used for replace placeholder string values
    * @returns a localized string
    */
-  public get(
+  public async get(
     key: FurudeTranslationKeys,
-    options?: {
+    options: {
+      discord: {
+        interaction: CommandInteraction;
+        furudeUser?: FurudeUser;
+      };
       lng?: SupportedFurudeLocales;
-      values: Partial<IVariableManagerGetter>;
+      values?: Partial<IVariableManagerGetter>;
     }
   ) {
-    const lng = options?.lng ?? defaultFurudeLocale;
+    if (!options.discord.furudeUser) {
+      options.discord.furudeUser = await this.client.db.getFurudeUser(
+        options.discord.interaction.user
+      );
+    }
+
+    const lng =
+      options?.lng ??
+      options?.discord?.furudeUser?.preferred_locale ??
+      defaultFurudeLocale;
+
     const find = translations.find((translation) => {
       return translation.locale == lng;
     })?.structure[key];

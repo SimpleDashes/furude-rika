@@ -43,6 +43,10 @@ export default class extends FurudeResource {
         "Sorry i couldn't find the subcommand you are looking for!",
       SUBCOMMAND_MISSING_REQUIRED:
         'You need to choose a subcommand to be able to run this command!s',
+
+      // CUSTOMIZE
+      CUSTOMIZE_LOCALE_RESPONSE:
+        'Hey i am now going to respond you in the language: [$LOCALE]',
     });
   }
 }

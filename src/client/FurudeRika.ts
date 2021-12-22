@@ -10,9 +10,10 @@ import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import FurudeDB from '../database/FurudeDB';
 
 export default class FurudeRika extends BaseBot {
-  public readonly localizer = new FurudeLocales();
-  public readonly database = new FurudeDB();
-  private readonly forceDeploy: boolean = true;
+  public readonly db = new FurudeDB();
+  public readonly localizer = new FurudeLocales(this);
+
+  private readonly forceDeploy: boolean = false;
 
   public constructor() {
     super(
@@ -31,14 +32,21 @@ export default class FurudeRika extends BaseBot {
   override async start(): Promise<void> {
     super.start();
     await this.localizer.build();
-    await this.database.connect();
+    await this.db.connect();
   }
 
   public override async onSubCommandNotFound(
     interaction: CommandInteraction
   ): Promise<void> {
     await interaction.reply(
-      this.localizer.get(FurudeTranslationKeys.SUBCOMMAND_ERROR_NOT_FOUND)
+      await this.localizer.get(
+        FurudeTranslationKeys.SUBCOMMAND_ERROR_NOT_FOUND,
+        {
+          discord: {
+            interaction: interaction,
+          },
+        }
+      )
     );
   }
 

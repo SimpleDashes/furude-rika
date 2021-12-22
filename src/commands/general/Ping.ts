@@ -56,16 +56,23 @@ export default class Ping extends FurudeCommand {
       interaction,
     };
 
-    this.pingContainer.InternalArray.forEach((pingData) => {
+    this.pingContainer.InternalArray.forEach(async (pingData) => {
       const ping = pingData.ping?.call(pingData, pingArgs);
 
-      const text = ping
+      const text = await (ping
         ? client.localizer.get(FurudeTranslationKeys.PING_TO_PING, {
+            discord: {
+              interaction,
+            },
             values: {
               args: [ping?.toString()],
             },
           })
-        : client.localizer.get(FurudeTranslationKeys.PING_NOT_REACHABLE);
+        : client.localizer.get(FurudeTranslationKeys.PING_NOT_REACHABLE, {
+            discord: {
+              interaction,
+            },
+          }));
 
       const value = MessageFactory.bold(MessageFactory.blockQuote(text));
       embed.addField(pingData.pingWhat, value);

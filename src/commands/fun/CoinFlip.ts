@@ -27,11 +27,19 @@ export default class CoinFlip extends FurudeCommand {
     const selectedCoin = ArrayHelper.getRandomArrayElement(this.coinsArray);
     await interaction.reply({
       content: MessageFactory.success(
-        client.localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, {
+        await client.localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, {
+          discord: {
+            interaction,
+          },
           values: {
             args: [
-              client.localizer.get(
-                selectedCoin as unknown as FurudeTranslationKeys
+              await client.localizer.get(
+                selectedCoin as unknown as FurudeTranslationKeys,
+                {
+                  discord: {
+                    interaction,
+                  },
+                }
               ),
             ],
           },

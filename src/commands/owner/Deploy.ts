@@ -49,8 +49,13 @@ export default class Deploy extends FurudeCommand {
         onCommandNotFound: async () => {
           await interaction.editReply({
             content: MessageFactory.error(
-              client.localizer.get(
-                FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND
+              await client.localizer.get(
+                FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND,
+                {
+                  discord: {
+                    interaction,
+                  },
+                }
               )
             ),
           });
@@ -58,8 +63,13 @@ export default class Deploy extends FurudeCommand {
         onInvalidCommand: async () => {
           await interaction.editReply({
             content: MessageFactory.error(
-              client.localizer.get(
-                FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED
+              await client.localizer.get(
+                FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED,
+                {
+                  discord: {
+                    interaction,
+                  },
+                }
               )
             ),
           });
@@ -67,14 +77,28 @@ export default class Deploy extends FurudeCommand {
         onError: async () => {
           await interaction.editReply({
             content: MessageFactory.error(
-              client.localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_ERROR)
+              await client.localizer.get(
+                FurudeTranslationKeys.DEPLOY_COMMAND_ERROR,
+                {
+                  discord: {
+                    interaction,
+                  },
+                }
+              )
             ),
           });
         },
         onSuccess: async () => {
           await interaction.editReply({
             content: MessageFactory.success(
-              client.localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS)
+              await client.localizer.get(
+                FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS,
+                {
+                  discord: {
+                    interaction,
+                  },
+                }
+              )
             ),
           });
         },
