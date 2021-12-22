@@ -1,6 +1,5 @@
 import {
   CacheType,
-  Client,
   CommandInteraction,
   PermissionResolvable,
 } from 'discord.js';
