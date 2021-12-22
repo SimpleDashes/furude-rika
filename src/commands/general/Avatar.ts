@@ -1,7 +1,10 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
+import DefaultDependency from '../../client/providers/DefaultDependency';
 import CommandOptions from '../../containers/CommandOptions';
-import FurudeCommand from '../../discord/FurudeCommand';
+import FurudeCommand from '../../discord/commands/FurudeCommand';
+import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
+import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import BaseEmbed from '../../framework/embeds/BaseEmbed';
 import UserOption from '../../framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
@@ -21,7 +24,8 @@ export default class Avatar extends FurudeCommand {
   }
 
   public createRunnerRunnable(
-    client: FurudeRika,
+    runner: IFurudeRunner<DefaultDependency>,
+    _client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
@@ -31,12 +35,9 @@ export default class Avatar extends FurudeCommand {
 
       const embed = new BaseEmbed(
         {
-          title: await client.localizer.get(
+          title: runner.args!.localizer.get(
             FurudeTranslationKeys.AVATAR_RESPONSE,
             {
-              discord: {
-                interaction,
-              },
               values: {
                 args: [selectedUser.username],
               },

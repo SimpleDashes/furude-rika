@@ -1,7 +1,9 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
+import DefaultDependency from '../../client/providers/DefaultDependency';
 import CommandOptions from '../../containers/CommandOptions';
-import FurudeCommand from '../../discord/FurudeCommand';
+import FurudeCommand from '../../discord/commands/FurudeCommand';
+import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import { OwnerOnly } from '../../framework/commands/decorators/PreconditionDecorators';
 import BooleanOption from '../../framework/options/classes/BooleanOption';
 import StringOption from '../../framework/options/classes/StringOption';
@@ -32,6 +34,7 @@ export default class Deploy extends FurudeCommand {
   }
 
   public createRunnerRunnable(
+    runner: IFurudeRunner<DefaultDependency>,
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
@@ -50,13 +53,8 @@ export default class Deploy extends FurudeCommand {
           onCommandNotFound: async () => {
             await interaction.editReply({
               content: MessageFactory.error(
-                await client.localizer.get(
-                  FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND,
-                  {
-                    discord: {
-                      interaction,
-                    },
-                  }
+                runner.args!.localizer.get(
+                  FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND
                 )
               ),
             });
@@ -64,13 +62,8 @@ export default class Deploy extends FurudeCommand {
           onInvalidCommand: async () => {
             await interaction.editReply({
               content: MessageFactory.error(
-                await client.localizer.get(
-                  FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED,
-                  {
-                    discord: {
-                      interaction,
-                    },
-                  }
+                runner.args!.localizer.get(
+                  FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED
                 )
               ),
             });
@@ -78,13 +71,8 @@ export default class Deploy extends FurudeCommand {
           onError: async () => {
             await interaction.editReply({
               content: MessageFactory.error(
-                await client.localizer.get(
-                  FurudeTranslationKeys.DEPLOY_COMMAND_ERROR,
-                  {
-                    discord: {
-                      interaction,
-                    },
-                  }
+                runner.args!.localizer.get(
+                  FurudeTranslationKeys.DEPLOY_COMMAND_ERROR
                 )
               ),
             });
@@ -92,13 +80,8 @@ export default class Deploy extends FurudeCommand {
           onSuccess: async () => {
             await interaction.editReply({
               content: MessageFactory.success(
-                await client.localizer.get(
-                  FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS,
-                  {
-                    discord: {
-                      interaction,
-                    },
-                  }
+                runner.args!.localizer.get(
+                  FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS
                 )
               ),
             });

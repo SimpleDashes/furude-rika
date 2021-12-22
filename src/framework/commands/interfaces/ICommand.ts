@@ -10,7 +10,7 @@ export default interface ICommand<
 > {
   readonly options: ToAPIApplicationCommandOptions[];
   readonly information: ICommandInformation;
-  createRunner(interaction: CommandInteraction): IRunsCommand<T>;
+  createRunner(interaction: CommandInteraction): Promise<IRunsCommand<T>>;
   registerOption<C>(option: C): C;
   setName(name: string): THIS;
   setDescription(description: string): THIS;

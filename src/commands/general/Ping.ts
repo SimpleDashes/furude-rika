@@ -1,6 +1,9 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
-import FurudeCommand from '../../discord/FurudeCommand';
+import DefaultDependency from '../../client/providers/DefaultDependency';
+import FurudeCommand from '../../discord/commands/FurudeCommand';
+import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
+import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import BaseEmbed from '../../framework/embeds/BaseEmbed';
 import UserType from '../../framework/enums/UserType';
 import PingContainer from '../../framework/ping/PingContainer';
@@ -42,7 +45,8 @@ export default class Ping extends FurudeCommand {
   }
 
   public createRunnerRunnable(
-    client: FurudeRika,
+    runner: IFurudeRunner<DefaultDependency>,
+    _client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
@@ -57,23 +61,18 @@ export default class Ping extends FurudeCommand {
         interaction,
       };
 
-      this.pingContainer.InternalArray.forEach(async (pingData) => {
+      this.pingContainer.InternalArray.forEach((pingData) => {
         const ping = pingData.ping?.call(pingData, pingArgs);
 
-        const text = await (ping
-          ? client.localizer.get(FurudeTranslationKeys.PING_TO_PING, {
-              discord: {
-                interaction,
-              },
+        const text = ping
+          ? runner.args!.localizer.get(FurudeTranslationKeys.PING_TO_PING, {
               values: {
                 args: [ping?.toString()],
               },
             })
-          : client.localizer.get(FurudeTranslationKeys.PING_NOT_REACHABLE, {
-              discord: {
-                interaction,
-              },
-            }));
+          : runner.args!.localizer.get(
+              FurudeTranslationKeys.PING_NOT_REACHABLE
+            );
 
         const value = MessageFactory.bold(MessageFactory.blockQuote(text));
         embed.addField(pingData.pingWhat, value);

@@ -2,9 +2,13 @@ import { CommandInteraction, CacheType, Collection } from 'discord.js';
 
 import { Parser } from 'expr-eval';
 import FurudeRika from '../../client/FurudeRika';
-import FurudeCommand from '../../discord/FurudeCommand';
+import DefaultDependency from '../../client/providers/DefaultDependency';
+import FurudeCommand from '../../discord/commands/FurudeCommand';
+import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
+import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import CollectionHelper from '../../framework/helpers/CollectionHelper';
 import StringUtils from '../../framework/helpers/StringUtils';
+import Constructor from '../../framework/interfaces/Constructor';
 import StringOption from '../../framework/options/classes/StringOption';
 import MessageFactory from '../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
@@ -33,7 +37,8 @@ export default class Calc extends FurudeCommand {
   }
 
   public override createRunnerRunnable(
-    client: FurudeRika,
+    runner: IFurudeRunner<DefaultDependency>,
+    _client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
@@ -61,12 +66,9 @@ export default class Calc extends FurudeCommand {
       if (missingVariables.length != 0) {
         await interaction.editReply(
           MessageFactory.error(
-            await client.localizer.get(
+            runner.args!.localizer.get(
               FurudeTranslationKeys.CALC_MISSING_VARIABLES,
               {
-                discord: {
-                  interaction,
-                },
                 values: {
                   args: [
                     MessageFactory.block(missingVariables.toString()),
@@ -91,12 +93,9 @@ export default class Calc extends FurudeCommand {
 
       let displayText;
       if (evaluatedResult) {
-        displayText = await client.localizer.get(
+        displayText = runner.args!.localizer.get(
           FurudeTranslationKeys.CALC_RESULTS,
           {
-            discord: {
-              interaction,
-            },
             values: {
               args: [
                 expressionText,
@@ -106,12 +105,9 @@ export default class Calc extends FurudeCommand {
           }
         );
         if (gotVariables && gotVariablesRaw) {
-          displayText += `, ${await client.localizer.get(
+          displayText += `, ${runner.args!.localizer.get(
             FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
             {
-              discord: {
-                interaction,
-              },
               values: {
                 args: [MessageFactory.block(gotVariablesRaw.trim())],
               },
@@ -121,12 +117,9 @@ export default class Calc extends FurudeCommand {
         displayText = MessageFactory.success(displayText);
       } else {
         displayText = MessageFactory.error(
-          await client.localizer.get(
+          runner.args!.localizer.get(
             FurudeTranslationKeys.CALC_EVALUATE_ERROR,
             {
-              discord: {
-                interaction,
-              },
               values: {
                 args: [expressionText],
               },

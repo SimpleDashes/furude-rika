@@ -21,6 +21,7 @@ import IHasPreconditions from '../commands/preconditions/interfaces/IHasPrecondi
 import GuildPermissionsPreconditions from '../commands/preconditions/GuildPermissionsPreconditions';
 import { initPreconditions } from '../commands/decorators/PreconditionDecorators';
 import IRunsCommand from '../commands/interfaces/IRunsCommand';
+import DefaultDependency from '../../client/providers/DefaultDependency';
 
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
@@ -122,13 +123,13 @@ export default abstract class BaseBot extends Client implements IBot {
           .get(command)
           ?.find((sub) => sub.name == subCommandOption);
         if (runnableSubCommand) {
-          runner = runnableSubCommand.createRunner(interaction);
+          runner = await runnableSubCommand.createRunner(interaction);
         } else {
           await this.onSubCommandNotFound(interaction);
         }
         return;
       } else {
-        runner = command.createRunner(interaction);
+        runner = await command.createRunner(interaction);
       }
 
       if (!(await this.verifyPermissionsToRunCommand(runner, preconditioned))) {

@@ -1,6 +1,10 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../../client/FurudeRika';
-import FurudeSubCommand from '../../../discord/FurudeSubCommand';
+import DefaultDependency from '../../../client/providers/DefaultDependency';
+import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
+import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
+import IRunsCommand from '../../../framework/commands/interfaces/IRunsCommand';
+import Constructor from '../../../framework/interfaces/Constructor';
 import StringOption from '../../../framework/options/classes/StringOption';
 import MessageFactory from '../../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
@@ -23,6 +27,7 @@ export default class extends FurudeSubCommand {
   }
 
   public createRunnerRunnable(
+    runner: IFurudeRunner<DefaultDependency>,
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
@@ -41,13 +46,9 @@ export default class extends FurudeSubCommand {
 
       await interaction.editReply({
         content: MessageFactory.success(
-          await client.localizer.get(
+          runner.args!.localizer.get(
             FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE,
             {
-              discord: {
-                interaction: interaction,
-                furudeUser: furudeUser,
-              },
               values: {
                 args: [preferredLocale],
               },

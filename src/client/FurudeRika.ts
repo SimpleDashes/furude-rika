@@ -8,10 +8,11 @@ import path from 'path';
 import FurudeLocales from '../localization/FurudeLocales';
 import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import FurudeDB from '../database/FurudeDB';
+import DefaultDependency from './providers/DefaultDependency';
 
 export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
-  public readonly localizer = new FurudeLocales(this);
+  public readonly localizer = new FurudeLocales();
 
   private readonly forceDeploy: boolean = false;
 
@@ -38,15 +39,15 @@ export default class FurudeRika extends BaseBot {
   public override async onSubCommandNotFound(
     interaction: CommandInteraction
   ): Promise<void> {
+    const dependency = new DefaultDependency({
+      interaction: interaction,
+      client: this,
+    });
+    const localizer = new FurudeLocales({
+      language: dependency.furudeUser.preferred_locale,
+    });
     await interaction.reply(
-      await this.localizer.get(
-        FurudeTranslationKeys.SUBCOMMAND_ERROR_NOT_FOUND,
-        {
-          discord: {
-            interaction: interaction,
-          },
-        }
-      )
+      localizer.get(FurudeTranslationKeys.SUBCOMMAND_ERROR_NOT_FOUND)
     );
   }
 

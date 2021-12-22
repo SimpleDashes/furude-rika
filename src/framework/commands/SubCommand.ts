@@ -11,7 +11,6 @@ export default abstract class SubCommand<T extends BaseBot>
   implements ICommand<T, SubCommand<T>>
 {
   public readonly information: ICommandInformation;
-  public readonly runners: IRunsCommand<T>[] = [];
 
   public constructor(information: ICommandInformation) {
     super();
@@ -21,7 +20,7 @@ export default abstract class SubCommand<T extends BaseBot>
 
   public abstract createRunner(
     interaction: CommandInteraction<CacheType>
-  ): IRunsCommand<T>;
+  ): Promise<IRunsCommand<T>>;
 
   public registerOption<C>(option: C): C {
     return CommandHelper.registerOption(this, option);
