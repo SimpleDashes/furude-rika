@@ -20,35 +20,37 @@ export default class Avatar extends FurudeCommand {
     });
   }
 
-  public async run(
+  public createRunnerRunnable(
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
-  ): Promise<void> {
-    await interaction.deferReply();
+  ): () => Promise<void> {
+    return async () => {
+      await interaction.deferReply();
 
-    const selectedUser = this.user.apply(interaction) ?? interaction.user;
+      const selectedUser = this.user.apply(interaction) ?? interaction.user;
 
-    const embed = new BaseEmbed(
-      {
-        title: await client.localizer.get(
-          FurudeTranslationKeys.AVATAR_RESPONSE,
-          {
-            discord: {
-              interaction,
-            },
-            values: {
-              args: [selectedUser.username],
-            },
-          }
-        ),
-      },
-      interaction
-    );
+      const embed = new BaseEmbed(
+        {
+          title: await client.localizer.get(
+            FurudeTranslationKeys.AVATAR_RESPONSE,
+            {
+              discord: {
+                interaction,
+              },
+              values: {
+                args: [selectedUser.username],
+              },
+            }
+          ),
+        },
+        interaction
+      );
 
-    embed.setImage(selectedUser.avatarURL({ dynamic: true, size: 1024 })!);
+      embed.setImage(selectedUser.avatarURL({ dynamic: true, size: 1024 })!);
 
-    await interaction.editReply({
-      embeds: [embed],
-    });
+      await interaction.editReply({
+        embeds: [embed],
+      });
+    };
   }
 }

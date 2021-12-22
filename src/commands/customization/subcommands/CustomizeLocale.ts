@@ -22,37 +22,39 @@ export default class extends FurudeSubCommand {
     });
   }
 
-  public async run(
+  public createRunnerRunnable(
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
-  ): Promise<void> {
-    await interaction.deferReply();
+  ): () => Promise<void> {
+    return async () => {
+      await interaction.deferReply();
 
-    const preferredLocale =
-      SupportedFurudeLocales[
-        this.locale.apply(interaction)! as SupportedFurudeLocales
-      ];
+      const preferredLocale =
+        SupportedFurudeLocales[
+          this.locale.apply(interaction)! as SupportedFurudeLocales
+        ];
 
-    const furudeUser = await client.db.getFurudeUser(interaction.user);
-    await client.db.manipulate(furudeUser, (user) => {
-      user.preferred_locale = preferredLocale;
-    });
+      const furudeUser = await client.db.getFurudeUser(interaction.user);
+      await client.db.manipulate(furudeUser, (user) => {
+        user.preferred_locale = preferredLocale;
+      });
 
-    await interaction.editReply({
-      content: MessageFactory.success(
-        await client.localizer.get(
-          FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE,
-          {
-            discord: {
-              interaction: interaction,
-              furudeUser: furudeUser,
-            },
-            values: {
-              args: [preferredLocale],
-            },
-          }
-        )
-      ),
-    });
+      await interaction.editReply({
+        content: MessageFactory.success(
+          await client.localizer.get(
+            FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE,
+            {
+              discord: {
+                interaction: interaction,
+                furudeUser: furudeUser,
+              },
+              values: {
+                args: [preferredLocale],
+              },
+            }
+          )
+        ),
+      });
+    };
   }
 }

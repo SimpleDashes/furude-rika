@@ -1,32 +1,22 @@
-import {
-  CommandInteraction,
-  CacheType,
-  PermissionResolvable,
-} from 'discord.js';
+import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../client/FurudeRika';
-import CommandPrecondition from '../framework/commands/preconditions/abstracts/CommandPrecondition';
+import IRunsCommand from '../framework/commands/interfaces/IRunsCommand';
 import SubCommand from '../framework/commands/SubCommand';
 import FurudeCommandWrapper from './FurudeCommandWrapper';
+import IFurudeCommand from './IFurudeCommand';
 
-export default abstract class FurudeSubCommand extends SubCommand<FurudeRika> {
-  public override async onInsufficientPermissions(
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>,
-    precondition: CommandPrecondition,
-    missingPermissions?: PermissionResolvable
-  ): Promise<void> {
-    FurudeCommandWrapper.onInsufficientPermissions(
-      client,
-      interaction,
-      precondition,
-      missingPermissions
-    );
+export default abstract class FurudeSubCommand
+  extends SubCommand<FurudeRika>
+  implements IFurudeCommand
+{
+  public override createRunner(
+    interaction: CommandInteraction<CacheType>
+  ): IRunsCommand<FurudeRika> {
+    return FurudeCommandWrapper.createRunner(this, interaction);
   }
 
-  public override async onMissingRequiredSubCommands(
+  public abstract createRunnerRunnable(
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
-  ): Promise<void> {
-    FurudeCommandWrapper.onMissingRequiredSubCommands(client, interaction);
-  }
+  ): () => Promise<void>;
 }

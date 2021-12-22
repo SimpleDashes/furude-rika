@@ -31,78 +31,80 @@ export default class Deploy extends FurudeCommand {
     });
   }
 
-  public async run(
+  public createRunnerRunnable(
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
-  ): Promise<void> {
-    await interaction.deferReply();
+  ): () => Promise<void> {
+    return async () => {
+      await interaction.deferReply();
 
-    const isDebug = this.debug.apply(interaction);
-    const commandName = this.commandName.apply(interaction) as string;
+      const isDebug = this.debug.apply(interaction);
+      const commandName = this.commandName.apply(interaction) as string;
 
-    await DeployHandler.deployCommand({
-      client,
-      commandName,
-      isDebug,
-      interaction,
-      resFunctions: {
-        onCommandNotFound: async () => {
-          await interaction.editReply({
-            content: MessageFactory.error(
-              await client.localizer.get(
-                FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND,
-                {
-                  discord: {
-                    interaction,
-                  },
-                }
-              )
-            ),
-          });
+      await DeployHandler.deployCommand({
+        client,
+        commandName,
+        isDebug,
+        interaction,
+        resFunctions: {
+          onCommandNotFound: async () => {
+            await interaction.editReply({
+              content: MessageFactory.error(
+                await client.localizer.get(
+                  FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND,
+                  {
+                    discord: {
+                      interaction,
+                    },
+                  }
+                )
+              ),
+            });
+          },
+          onInvalidCommand: async () => {
+            await interaction.editReply({
+              content: MessageFactory.error(
+                await client.localizer.get(
+                  FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED,
+                  {
+                    discord: {
+                      interaction,
+                    },
+                  }
+                )
+              ),
+            });
+          },
+          onError: async () => {
+            await interaction.editReply({
+              content: MessageFactory.error(
+                await client.localizer.get(
+                  FurudeTranslationKeys.DEPLOY_COMMAND_ERROR,
+                  {
+                    discord: {
+                      interaction,
+                    },
+                  }
+                )
+              ),
+            });
+          },
+          onSuccess: async () => {
+            await interaction.editReply({
+              content: MessageFactory.success(
+                await client.localizer.get(
+                  FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS,
+                  {
+                    discord: {
+                      interaction,
+                    },
+                  }
+                )
+              ),
+            });
+          },
         },
-        onInvalidCommand: async () => {
-          await interaction.editReply({
-            content: MessageFactory.error(
-              await client.localizer.get(
-                FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED,
-                {
-                  discord: {
-                    interaction,
-                  },
-                }
-              )
-            ),
-          });
-        },
-        onError: async () => {
-          await interaction.editReply({
-            content: MessageFactory.error(
-              await client.localizer.get(
-                FurudeTranslationKeys.DEPLOY_COMMAND_ERROR,
-                {
-                  discord: {
-                    interaction,
-                  },
-                }
-              )
-            ),
-          });
-        },
-        onSuccess: async () => {
-          await interaction.editReply({
-            content: MessageFactory.success(
-              await client.localizer.get(
-                FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS,
-                {
-                  discord: {
-                    interaction,
-                  },
-                }
-              )
-            ),
-          });
-        },
-      },
-    });
+      });
+    };
   }
 }

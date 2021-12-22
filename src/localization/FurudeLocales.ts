@@ -75,6 +75,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
     }
   ) {
     if (!options.discord.furudeUser) {
+      // TODO: DUDE THIS IS SO WRONG WTF WHAT IF WE ARE ON A FOR LOOP WTFF!!
       options.discord.furudeUser = await this.client.db.getFurudeUser(
         options.discord.interaction.user
       );

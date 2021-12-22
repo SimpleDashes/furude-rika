@@ -41,45 +41,47 @@ export default class Ping extends FurudeCommand {
     });
   }
 
-  public async run(
+  public createRunnerRunnable(
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
-  ): Promise<void> {
-    await interaction.deferReply();
+  ): () => Promise<void> {
+    return async () => {
+      await interaction.deferReply();
 
-    const embed = new BaseEmbed({}, interaction, {
-      author: interaction.user,
-      defaultsTo: UserType.MEMBER,
-    });
+      const embed = new BaseEmbed({}, interaction, {
+        author: interaction.user,
+        defaultsTo: UserType.MEMBER,
+      });
 
-    const pingArgs: IPingCallbackArguments = {
-      interaction,
+      const pingArgs: IPingCallbackArguments = {
+        interaction,
+      };
+
+      this.pingContainer.InternalArray.forEach(async (pingData) => {
+        const ping = pingData.ping?.call(pingData, pingArgs);
+
+        const text = await (ping
+          ? client.localizer.get(FurudeTranslationKeys.PING_TO_PING, {
+              discord: {
+                interaction,
+              },
+              values: {
+                args: [ping?.toString()],
+              },
+            })
+          : client.localizer.get(FurudeTranslationKeys.PING_NOT_REACHABLE, {
+              discord: {
+                interaction,
+              },
+            }));
+
+        const value = MessageFactory.bold(MessageFactory.blockQuote(text));
+        embed.addField(pingData.pingWhat, value);
+      });
+
+      await interaction.editReply({
+        embeds: [embed],
+      });
     };
-
-    this.pingContainer.InternalArray.forEach(async (pingData) => {
-      const ping = pingData.ping?.call(pingData, pingArgs);
-
-      const text = await (ping
-        ? client.localizer.get(FurudeTranslationKeys.PING_TO_PING, {
-            discord: {
-              interaction,
-            },
-            values: {
-              args: [ping?.toString()],
-            },
-          })
-        : client.localizer.get(FurudeTranslationKeys.PING_NOT_REACHABLE, {
-            discord: {
-              interaction,
-            },
-          }));
-
-      const value = MessageFactory.bold(MessageFactory.blockQuote(text));
-      embed.addField(pingData.pingWhat, value);
-    });
-
-    await interaction.editReply({
-      embeds: [embed],
-    });
   }
 }

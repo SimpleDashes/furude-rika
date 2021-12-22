@@ -32,106 +32,113 @@ export default class Calc extends FurudeCommand {
     });
   }
 
-  public async run(
+  public override createRunnerRunnable(
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
-  ): Promise<void> {
-    await interaction.deferReply();
+  ): () => Promise<void> {
+    return async () => {
+      await interaction.deferReply();
 
-    const gotExpression = this.expression.apply(interaction)!.replace(' ', '');
-    const gotVariablesRaw = this.variables.apply(interaction);
+      const gotExpression = this.expression
+        .apply(interaction)!
+        .replace(' ', '');
+      const gotVariablesRaw = this.variables.apply(interaction);
 
-    const gotVariables = this.getAllInputVariablesCollection(
-      gotVariablesRaw!,
-      gotExpression
-    );
+      const gotVariables = this.getAllInputVariablesCollection(
+        gotVariablesRaw!,
+        gotExpression
+      );
 
-    const allVariables = this.getAllRequiredVariablesArray(gotExpression);
+      const allVariables = this.getAllRequiredVariablesArray(gotExpression);
 
-    const missingVariables = this.getAllMissingRequiredVariablesArray(
-      allVariables,
-      gotVariables
-    );
+      const missingVariables = this.getAllMissingRequiredVariablesArray(
+        allVariables,
+        gotVariables
+      );
 
-    const expressionText = MessageFactory.block(gotExpression!.trim());
+      const expressionText = MessageFactory.block(gotExpression!.trim());
 
-    if (missingVariables.length != 0) {
-      await interaction.editReply(
-        MessageFactory.error(
-          await client.localizer.get(
-            FurudeTranslationKeys.CALC_MISSING_VARIABLES,
-            {
-              discord: {
-                interaction,
-              },
-              values: {
-                args: [
-                  MessageFactory.block(missingVariables.toString()),
-                  expressionText,
-                ],
-              },
-            }
+      if (missingVariables.length != 0) {
+        await interaction.editReply(
+          MessageFactory.error(
+            await client.localizer.get(
+              FurudeTranslationKeys.CALC_MISSING_VARIABLES,
+              {
+                discord: {
+                  interaction,
+                },
+                values: {
+                  args: [
+                    MessageFactory.block(missingVariables.toString()),
+                    expressionText,
+                  ],
+                },
+              }
+            )
           )
-        )
-      );
-      return;
-    }
+        );
+        return;
+      }
 
-    const parsedExpression = Parser.parse(gotExpression!);
+      const parsedExpression = Parser.parse(gotExpression!);
 
-    let evaluatedResult: number | null = null;
-    try {
-      evaluatedResult = parsedExpression.evaluate(
-        CollectionHelper.collectionToRecord(gotVariables)
-      );
-    } catch {}
+      let evaluatedResult: number | null = null;
+      try {
+        evaluatedResult = parsedExpression.evaluate(
+          CollectionHelper.collectionToRecord(gotVariables)
+        );
+      } catch {}
 
-    let displayText;
-    if (evaluatedResult) {
-      displayText = await client.localizer.get(
-        FurudeTranslationKeys.CALC_RESULTS,
-        {
-          discord: {
-            interaction,
-          },
-          values: {
-            args: [
-              expressionText,
-              MessageFactory.block(evaluatedResult.toString()),
-            ],
-          },
-        }
-      );
-      if (gotVariables && gotVariablesRaw) {
-        displayText += `, ${await client.localizer.get(
-          FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
+      let displayText;
+      if (evaluatedResult) {
+        displayText = await client.localizer.get(
+          FurudeTranslationKeys.CALC_RESULTS,
           {
             discord: {
               interaction,
             },
             values: {
-              args: [MessageFactory.block(gotVariablesRaw.trim())],
+              args: [
+                expressionText,
+                MessageFactory.block(evaluatedResult.toString()),
+              ],
             },
           }
-        )}`;
+        );
+        if (gotVariables && gotVariablesRaw) {
+          displayText += `, ${await client.localizer.get(
+            FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
+            {
+              discord: {
+                interaction,
+              },
+              values: {
+                args: [MessageFactory.block(gotVariablesRaw.trim())],
+              },
+            }
+          )}`;
+        }
+        displayText = MessageFactory.success(displayText);
+      } else {
+        displayText = MessageFactory.error(
+          await client.localizer.get(
+            FurudeTranslationKeys.CALC_EVALUATE_ERROR,
+            {
+              discord: {
+                interaction,
+              },
+              values: {
+                args: [expressionText],
+              },
+            }
+          )
+        );
       }
-      displayText = MessageFactory.success(displayText);
-    } else {
-      displayText = MessageFactory.error(
-        await client.localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, {
-          discord: {
-            interaction,
-          },
-          values: {
-            args: [expressionText],
-          },
-        })
-      );
-    }
 
-    await interaction.editReply({
-      content: displayText,
-    });
+      await interaction.editReply({
+        content: displayText,
+      });
+    };
   }
 
   private getAllMissingRequiredVariablesArray(

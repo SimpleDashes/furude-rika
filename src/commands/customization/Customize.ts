@@ -12,10 +12,10 @@ export default class extends FurudeCommand {
     });
   }
 
-  public run(
+  public createRunnerRunnable(
     _client: FurudeRika,
     _interaction: CommandInteraction<CacheType>
-  ): Promise<void> {
+  ): () => Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

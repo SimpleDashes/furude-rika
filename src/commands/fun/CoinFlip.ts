@@ -20,31 +20,33 @@ export default class CoinFlip extends FurudeCommand {
     });
   }
 
-  public async run(
+  public createRunnerRunnable(
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
-  ): Promise<void> {
-    const selectedCoin = ArrayHelper.getRandomArrayElement(this.coinsArray);
-    await interaction.reply({
-      content: MessageFactory.success(
-        await client.localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, {
-          discord: {
-            interaction,
-          },
-          values: {
-            args: [
-              await client.localizer.get(
-                selectedCoin as unknown as FurudeTranslationKeys,
-                {
-                  discord: {
-                    interaction,
-                  },
-                }
-              ),
-            ],
-          },
-        })
-      ),
-    });
+  ): () => Promise<void> {
+    return async () => {
+      const selectedCoin = ArrayHelper.getRandomArrayElement(this.coinsArray);
+      await interaction.reply({
+        content: MessageFactory.success(
+          await client.localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, {
+            discord: {
+              interaction,
+            },
+            values: {
+              args: [
+                await client.localizer.get(
+                  selectedCoin as unknown as FurudeTranslationKeys,
+                  {
+                    discord: {
+                      interaction,
+                    },
+                  }
+                ),
+              ],
+            },
+          })
+        ),
+      });
+    };
   }
 }

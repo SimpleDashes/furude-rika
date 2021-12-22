@@ -1,20 +1,17 @@
 import { SlashCommandSubcommandBuilder } from '@discordjs/builders';
-import {
-  CacheType,
-  Client,
-  CommandInteraction,
-  PermissionResolvable,
-} from 'discord.js';
+import { CommandInteraction, CacheType } from 'discord.js';
+import BaseBot from '../client/BaseBot';
 import CommandHelper from './CommandHelper';
-import ICommand from './ICommand';
-import ICommandInformation from './ICommandInformation';
-import CommandPrecondition from './preconditions/abstracts/CommandPrecondition';
+import ICommand from './interfaces/ICommand';
+import ICommandInformation from './interfaces/ICommandInformation';
+import IRunsCommand from './interfaces/IRunsCommand';
 
-export default abstract class SubCommand<T extends Client>
+export default abstract class SubCommand<T extends BaseBot>
   extends SlashCommandSubcommandBuilder
   implements ICommand<T, SubCommand<T>>
 {
   public readonly information: ICommandInformation;
+  public readonly runners: IRunsCommand<T>[] = [];
 
   public constructor(information: ICommandInformation) {
     super();
@@ -22,22 +19,9 @@ export default abstract class SubCommand<T extends Client>
     CommandHelper.setInformation(this, this.information);
   }
 
-  public abstract run(
-    client: T,
+  public abstract createRunner(
     interaction: CommandInteraction<CacheType>
-  ): Promise<void>;
-
-  public abstract onInsufficientPermissions(
-    client: T,
-    interaction: CommandInteraction<CacheType>,
-    precondition: CommandPrecondition,
-    missingPermissions?: PermissionResolvable
-  ): Promise<void>;
-
-  public abstract onMissingRequiredSubCommands(
-    client: T,
-    interaction: CommandInteraction<CacheType>
-  ): Promise<void>;
+  ): IRunsCommand<T>;
 
   public registerOption<C>(option: C): C {
     return CommandHelper.registerOption(this, option);

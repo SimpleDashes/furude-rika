@@ -15,12 +15,12 @@ import DirectoryMapperFactory from '../io/DirectoryMapperFactory';
 import path from 'path';
 import fsSync from 'fs';
 import SubCommandResolver from '../io/object_resolvers/command_resolvers/SubCommandResolver';
-import ICommand from '../commands/ICommand';
 import SubCommand from '../commands/SubCommand';
 import OwnerPrecondition from '../commands/preconditions/OwnerPrecondition';
 import IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
 import GuildPermissionsPreconditions from '../commands/preconditions/GuildPermissionsPreconditions';
 import { initPreconditions } from '../commands/decorators/PreconditionDecorators';
+import IRunsCommand from '../commands/interfaces/IRunsCommand';
 
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
@@ -111,67 +111,60 @@ export default abstract class BaseBot extends Client implements IBot {
 
       const preconditioned = command as unknown as Partial<IHasPreconditions>;
 
-      if (
-        !(await this.verifyPermissionsToRunCommand(
-          preconditioned,
-          interaction,
-          command
-        ))
-      ) {
-        return;
-      }
-
       const subCommandOption = interaction.options.getSubcommand(
         !!preconditioned.requiresSubCommands
       );
+
+      let runner: IRunsCommand<BaseBot>;
+
       if (subCommandOption) {
         const runnableSubCommand = this.subCommands
           .get(command)
           ?.find((sub) => sub.name == subCommandOption);
         if (runnableSubCommand) {
-          await runnableSubCommand.run(this, interaction);
+          runner = runnableSubCommand.createRunner(interaction);
         } else {
           await this.onSubCommandNotFound(interaction);
         }
         return;
       } else {
-        await command.run(this, interaction);
+        runner = command.createRunner(interaction);
       }
 
-      this.onCommandRun({
-        interaction,
-        command: command,
-      });
+      if (!(await this.verifyPermissionsToRunCommand(runner, preconditioned))) {
+        return;
+      }
+
+      if (runner.run) {
+        await runner.run();
+        this.onCommandRun({
+          interaction,
+          command: command,
+        });
+      }
     });
   }
 
   /**
-   *
-   * @param interaction The context interaction to verify the permissions
-   * @param command the command used on this interaction
    * @returns wether the user has enough permissions to execute said command
    */
   private async verifyPermissionsToRunCommand(
-    preconditioned: Partial<IHasPreconditions>,
-    interaction: CommandInteraction,
-    command: ICommand<any, any>
+    runner: IRunsCommand<BaseBot>,
+    preconditioned: Partial<IHasPreconditions>
   ): Promise<boolean> {
+    const { interaction } = runner;
     if (preconditioned?.preconditions) {
       for (const precondition of preconditioned.preconditions) {
         if (!precondition.validate(interaction)) {
-          if (precondition instanceof OwnerPrecondition) {
-            await command.onInsufficientPermissions(
-              this,
-              interaction,
-              precondition
-            );
-          } else if (precondition instanceof GuildPermissionsPreconditions) {
-            await command.onInsufficientPermissions(
-              this,
-              interaction,
-              precondition,
-              precondition.requiredPermissions
-            );
+          if (runner.onInsufficientPermissions) {
+            if (precondition instanceof OwnerPrecondition) {
+              await runner.onInsufficientPermissions(precondition);
+            } else if (precondition instanceof GuildPermissionsPreconditions) {
+              await runner.onInsufficientPermissions(
+                precondition,
+                precondition.requiredPermissions
+              );
+            }
           }
           return false;
         }

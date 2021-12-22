@@ -1,6 +1,6 @@
 import { ToAPIApplicationCommandOptions } from '@discordjs/builders';
-import ICommand from './ICommand';
-import ICommandInformation from './ICommandInformation';
+import ICommand from './interfaces/ICommand';
+import ICommandInformation from './interfaces/ICommandInformation';
 
 export default class CommandHelper {
   public static setInformation(

@@ -1,7 +1,7 @@
 import { PermissionResolvable } from 'discord.js';
 import ArrayHelper from '../../helpers/ArrayHelper';
 import Constructor from '../../interfaces/Constructor';
-import ICommand from '../ICommand';
+import ICommand from '../interfaces/ICommand';
 import CommandPrecondition from '../preconditions/abstracts/CommandPrecondition';
 import GuildPermissionsPreconditions from '../preconditions/GuildPermissionsPreconditions';
 import IHasPreconditions from '../preconditions/interfaces/IHasPreconditions';
