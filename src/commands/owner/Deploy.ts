@@ -2,12 +2,14 @@ import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/FurudeCommand';
+import { OwnerOnly } from '../../framework/commands/decorators/PreconditionDecorators';
 import BooleanOption from '../../framework/options/classes/BooleanOption';
 import StringOption from '../../framework/options/classes/StringOption';
 import DeployHandler from '../../framework/rest/DeployHandler';
 import MessageFactory from '../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
+@OwnerOnly
 export default class Deploy extends FurudeCommand {
   private readonly commandName = this.registerOption(
     new StringOption()
@@ -26,8 +28,6 @@ export default class Deploy extends FurudeCommand {
     super({
       name: 'deploy',
       description: 'deploys a discord command',
-      usage: '',
-      ownerOnly: true,
     });
   }
 

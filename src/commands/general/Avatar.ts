@@ -17,7 +17,6 @@ export default class Avatar extends FurudeCommand {
     super({
       name: 'avatar',
       description: "Displays your's or another user Avatar.",
-      usage: '',
     });
   }
 

@@ -19,6 +19,10 @@ import fsSync from 'fs';
 import SubCommandResolver from '../io/object_resolvers/command_resolvers/SubCommandResolver';
 import ICommand from '../commands/ICommand';
 import SubCommand from '../commands/SubCommand';
+import { initPreconditions } from '../commands/decorators/PreconditionDecorators';
+import OwnerPrecondition from '../commands/preconditions/OwnerPrecondition';
+import IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
+import GuildPermissionsPreconditions from '../commands/preconditions/GuildPermissionsPreconditions';
 
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
@@ -49,6 +53,7 @@ export default abstract class BaseBot extends Client implements IBot {
       ownerIds: this.devOptions.OWNER_IDS,
       token: process.env[this.devOptions.ENV_TOKEN_VAR],
     };
+    initPreconditions(new OwnerPrecondition(this.devInfo.ownerIds));
   }
 
   private async loadCommands() {
@@ -106,12 +111,20 @@ export default abstract class BaseBot extends Client implements IBot {
 
       if (!command) return;
 
-      if (!(await this.verifyPermissionsToRunCommand(interaction, command))) {
+      const preconditioned = command as unknown as Partial<IHasPreconditions>;
+
+      if (
+        !(await this.verifyPermissionsToRunCommand(
+          preconditioned,
+          interaction,
+          command
+        ))
+      ) {
         return;
       }
 
       const subCommandOption = interaction.options.getSubcommand(
-        !!command.information.requiresSubCommand
+        !!preconditioned.requiresSubCommands
       );
       if (subCommandOption) {
         const runnableSubCommand = this.subCommands
@@ -141,31 +154,29 @@ export default abstract class BaseBot extends Client implements IBot {
    * @returns wether the user has enough permissions to execute said command
    */
   private async verifyPermissionsToRunCommand(
+    preconditioned: Partial<IHasPreconditions>,
     interaction: CommandInteraction,
     command: ICommand<any, any>
   ): Promise<boolean> {
-    if (command.information.ownerOnly) {
-      if (!this.devInfo.ownerIds.includes(interaction.user.id)) {
-        await command.onInsufficientPermissions(this, interaction);
-        return false;
-      }
-    }
-    if (command.information.permissions) {
-      if (interaction.guild) {
-        if (
-          !(interaction.member as GuildMember).permissions.has(
-            command.information.permissions
-          )
-        ) {
-          await command.onInsufficientPermissions(
-            this,
-            interaction,
-            command.information.permissions
-          );
+    if (preconditioned?.preconditions) {
+      for (const precondition of preconditioned.preconditions) {
+        if (!precondition.validate(interaction)) {
+          if (precondition instanceof OwnerPrecondition) {
+            await command.onInsufficientPermissions(
+              this,
+              interaction,
+              precondition
+            );
+          } else if (precondition instanceof GuildPermissionsPreconditions) {
+            await command.onInsufficientPermissions(
+              this,
+              interaction,
+              precondition,
+              precondition.requiredPermissions
+            );
+          }
           return false;
         }
-      } else {
-        return false;
       }
     }
     return true;

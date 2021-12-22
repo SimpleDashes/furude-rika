@@ -1,6 +1,8 @@
 import { ToAPIApplicationCommandOptions } from '@discordjs/builders';
 import { Client, CommandInteraction, PermissionResolvable } from 'discord.js';
 import ICommandInformation from './ICommandInformation';
+import CommandPrecondition from './preconditions/abstracts/CommandPrecondition';
+import PermissionPrecondition from './preconditions/abstracts/PermissionPrecondition';
 
 export default interface ICommand<
   T extends Client,
@@ -12,6 +14,7 @@ export default interface ICommand<
   onInsufficientPermissions(
     client: T,
     interaction: CommandInteraction,
+    failedCondition?: PermissionPrecondition,
     missingPermissions?: PermissionResolvable
   ): Promise<void>;
   registerOption<C>(option: C): C;

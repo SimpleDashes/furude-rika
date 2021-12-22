@@ -38,7 +38,6 @@ export default class Ping extends FurudeCommand {
     super({
       name: 'ping',
       description: 'Pings multiple servers',
-      usage: '',
     });
   }
 

@@ -29,7 +29,6 @@ export default class Calc extends FurudeCommand {
     super({
       name: 'calc',
       description: 'Calculates mathematical expressions, how nice!',
-      usage: '',
     });
   }
 

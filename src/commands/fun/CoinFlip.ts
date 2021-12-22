@@ -17,7 +17,6 @@ export default class CoinFlip extends FurudeCommand {
     super({
       name: 'coinflip',
       description: "Flips a coin, will it land on head or tails, let's see?",
-      usage: '',
     });
   }
 

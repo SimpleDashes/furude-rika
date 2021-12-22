@@ -8,6 +8,7 @@ import {
 import CommandHelper from './CommandHelper';
 import ICommand from './ICommand';
 import ICommandInformation from './ICommandInformation';
+import CommandPrecondition from './preconditions/abstracts/CommandPrecondition';
 
 export default abstract class SubCommand<T extends Client>
   extends SlashCommandSubcommandBuilder
@@ -29,6 +30,7 @@ export default abstract class SubCommand<T extends Client>
   public abstract onInsufficientPermissions(
     client: T,
     interaction: CommandInteraction<CacheType>,
+    precondition: CommandPrecondition,
     missingPermissions?: PermissionResolvable
   ): Promise<void>;
 

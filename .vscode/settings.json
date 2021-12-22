@@ -3,7 +3,9 @@
     "coinflip",
     "discordjs",
     "furude",
-    "rika"
+    "rika",
+    "typeorm",
+    "zjpv"
   ],
   "cSpell.language": "en,pt,pt-BR"
 }

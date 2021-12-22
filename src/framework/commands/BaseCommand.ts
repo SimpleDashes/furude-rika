@@ -8,6 +8,8 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import ICommand from './ICommand';
 import ICommandInformation from './ICommandInformation';
 import CommandHelper from './CommandHelper';
+import CommandPrecondition from './preconditions/abstracts/CommandPrecondition';
+import PermissionPrecondition from './preconditions/abstracts/PermissionPrecondition';
 
 export default abstract class BaseCommand<T extends Client>
   extends SlashCommandBuilder
@@ -29,6 +31,7 @@ export default abstract class BaseCommand<T extends Client>
   public abstract onInsufficientPermissions(
     client: T,
     interaction: CommandInteraction<CacheType>,
+    precondition?: PermissionPrecondition,
     missingPermissions?: PermissionResolvable
   ): Promise<void>;
 
