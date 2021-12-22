@@ -1,21 +1,10 @@
-import { Connection, createConnection } from 'typeorm';
+import { Connection } from 'typeorm';
 
-export default class FurudeDB {
-  public readonly uri: string;
-  private connection?: Connection;
-
-  get Connection() {
-    return this.connection;
-  }
-
+export default class FurudeDB extends Connection {
   public constructor() {
-    this.uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@furude.9zjpv.mongodb.net/furude?retryWrites=true&w=majority`;
-  }
-
-  public async connect() {
-    this.connection = await createConnection({
+    super({
       type: 'mongodb',
-      url: this.uri,
+      url: `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@furude.9zjpv.mongodb.net/furude?retryWrites=true&w=majority`,
       useNewUrlParser: true,
       synchronize: true,
       logging: true,
