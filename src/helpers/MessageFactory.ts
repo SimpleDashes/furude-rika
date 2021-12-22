@@ -41,7 +41,7 @@ export default abstract class MessageFactory {
   ) {
     let s = '';
     for (const k in obj) {
-      const v = (obj as Record<string, any>)[k];
+      const v = (obj as Record<string, unknown>)[k];
       s += `${k}: ${
         typeof v === 'number' ? `${v.toFixed(options.fixedNumber)}` : v
       }\n`;
