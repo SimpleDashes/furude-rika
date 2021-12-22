@@ -22,4 +22,11 @@ export default abstract class FurudeCommand extends BaseCommand<FurudeRika> {
       missingPermissions
     );
   }
+
+  public override async onMissingRequiredSubCommands(
+    client: FurudeRika,
+    interaction: CommandInteraction<CacheType>
+  ): Promise<void> {
+    await FurudeCommandWrapper.onInsufficientPermissions(client, interaction);
+  }
 }

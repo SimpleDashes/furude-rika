@@ -1,10 +1,8 @@
 import {
-  Base,
   Client,
   ClientOptions,
   Collection,
   CommandInteraction,
-  GuildMember,
 } from 'discord.js';
 import DirectoryMapper from '../io/DirectoryMapper';
 import CommandResolver from '../io/object_resolvers/command_resolvers/CommandResolver';
@@ -19,10 +17,10 @@ import fsSync from 'fs';
 import SubCommandResolver from '../io/object_resolvers/command_resolvers/SubCommandResolver';
 import ICommand from '../commands/ICommand';
 import SubCommand from '../commands/SubCommand';
-import { initPreconditions } from '../commands/decorators/PreconditionDecorators';
 import OwnerPrecondition from '../commands/preconditions/OwnerPrecondition';
 import IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
 import GuildPermissionsPreconditions from '../commands/preconditions/GuildPermissionsPreconditions';
+import { initPreconditions } from '../commands/decorators/PreconditionDecorators';
 
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =

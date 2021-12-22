@@ -21,14 +21,24 @@ export default class FurudeCommandWrapper {
     precondition?: CommandPrecondition,
     _missingPermissions?: PermissionResolvable
   ): Promise<void> {
-    await interaction.deferReply();
-    await interaction.editReply({
+    await interaction.reply({
       content: MessageFactory.error(
         precondition instanceof OwnerPrecondition
           ? client.localizer.get(FurudeTranslationKeys.ERRO_OWNER_ONLY_COMMAND)
           : client.localizer.get(
               FurudeTranslationKeys.ERROR_MISSING_PERMISSIONS
             )
+      ),
+    });
+  }
+
+  public static async onMissingRequiredSubCommands(
+    _client: FurudeRika,
+    interaction: CommandInteraction<CacheType>
+  ): Promise<void> {
+    await interaction.reply({
+      content: MessageFactory.error(
+        FurudeTranslationKeys.SUBCOMMAND_MISSING_REQUIRED
       ),
     });
   }

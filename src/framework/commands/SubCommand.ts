@@ -34,6 +34,11 @@ export default abstract class SubCommand<T extends Client>
     missingPermissions?: PermissionResolvable
   ): Promise<void>;
 
+  public abstract onMissingRequiredSubCommands(
+    client: T,
+    interaction: CommandInteraction<CacheType>
+  ): Promise<void>;
+
   public registerOption<C>(option: C): C {
     return CommandHelper.registerOption(this, option);
   }

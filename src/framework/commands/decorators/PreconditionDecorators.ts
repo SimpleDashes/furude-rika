@@ -39,8 +39,15 @@ function RequirePermissions<T extends BaseCommand<any>>(
   };
 }
 
+function RequiresSubCommands<T extends BaseCommand<any>>(
+  target: Constructor<T>
+) {
+  (target.prototype as unknown as IHasPreconditions).requiresSubCommands = true;
+}
+
 export {
   initOwnerPrecondition as initPreconditions,
   OwnerOnly,
   RequirePermissions,
+  RequiresSubCommands,
 };

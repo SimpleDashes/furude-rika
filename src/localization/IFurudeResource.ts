@@ -24,4 +24,5 @@ export default interface IFurudeResource extends ILocalizerStructure {
   ERROR_OWNER_ONLY_COMMAND: string;
 
   SUBCOMMAND_ERROR_NOT_FOUND: string;
+  SUBCOMMAND_MISSING_REQUIRED: string;
 }

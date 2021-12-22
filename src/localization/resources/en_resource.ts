@@ -41,6 +41,8 @@ export default class extends FurudeResource {
       // SUBCOMMANDS
       SUBCOMMAND_ERROR_NOT_FOUND:
         "Sorry i couldn't find the subcommand you are looking for!",
+      SUBCOMMAND_MISSING_REQUIRED:
+        'You need to choose a subcommand to be able to run this command!s',
     });
   }
 }

@@ -41,6 +41,9 @@ export default class extends FurudeResource {
       // SUBCOMMANDS
       SUBCOMMAND_ERROR_NOT_FOUND:
         'Desculpa mas assim eu acho que o subcomando que você me especificou não existe sabe?',
+
+      SUBCOMMAND_MISSING_REQUIRED:
+        'Você precisa escolher um subcomando para executar este comando!',
     });
   }
 }

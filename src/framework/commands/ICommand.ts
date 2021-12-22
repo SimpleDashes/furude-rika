@@ -17,6 +17,10 @@ export default interface ICommand<
     failedCondition?: PermissionPrecondition,
     missingPermissions?: PermissionResolvable
   ): Promise<void>;
+  onMissingRequiredSubCommands(
+    client: T,
+    interaction: CommandInteraction
+  ): Promise<void>;
   registerOption<C>(option: C): C;
   setName(name: string): THIS;
   setDescription(description: string): THIS;
