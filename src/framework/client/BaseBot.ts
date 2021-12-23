@@ -85,7 +85,6 @@ export default abstract class BaseBot extends Client implements IBot {
         this.subCommands,
         (mapper: DirectoryMapper) => new SubCommandResolver(mapper),
         async (_res, command, sub) => {
-          console.log(sub.name);
           command.addSubcommand(sub);
         }
       );

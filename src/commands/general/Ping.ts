@@ -65,15 +65,12 @@ export default class Ping extends FurudeCommand {
         const ping = pingData.ping?.call(pingData, pingArgs);
 
         const text = ping
-          ? runner.args!.localizer.get(FurudeTranslationKeys.PING_TO_PING, {
-              vars: {
-                args: [ping?.toString()],
-              },
-            })
+          ? runner.args!.localizer.get(FurudeTranslationKeys.PING_TO_PING, [
+              ping?.toString(),
+            ])
           : runner.args!.localizer.get(
               FurudeTranslationKeys.PING_NOT_REACHABLE
             );
-
         const value = MessageFactory.bold(MessageFactory.blockQuote(text));
         embed.addField(pingData.pingWhat, value);
       });

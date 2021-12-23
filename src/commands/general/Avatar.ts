@@ -37,11 +37,7 @@ export default class Avatar extends FurudeCommand {
         {
           title: runner.args!.localizer.get(
             FurudeTranslationKeys.AVATAR_RESPONSE,
-            {
-              vars: {
-                args: [selectedUser.username],
-              },
-            }
+            [selectedUser.username]
           ),
         },
         interaction

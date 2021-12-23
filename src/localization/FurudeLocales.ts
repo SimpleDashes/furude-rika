@@ -71,12 +71,11 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
    * @param options lng: selected language, values: used for replace placeholder string values
    * @returns a localized string
    */
-  public get(
-    key: FurudeTranslationKeys,
-    options?: {
-      vars?: Partial<IVariableManagerGetter>;
-    }
-  ) {
+  public get(key: FurudeTranslationKeys, vars?: string[]) {
+    const values: IVariableManagerGetter = {
+      key,
+      args: vars ?? [],
+    };
     if (this.runner && this.language == defaultFurudeLocale) {
       this.language = this.runner.args.furudeUser.preferred_locale;
     }
@@ -84,12 +83,12 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
       return translation.locale == this.language;
     })?.structure[key];
     if (!find) return '';
-    if (options?.vars) {
-      options.vars.key = this.getKey(this.language, options.vars.key ?? key);
-      options.vars.args = options.vars.args ?? [];
-      if (stringWithVariablesManager.stringsWithVariables[options.vars.key]) {
+    if (values.args) {
+      values.key = this.getKey(this.language, values.key);
+      values.args = values.args ?? [];
+      if (stringWithVariablesManager.stringsWithVariables[values.key]) {
         return stringWithVariablesManager.getString(
-          options.vars as IVariableManagerGetter
+          values as IVariableManagerGetter
         )!;
       }
     }
