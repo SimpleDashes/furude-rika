@@ -128,31 +128,20 @@ export default abstract class BaseBot extends Client implements IBot {
     const subOrGroupPath = path.join(commandRes.directory.path, pathName);
 
     if (fsSync.existsSync(subOrGroupPath)) {
-      const dir = await fs.readdir(subOrGroupPath, {
-        withFileTypes: true,
-      });
+      const factory = new DirectoryMapperFactory(subOrGroupPath);
+      const mappers = await factory.buildMappers();
+      const subOrGroups: S[] = [];
 
-      for await (const file of dir) {
-        if (file.isDirectory()) {
-          pathName = path.join(pathName, file.name);
-          await this.registerSubOrGroup(
-            commandRes,
-            pathName,
-            collection,
-            resolver,
-            manipulator
-          );
+      for await (const mapper of mappers) {
+        const subOrGroupsResolverCommandResolver = resolver(mapper);
+        const resolvedSubOrGroups =
+          await subOrGroupsResolverCommandResolver.getAllObjects();
+
+        for await (const res of resolvedSubOrGroups) {
+          subOrGroups.push(res.object);
+          if (manipulator)
+            await manipulator(res, commandRes.object, res.object);
         }
-      }
-
-      const mapper = new DirectoryMapper(subOrGroupPath);
-      const subOrGroupsResolverCommandResolver = resolver(mapper);
-      const resolvedSubOrGroups =
-        await subOrGroupsResolverCommandResolver.getAllObjects();
-      const subOrGroups = resolvedSubOrGroups.map((res) => res.object);
-
-      for await (const res of resolvedSubOrGroups) {
-        if (manipulator) await manipulator(res, commandRes.object, res.object);
       }
 
       collection.set(commandRes.object, subOrGroups);
