@@ -41,9 +41,14 @@ function RequiresSubCommands(target: Constructor<ICommand<any, any>>) {
   (target.prototype as unknown as IHasPreconditions).requiresSubCommands = true;
 }
 
+function RequiresSubGroups(target: Constructor<ICommand<any, any>>) {
+  (target.prototype as unknown as IHasPreconditions).requiresSubGroups = true;
+}
+
 export {
-  initOwnerPrecondition as initPreconditions,
+  initOwnerPrecondition,
   OwnerOnly,
   RequirePermissions,
   RequiresSubCommands,
+  RequiresSubGroups,
 };

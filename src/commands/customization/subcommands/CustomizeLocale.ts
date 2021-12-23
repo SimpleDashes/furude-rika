@@ -3,8 +3,6 @@ import FurudeRika from '../../../client/FurudeRika';
 import DefaultDependency from '../../../client/providers/DefaultDependency';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
-import IRunsCommand from '../../../framework/commands/interfaces/IRunsCommand';
-import Constructor from '../../../framework/interfaces/Constructor';
 import StringOption from '../../../framework/options/classes/StringOption';
 import MessageFactory from '../../../helpers/MessageFactory';
 import FurudeLocales from '../../../localization/FurudeLocales';

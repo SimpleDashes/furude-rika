@@ -26,7 +26,10 @@ export default class FurudeRika extends BaseBot {
         ENV_DEVELOPMENT_SERVER: 'DEV_GUILD_ID',
         OWNER_IDS: ['902963589898444800'],
       },
-      new DirectoryMapperFactory(path.join('dist', 'commands'), ['subcommands'])
+      new DirectoryMapperFactory(path.join('dist', 'commands'), [
+        'subcommands',
+        'groups',
+      ])
     );
   }
 

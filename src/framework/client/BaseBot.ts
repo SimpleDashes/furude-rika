@@ -6,6 +6,8 @@ import {
 } from 'discord.js';
 import DirectoryMapper from '../io/DirectoryMapper';
 import CommandResolver from '../io/object_resolvers/command_resolvers/CommandResolver';
+import type { resolvedClass } from '../io/object_resolvers/ClassResolver';
+import ClassResolver from '../io/object_resolvers/ClassResolver';
 import IBot from './IBot';
 import BaseCommand from '../commands/BaseCommand';
 import ICommandRunResponse from './ICommandRunResponse';
@@ -19,31 +21,44 @@ import SubCommand from '../commands/SubCommand';
 import OwnerPrecondition from '../commands/preconditions/OwnerPrecondition';
 import IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
 import GuildPermissionsPreconditions from '../commands/preconditions/GuildPermissionsPreconditions';
-import { initPreconditions } from '../commands/decorators/PreconditionDecorators';
+import { initOwnerPrecondition } from '../commands/decorators/PreconditionDecorators';
 import IRunsCommand from '../commands/interfaces/IRunsCommand';
-
+import ICommand from '../commands/interfaces/ICommand';
+import CommandGroup from '../commands/CommandGroup';
+import SubCommandGroupResolver from '../io/object_resolvers/command_resolvers/SubCommandGroupResolver';
+import fs from 'fs/promises';
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
     new Collection();
+
   public readonly subCommands: Collection<
-    BaseCommand<BaseBot>,
+    ICommand<BaseBot, any>,
     SubCommand<BaseBot>[]
   > = new Collection();
+
+  public readonly subGroups: Collection<
+    BaseCommand<BaseBot>,
+    CommandGroup<BaseBot>[]
+  > = new Collection();
+
   public readonly commandMappers: DirectoryMapper[] = [];
   public readonly devInfo: IBotDevInformation;
   public readonly devOptions: IDevOptions;
   private readonly commandMapperFactory?: DirectoryMapperFactory;
   private readonly subCommandsDirectory: string;
+  private readonly subCommandGroupsDirectory: string;
 
   public constructor(
     options: ClientOptions,
     devOptions: IDevOptions,
     commandMapperFactory?: DirectoryMapperFactory,
     subCommandsDirectory: string = 'subcommands',
+    subCommandGroupsDirectory: string = 'groups',
     ...commandMappers: DirectoryMapper[]
   ) {
     super(options);
     this.subCommandsDirectory = subCommandsDirectory;
+    this.subCommandGroupsDirectory = subCommandGroupsDirectory;
     this.devOptions = devOptions;
     this.commandMappers = commandMappers;
     this.commandMapperFactory = commandMapperFactory;
@@ -51,7 +66,7 @@ export default abstract class BaseBot extends Client implements IBot {
       ownerIds: this.devOptions.OWNER_IDS,
       token: process.env[this.devOptions.ENV_TOKEN_VAR],
     };
-    initPreconditions(new OwnerPrecondition(this.devInfo.ownerIds));
+    initOwnerPrecondition(new OwnerPrecondition(this.devInfo.ownerIds));
   }
 
   private async loadCommands() {
@@ -63,25 +78,86 @@ export default abstract class BaseBot extends Client implements IBot {
     const resolvedCommands = await commandResolver.getAllObjects();
     for await (const commandRes of resolvedCommands) {
       this.commands.set(commandRes.object.name, commandRes.object);
-      const subCommandPath = path.join(
-        commandRes.directory.path,
-        this.subCommandsDirectory
-      );
-      if (fsSync.existsSync(subCommandPath)) {
-        const subCommandsMapper = new DirectoryMapper(subCommandPath);
-        const subCommandResolver = new SubCommandResolver(subCommandsMapper);
-        const resolvedSubCommands = await subCommandResolver.getAllObjects();
-        const subCommands = [];
 
-        for await (const subCommandRes of resolvedSubCommands) {
-          commandRes.object.addSubcommand(subCommandRes.object);
-          subCommands.push(subCommandRes.object);
+      await this.registerSubOrGroup(
+        commandRes,
+        this.subCommandsDirectory,
+        this.subCommands,
+        (mapper: DirectoryMapper) => new SubCommandResolver(mapper),
+        async (_res, command, sub) => {
+          console.log(sub.name);
+          command.addSubcommand(sub);
         }
+      );
 
-        this.subCommands.set(commandRes.object, subCommands);
-      }
+      await this.registerSubOrGroup(
+        commandRes,
+        this.subCommandGroupsDirectory,
+        this.subGroups,
+        (mapper: DirectoryMapper) => new SubCommandGroupResolver(mapper),
+        async (res, command, group) => {
+          command.addSubcommandGroup(group);
+          await this.registerSubOrGroup(
+            res,
+            this.subCommandGroupsDirectory,
+            this.subCommands,
+            (mapper: DirectoryMapper) => new SubCommandResolver(mapper),
+            async (_res, command, sub) => {
+              command.addSubcommand(sub);
+            }
+          );
+        }
+      );
     }
     await this.onCommandsLoaded();
+  }
+
+  private async registerSubOrGroup<
+    C extends ICommand<BaseBot, any>,
+    S extends ICommand<BaseBot, any>
+  >(
+    commandRes: resolvedClass<C>,
+    pathName: string,
+    collection: Collection<ICommand<BaseBot, any>, S[]>,
+    resolver: (mapper: DirectoryMapper) => ClassResolver<any>,
+    manipulator?: (
+      res: resolvedClass<S>,
+      command: C,
+      subOrGroup: S
+    ) => Promise<void>
+  ) {
+    const subOrGroupPath = path.join(commandRes.directory.path, pathName);
+
+    if (fsSync.existsSync(subOrGroupPath)) {
+      const dir = await fs.readdir(subOrGroupPath, {
+        withFileTypes: true,
+      });
+
+      for await (const file of dir) {
+        if (file.isDirectory()) {
+          pathName = path.join(pathName, file.name);
+          await this.registerSubOrGroup(
+            commandRes,
+            pathName,
+            collection,
+            resolver,
+            manipulator
+          );
+        }
+      }
+
+      const mapper = new DirectoryMapper(subOrGroupPath);
+      const subOrGroupsResolverCommandResolver = resolver(mapper);
+      const resolvedSubOrGroups =
+        await subOrGroupsResolverCommandResolver.getAllObjects();
+      const subOrGroups = resolvedSubOrGroups.map((res) => res.object);
+
+      for await (const res of resolvedSubOrGroups) {
+        if (manipulator) await manipulator(res, commandRes.object, res.object);
+      }
+
+      collection.set(commandRes.object, subOrGroups);
+    }
   }
 
   async start() {
@@ -115,11 +191,25 @@ export default abstract class BaseBot extends Client implements IBot {
         !!preconditioned.requiresSubCommands
       );
 
+      const subGroupOption = interaction.options.getSubcommandGroup(
+        !!preconditioned.requiresSubGroups
+      );
+
       let runner: IRunsCommand<BaseBot> | null = null;
+      let forSubCommandGroup: ICommand<any, any> = command;
+
+      if (subGroupOption) {
+        const gotGroup = this.subGroups
+          .get(command)
+          ?.find((group) => group.name == subGroupOption);
+        if (gotGroup) {
+          forSubCommandGroup = gotGroup;
+        }
+      }
 
       if (subCommandOption) {
         const runnableSubCommand = this.subCommands
-          .get(command)
+          .get(forSubCommandGroup)
           ?.find((sub) => sub.name == subCommandOption);
         if (runnableSubCommand) {
           runner = await runnableSubCommand.createRunner(interaction);

@@ -5,7 +5,7 @@ import path from 'path';
 import consola from 'consola';
 import Constructor from '../../interfaces/Constructor';
 
-type resolvedClass<T> = {
+export type resolvedClass<T> = {
   directory: DirectoryMapper;
   object: T;
 };
@@ -51,6 +51,8 @@ export default abstract class ClassResolver<T> {
           directory: directoryMapper,
           object: tClassObject,
         });
+      } else {
+        consola.error(`Failed to import object at: ${importPath}`);
       }
     }
     return objects;
