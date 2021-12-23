@@ -69,7 +69,7 @@ export default class Calc extends FurudeCommand {
             runner.args!.localizer.get(
               FurudeTranslationKeys.CALC_MISSING_VARIABLES,
               {
-                values: {
+                vars: {
                   args: [
                     MessageFactory.block(missingVariables.toString()),
                     expressionText,
@@ -96,7 +96,7 @@ export default class Calc extends FurudeCommand {
         displayText = runner.args!.localizer.get(
           FurudeTranslationKeys.CALC_RESULTS,
           {
-            values: {
+            vars: {
               args: [
                 expressionText,
                 MessageFactory.block(evaluatedResult.toString()),
@@ -108,7 +108,7 @@ export default class Calc extends FurudeCommand {
           displayText += `, ${runner.args!.localizer.get(
             FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
             {
-              values: {
+              vars: {
                 args: [MessageFactory.block(gotVariablesRaw.trim())],
               },
             }
@@ -120,7 +120,7 @@ export default class Calc extends FurudeCommand {
           runner.args!.localizer.get(
             FurudeTranslationKeys.CALC_EVALUATE_ERROR,
             {
-              values: {
+              vars: {
                 args: [expressionText],
               },
             }

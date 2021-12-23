@@ -66,7 +66,7 @@ export default class Ping extends FurudeCommand {
 
         const text = ping
           ? runner.args!.localizer.get(FurudeTranslationKeys.PING_TO_PING, {
-              values: {
+              vars: {
                 args: [ping?.toString()],
               },
             })

@@ -33,7 +33,7 @@ export default class CoinFlip extends FurudeCommand {
       await interaction.reply({
         content: MessageFactory.success(
           runner.args!.localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, {
-            values: {
+            vars: {
               args: [
                 runner.args!.localizer.get(
                   selectedCoin as unknown as FurudeTranslationKeys

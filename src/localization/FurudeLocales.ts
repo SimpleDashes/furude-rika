@@ -74,7 +74,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
   public get(
     key: FurudeTranslationKeys,
     options?: {
-      values?: Partial<IVariableManagerGetter>;
+      vars?: Partial<IVariableManagerGetter>;
     }
   ) {
     if (this.runner && this.language == defaultFurudeLocale) {
@@ -84,18 +84,13 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
       return translation.locale == this.language;
     })?.structure[key];
     if (!find) return '';
-    if (options?.values) {
-      options.values.key = this.getKey(
-        this.language,
-        options.values.key ?? key
-      );
-      options.values.args = options.values.args ?? [];
-      if (stringWithVariablesManager.stringsWithVariables[options.values.key]) {
-        return (
-          stringWithVariablesManager.getString(
-            options.values as IVariableManagerGetter
-          ) ?? ''
-        );
+    if (options?.vars) {
+      options.vars.key = this.getKey(this.language, options.vars.key ?? key);
+      options.vars.args = options.vars.args ?? [];
+      if (stringWithVariablesManager.stringsWithVariables[options.vars.key]) {
+        return stringWithVariablesManager.getString(
+          options.vars as IVariableManagerGetter
+        )!;
       }
     }
     return find;

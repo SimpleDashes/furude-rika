@@ -48,7 +48,7 @@ export default class extends FurudeSubCommand {
       await interaction.editReply({
         content: MessageFactory.success(
           localizer.get(FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE, {
-            values: {
+            vars: {
               args: [preferredLocale],
             },
           })
