@@ -197,18 +197,20 @@ export default abstract class BaseBot extends Client implements IBot {
 
       if (!command) return;
 
-      const preconditioned = command as unknown as Partial<IHasPreconditions>;
+      const preconditionedCommand =
+        command as unknown as Partial<IHasPreconditions>;
 
       const subCommandOption = interaction.options.getSubcommand(
-        !!preconditioned.requiresSubCommands
+        !!preconditionedCommand.requiresSubCommands
       );
 
       const subGroupOption = interaction.options.getSubcommandGroup(
-        !!preconditioned.requiresSubGroups
+        !!preconditionedCommand.requiresSubGroups
       );
 
       let runner: IRunsCommand<BaseBot> | null = null;
       let groupToRunSubcommand: ICommand<any, any> = command;
+      let runnerCommand: ICommand<any, any> = command;
 
       if (subGroupOption) {
         const gotGroup = this.subGroups
@@ -224,19 +226,38 @@ export default abstract class BaseBot extends Client implements IBot {
           .get(groupToRunSubcommand)
           ?.find((sub) => sub.name == subCommandOption);
         if (runnableSubCommand) {
+          runnerCommand = runnableSubCommand;
           runner = await runnableSubCommand.createRunner(interaction);
         } else {
           await this.onSubCommandNotFound(interaction);
           return;
         }
       } else {
+        runnerCommand = runnerCommand;
         runner = await command.createRunner(interaction);
       }
 
       if (runner) {
-        if (
-          !(await this.verifyPermissionsToRunCommand(runner, preconditioned))
-        ) {
+        const canRun = async (
+          can: ICommand<any, any> | Partial<IHasPreconditions>
+        ) => {
+          return await this.verifyPermissionsToRunCommand(
+            runner!,
+            can as unknown as Partial<IHasPreconditions>
+          );
+        };
+
+        const canRunInner = async (inner: ICommand<any, any>) => {
+          return inner == preconditionedCommand ? true : await canRun(inner);
+        };
+
+        const canRunCommandBase = await canRun(preconditionedCommand);
+
+        const canRunCommandGroup = await canRunInner(groupToRunSubcommand);
+
+        const canRunSubCommand = await canRunInner(runnerCommand);
+
+        if (!(canRunCommandBase && canRunCommandGroup && canRunSubCommand)) {
           return;
         }
 
@@ -244,7 +265,7 @@ export default abstract class BaseBot extends Client implements IBot {
           await runner.run();
           this.onCommandRun({
             interaction,
-            command: command,
+            command: runnerCommand,
           });
         }
       }

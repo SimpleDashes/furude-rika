@@ -1,4 +1,4 @@
-import { User } from 'discord.js';
+import { Guild, User } from 'discord.js';
 import {
   BaseEntity,
   Connection,
@@ -6,8 +6,10 @@ import {
   FindOneOptions,
 } from 'typeorm';
 import Constructor from '../framework/interfaces/Constructor';
-import DiscordUser from './entity/DiscordUser';
-import { FurudeUser } from './entity/FurudeUser';
+import SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
+import DBGuild from './entity/DBGuild';
+import DBUser from './entity/DBUser';
+import IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
 
 export default class FurudeDB {
   public readonly uri: string;
@@ -33,9 +35,9 @@ export default class FurudeDB {
     });
   }
 
-  public async createEntityWhenNotFound<T extends BaseEntity>(
+  private async createEntityWhenNotFound<T extends BaseEntity>(
     constructor: Constructor<T>,
-    findEntity: () => Promise<T | undefined>
+    findEntity: () => Promise<T>
   ) {
     let find: T | null = null;
     try {
@@ -44,32 +46,48 @@ export default class FurudeDB {
         find = found;
       }
     } catch {}
-    find = find ?? new constructor();
-    return find;
+    const entity = new constructor();
+    Object.assign(entity, find);
+    return entity;
   }
 
-  public getDiscordUserQuery(user: User): FindOneOptions<any> {
+  private getSnowFlakeQuery(
+    snowflakeable: IHasSnowFlakeID
+  ): FindOneOptions<any> {
     return {
       where: {
-        id: user.id,
+        id: snowflakeable.id,
       },
     };
   }
 
-  public identifyDiscordUser<T extends DiscordUser>(entity: T, user: User): T {
+  private identifySnowflake<T extends SnowFlakeIDEntity>(
+    entity: T,
+    snowflakeable: IHasSnowFlakeID
+  ): T {
     if (!entity.id) {
-      entity.id = user.id;
+      entity.id = snowflakeable.id;
     }
     return entity;
   }
 
-  public async getFurudeUser(user: User): Promise<FurudeUser> {
-    return this.identifyDiscordUser(
+  public async getUser(user: User): Promise<DBUser> {
+    return this.identifySnowflake(
       await this.createEntityWhenNotFound(
-        FurudeUser,
-        async () => await FurudeUser.findOne(this.getDiscordUserQuery(user))
+        DBUser,
+        async () => await DBUser.findOne(this.getSnowFlakeQuery(user))
       ),
       user
+    );
+  }
+
+  public async getGuild(guild: Guild): Promise<DBGuild> {
+    return this.identifySnowflake(
+      await this.createEntityWhenNotFound(
+        DBGuild,
+        async () => await DBGuild.findOne(this.getSnowFlakeQuery(guild))
+      ),
+      guild
     );
   }
 
@@ -80,7 +98,7 @@ export default class FurudeDB {
     object: T,
     manipulator: (object: T) => void
   ) {
-    await manipulator(object);
+    manipulator(object);
     await object.save();
   }
 }

@@ -1,7 +1,8 @@
 import { CommandInteraction } from 'discord.js';
-import BaseCommand from '../commands/BaseCommand';
+import ICommand from '../commands/interfaces/ICommand';
+import BaseBot from './BaseBot';
 
 export default interface ICommandRunResponse {
   interaction: CommandInteraction;
-  command: BaseCommand<any>;
+  command: ICommand<BaseBot, any>;
 }

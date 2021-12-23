@@ -1,15 +1,22 @@
-import { FurudeUser } from '../../database/entity/FurudeUser';
+import DBGuild from '../../database/entity/DBGuild';
+import DBUser from '../../database/entity/DBUser';
 import FurudeLocales from '../../localization/FurudeLocales';
 import BaseDependency from './BaseDependency';
 
 export default class extends BaseDependency {
-  public furudeUser!: FurudeUser;
+  public dbUser!: DBUser;
+  public dbGuild?: DBGuild;
   public localizer!: FurudeLocales;
 
   protected async build(): Promise<void> {
-    this.furudeUser = await this.runner.client.db.getFurudeUser(
+    this.dbUser = await this.runner.client.db.getUser(
       this.runner.interaction.user
     );
+    if (this.runner.interaction.guild) {
+      this.dbGuild = await this.runner.client.db.getGuild(
+        this.runner.interaction.guild
+      );
+    }
     this.localizer = new FurudeLocales({ runner: this.runner });
   }
 }

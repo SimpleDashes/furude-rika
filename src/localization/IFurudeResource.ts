@@ -26,5 +26,7 @@ export default interface IFurudeResource extends ILocalizerStructure {
   SUBCOMMAND_ERROR_NOT_FOUND: string;
   SUBCOMMAND_MISSING_REQUIRED: string;
 
-  CUSTOMIZE_LOCALE_RESPONSE: string;
+  CUSTOMIZE_LOCALE_RESPONSE_USER: string;
+  CUSTOMIZE_LOCALE_RESPONSE_GUILD: string;
+  CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY: string;
 }

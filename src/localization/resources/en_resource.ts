@@ -45,8 +45,12 @@ export default class extends FurudeResource {
         'You need to choose a subcommand to be able to run this command!',
 
       // CUSTOMIZE
-      CUSTOMIZE_LOCALE_RESPONSE:
-        'Hey i am now going to respond you in the language: [$LOCALE]',
+      CUSTOMIZE_LOCALE_RESPONSE_USER:
+        'Damn, you want me to respond you that way, sure!',
+      CUSTOMIZE_LOCALE_RESPONSE_GUILD:
+        'HEY! now i am going to respond you in this server just in english, sup!',
+      CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY:
+        'Oh sure, i will let users pick their preferred language then!',
     });
   }
 }

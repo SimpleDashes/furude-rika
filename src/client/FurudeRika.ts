@@ -14,7 +14,8 @@ export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
 
-  private readonly forceDeploy: boolean = false;
+  private readonly forceDeploy = false;
+  private readonly isDebug = true;
 
   public constructor() {
     super(
@@ -29,6 +30,7 @@ export default class FurudeRika extends BaseBot {
       new DirectoryMapperFactory(path.join('dist', 'commands'), [
         'subcommands',
         'groups',
+        'wrapper',
       ])
     );
   }
@@ -47,7 +49,7 @@ export default class FurudeRika extends BaseBot {
       client: this,
     });
     const localizer = new FurudeLocales({
-      language: dependency.furudeUser.preferred_locale,
+      language: dependency.dbUser.preferred_locale ?? undefined,
     });
     await interaction.reply(
       localizer.get(FurudeTranslationKeys.SUBCOMMAND_ERROR_NOT_FOUND)
@@ -58,7 +60,7 @@ export default class FurudeRika extends BaseBot {
     const { interaction, command } = response;
     consola.success(
       `Command "${
-        command.name
+        command.information.name
       }" was ran, requested by: ${interaction.user.toString()} on channel: ${
         interaction.channel?.id
       } on server: ${interaction.guild?.name}`
@@ -68,8 +70,7 @@ export default class FurudeRika extends BaseBot {
   public override async onCommandsLoaded(): Promise<void> {
     consola.log(this.commands.size + ' commands were loaded');
     if (!this.forceDeploy) return;
-    const isDebug = true;
-    await DeployHandler.deployAll(this, isDebug, {
+    await DeployHandler.deployAll(this, this.isDebug, {
       onError: () => {
         consola.error(`Error deploying all commands`);
       },
