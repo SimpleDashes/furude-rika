@@ -63,7 +63,7 @@ export default class FurudeRika extends BaseBot {
   }
 
   public override async onCommandsLoaded(): Promise<void> {
-    console.log(this.commands.size + ' commands were loaded');
+    consola.log(this.commands.size + ' commands were loaded');
     if (!this.forceDeploy) return;
     const isDebug = true;
     await DeployHandler.deployAll(this, isDebug, {

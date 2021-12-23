@@ -7,6 +7,7 @@ import IRunsCommand from '../../../framework/commands/interfaces/IRunsCommand';
 import Constructor from '../../../framework/interfaces/Constructor';
 import StringOption from '../../../framework/options/classes/StringOption';
 import MessageFactory from '../../../helpers/MessageFactory';
+import FurudeLocales from '../../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
 
@@ -27,7 +28,7 @@ export default class extends FurudeSubCommand {
   }
 
   public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultDependency>,
+    _runner: IFurudeRunner<DefaultDependency>,
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
@@ -44,16 +45,15 @@ export default class extends FurudeSubCommand {
         user.preferred_locale = preferredLocale;
       });
 
+      const localizer = new FurudeLocales({ language: preferredLocale });
+
       await interaction.editReply({
         content: MessageFactory.success(
-          runner.args!.localizer.get(
-            FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE,
-            {
-              values: {
-                args: [preferredLocale],
-              },
-            }
-          )
+          localizer.get(FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE, {
+            values: {
+              args: [preferredLocale],
+            },
+          })
         ),
       });
     };

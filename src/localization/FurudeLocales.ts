@@ -34,10 +34,8 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
       defaultLocale: defaultFurudeLocale,
       locales: translations,
     });
-    this.language =
-      options?.language ??
-      this.runner?.args?.furudeUser.preferred_locale ??
-      defaultFurudeLocale;
+    this.runner = options?.runner;
+    this.language = options?.language ?? defaultFurudeLocale;
   }
 
   public async build() {
@@ -79,6 +77,9 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
       values?: Partial<IVariableManagerGetter>;
     }
   ) {
+    if (this.runner && this.language == defaultFurudeLocale) {
+      this.language = this.runner.args.furudeUser.preferred_locale;
+    }
     const find = translations.find((translation) => {
       return translation.locale == this.language;
     })?.structure[key];
