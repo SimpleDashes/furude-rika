@@ -21,7 +21,6 @@ import IHasPreconditions from '../commands/preconditions/interfaces/IHasPrecondi
 import GuildPermissionsPreconditions from '../commands/preconditions/GuildPermissionsPreconditions';
 import { initPreconditions } from '../commands/decorators/PreconditionDecorators';
 import IRunsCommand from '../commands/interfaces/IRunsCommand';
-import DefaultDependency from '../../client/providers/DefaultDependency';
 
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
@@ -116,7 +115,7 @@ export default abstract class BaseBot extends Client implements IBot {
         !!preconditioned.requiresSubCommands
       );
 
-      let runner: IRunsCommand<BaseBot>;
+      let runner: IRunsCommand<BaseBot> | null = null;
 
       if (subCommandOption) {
         const runnableSubCommand = this.subCommands
@@ -126,22 +125,26 @@ export default abstract class BaseBot extends Client implements IBot {
           runner = await runnableSubCommand.createRunner(interaction);
         } else {
           await this.onSubCommandNotFound(interaction);
+          return;
         }
-        return;
       } else {
         runner = await command.createRunner(interaction);
       }
 
-      if (!(await this.verifyPermissionsToRunCommand(runner, preconditioned))) {
-        return;
-      }
+      if (runner) {
+        if (
+          !(await this.verifyPermissionsToRunCommand(runner, preconditioned))
+        ) {
+          return;
+        }
 
-      if (runner.run) {
-        await runner.run();
-        this.onCommandRun({
-          interaction,
-          command: command,
-        });
+        if (runner.run) {
+          await runner.run();
+          this.onCommandRun({
+            interaction,
+            command: command,
+          });
+        }
       }
     });
   }

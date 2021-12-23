@@ -3,7 +3,7 @@ import SupportedFurudeLocales from '../SupportedFurudeLocales';
 
 export default class extends FurudeResource {
   public constructor() {
-    super(SupportedFurudeLocales.pt_br, {
+    super(SupportedFurudeLocales.brazilian_portuguese, {
       // AVATAR
       AVATAR_RESPONSE: 'Aqui, toma o avatar do(a) [$USER]',
 

@@ -15,7 +15,7 @@ const resourceResolver = new ResourceResolver(
   new DirectoryMapper(path.join(__dirname, 'resources'))
 );
 
-const defaultFurudeLocale = SupportedFurudeLocales.pt_br;
+const defaultFurudeLocale = SupportedFurudeLocales.english;
 
 const translations: FurudeResource[] = [];
 const stringWithVariablesManager = new StringWithVariablesManager();

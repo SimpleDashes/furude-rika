@@ -1,6 +1,6 @@
 enum SupportedFurudeLocales {
-  en = 'en',
-  pt_br = 'pt_br',
+  english = 'english',
+  brazilian_portuguese = 'brazilian_portuguese',
 }
 
 export default SupportedFurudeLocales;
