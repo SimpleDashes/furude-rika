@@ -51,6 +51,10 @@ export default class extends FurudeResource {
         'HEY! now i am going to respond you in this server just in english, sup!',
       CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY:
         'Oh sure, i will let users pick their preferred language then!',
+      CUSTOMIZE_LOCALE_RESPONSE_CHANNEL:
+        'Oh sure, then i will be speaking in english in this channel!',
+      CUSTOMIZE_LOCALE_RESPONSE_CHANNEL_ANY:
+        'Oh sure, i will let the users speak this server default language in this channel...',
     });
   }
 }

@@ -18,7 +18,7 @@ export default class FurudeCommandWrapper {
     command: IFurudeCommand,
     interaction: CommandInteraction<CacheType>
   ): Promise<IFurudeRunner<any>> {
-    const runner: IFurudeRunner<any> = {
+    const runner: IFurudeRunner<DefaultDependency> = {
       interaction: interaction,
       client: interaction.client as FurudeRika,
       onInsufficientPermissions: async (
@@ -45,7 +45,7 @@ export default class FurudeCommandWrapper {
   }
 
   public static async onInsufficientPermissions(
-    runner: IFurudeRunner<any>,
+    runner: IFurudeRunner<DefaultDependency>,
     precondition?: CommandPrecondition,
     _missingPermissions?: PermissionResolvable
   ): Promise<void> {

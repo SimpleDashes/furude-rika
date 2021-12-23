@@ -49,9 +49,13 @@ export default class extends FurudeResource {
       CUSTOMIZE_LOCALE_RESPONSE_USER:
         'Opa! configurei para eu lhe responder em "brasiliense" k.',
       CUSTOMIZE_LOCALE_RESPONSE_GUILD:
-        'Coé, configurei para os membros do servidor serem respondidos assim, bróder...',
+        'Coé, configurei para os membros do servidor serem respondidos assim, bróder... tmj.',
       CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY:
         'Ah então ok, vou deixar seus ~~escravos~~ escolherem suas propias linguagens!',
+      CUSTOMIZE_LOCALE_RESPONSE_CHANNEL:
+        'Ok então, este canal é para os crias, certo!',
+      CUSTOMIZE_LOCALE_RESPONSE_CHANNEL_ANY:
+        'Então, é para os membros falarem o idioma preferido do servidor, neste canal? entendido.',
     });
   }
 }

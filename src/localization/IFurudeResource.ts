@@ -29,4 +29,6 @@ export default interface IFurudeResource extends ILocalizerStructure {
   CUSTOMIZE_LOCALE_RESPONSE_USER: string;
   CUSTOMIZE_LOCALE_RESPONSE_GUILD: string;
   CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY: string;
+  CUSTOMIZE_LOCALE_RESPONSE_CHANNEL: string;
+  CUSTOMIZE_LOCALE_RESPONSE_CHANNEL_ANY: string;
 }

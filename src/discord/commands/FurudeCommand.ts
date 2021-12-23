@@ -17,7 +17,7 @@ export default abstract class FurudeCommand
   }
 
   public abstract createRunnerRunnable(
-    runner: IFurudeRunner<any>,
+    runner: IFurudeRunner<DefaultDependency>,
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void>;

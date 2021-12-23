@@ -80,6 +80,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
     if (this.runner) {
       this.language =
         this.runner.args?.dbGuild?.preferred_locale ??
+        this.runner.args?.dbChannel?.preferred_locale ??
         this.runner.args?.dbUser.preferred_locale ??
         this.language;
     }

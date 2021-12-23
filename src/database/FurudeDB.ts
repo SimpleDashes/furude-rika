@@ -1,4 +1,4 @@
-import { Guild, User } from 'discord.js';
+import { Guild, GuildChannel, User } from 'discord.js';
 import {
   BaseEntity,
   Connection,
@@ -88,6 +88,16 @@ export default class FurudeDB {
         async () => await DBGuild.findOne(this.getSnowFlakeQuery(guild))
       ),
       guild
+    );
+  }
+
+  public async getChannel(channel: GuildChannel): Promise<DBGuild> {
+    return this.identifySnowflake(
+      await this.createEntityWhenNotFound(
+        DBGuild,
+        async () => await DBGuild.findOne(this.getSnowFlakeQuery(channel))
+      ),
+      channel
     );
   }
 
