@@ -5,7 +5,7 @@ import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner
 import { RequiresSubCommands } from '../../../../framework/commands/decorators/PreconditionDecorators';
 
 @RequiresSubCommands
-export default class extends FurudeCommandGroup {
+export default class CustomizeGuild extends FurudeCommandGroup {
   public constructor() {
     super({
       name: 'guild',

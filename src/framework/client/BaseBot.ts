@@ -98,7 +98,7 @@ export default abstract class BaseBot extends Client implements IBot {
           command.addSubcommandGroup(group);
           await this.registerSubOrGroup(
             res,
-            this.subCommandGroupsDirectory,
+            this.subCommandsDirectory,
             this.subCommands,
             (mapper: DirectoryMapper) => new SubCommandResolver(mapper),
             async (_res, command, sub) => {
@@ -123,28 +123,52 @@ export default abstract class BaseBot extends Client implements IBot {
       res: resolvedClass<S>,
       command: C,
       subOrGroup: S
-    ) => Promise<void>
+    ) => Promise<void>,
+    selectedDirectoryBase: string = pathName
   ) {
     const subOrGroupPath = path.join(commandRes.directory.path, pathName);
 
     if (fsSync.existsSync(subOrGroupPath)) {
-      const factory = new DirectoryMapperFactory(subOrGroupPath);
-      const mappers = await factory.buildMappers();
-      const subOrGroups: S[] = [];
+      const dir = await fs.readdir(subOrGroupPath, {
+        withFileTypes: true,
+      });
 
-      for await (const mapper of mappers) {
-        const subOrGroupsResolverCommandResolver = resolver(mapper);
-        const resolvedSubOrGroups =
-          await subOrGroupsResolverCommandResolver.getAllObjects();
-
-        for await (const res of resolvedSubOrGroups) {
-          subOrGroups.push(res.object);
-          if (manipulator)
-            await manipulator(res, commandRes.object, res.object);
+      for await (const file of dir) {
+        if (file.isDirectory()) {
+          pathName = path.join(pathName, file.name);
+          if (
+            (selectedDirectoryBase == this.subCommandGroupsDirectory &&
+              !pathName.endsWith(this.subCommandsDirectory)) ||
+            selectedDirectoryBase == this.subCommandsDirectory
+          ) {
+            await this.registerSubOrGroup(
+              commandRes,
+              pathName,
+              collection,
+              resolver,
+              manipulator,
+              selectedDirectoryBase
+            );
+          }
         }
       }
 
-      collection.set(commandRes.object, subOrGroups);
+      const mapper = new DirectoryMapper(subOrGroupPath);
+      const subOrGroupsResolverCommandResolver = resolver(mapper);
+      const resolvedSubOrGroups =
+        await subOrGroupsResolverCommandResolver.getAllObjects();
+      const subOrGroups = resolvedSubOrGroups.map((res) => res.object);
+
+      for await (const res of resolvedSubOrGroups) {
+        if (manipulator) await manipulator(res, commandRes.object, res.object);
+      }
+
+      const got = collection.get(commandRes.object);
+      if (got) {
+        got.push(...subOrGroups);
+      } else {
+        collection.set(commandRes.object, subOrGroups);
+      }
     }
   }
 
@@ -184,20 +208,20 @@ export default abstract class BaseBot extends Client implements IBot {
       );
 
       let runner: IRunsCommand<BaseBot> | null = null;
-      let forSubCommandGroup: ICommand<any, any> = command;
+      let groupToRunSubcommand: ICommand<any, any> = command;
 
       if (subGroupOption) {
         const gotGroup = this.subGroups
           .get(command)
           ?.find((group) => group.name == subGroupOption);
         if (gotGroup) {
-          forSubCommandGroup = gotGroup;
+          groupToRunSubcommand = gotGroup;
         }
       }
 
       if (subCommandOption) {
         const runnableSubCommand = this.subCommands
-          .get(forSubCommandGroup)
+          .get(groupToRunSubcommand)
           ?.find((sub) => sub.name == subCommandOption);
         if (runnableSubCommand) {
           runner = await runnableSubCommand.createRunner(interaction);

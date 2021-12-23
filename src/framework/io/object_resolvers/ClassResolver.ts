@@ -40,7 +40,6 @@ export default abstract class ClassResolver<T> {
     for await (const file of files) {
       const importPath = path.join(dir, file.name);
       const relativePath = path.relative(__dirname, importPath);
-      consola.log(`Trying to import object at: ${importPath}`);
       const possibleClass = await import(relativePath);
       const classClass: Constructor<T> = possibleClass.default ?? possibleClass;
       const classObject: unknown = new classClass();
@@ -51,6 +50,7 @@ export default abstract class ClassResolver<T> {
           directory: directoryMapper,
           object: tClassObject,
         });
+        consola.success(`Imported object at: ${importPath}`);
       } else {
         consola.error(`Failed to import object at: ${importPath}`);
       }
