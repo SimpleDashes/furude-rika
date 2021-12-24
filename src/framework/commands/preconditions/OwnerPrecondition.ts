@@ -1,7 +1,7 @@
 import { CommandInteraction, CacheType, Snowflake } from 'discord.js';
 import PermissionPrecondition from './abstracts/PermissionPrecondition';
 
-export default class extends PermissionPrecondition {
+export default class OwnerPrecondition extends PermissionPrecondition {
   public readonly ownerIDS: Snowflake[];
 
   public constructor(ownerIDS: Snowflake[]) {

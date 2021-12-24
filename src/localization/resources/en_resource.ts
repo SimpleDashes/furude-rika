@@ -37,6 +37,8 @@ export default class extends FurudeResource {
         "You don't have enough permission to be able to execute this command!",
       ERROR_OWNER_ONLY_COMMAND:
         'This command can only be executed by my developers!',
+      ERROR_REQUIRES_GUILD:
+        'I am so sorry, but this command must be executed on a server...',
 
       // SUBCOMMANDS
       SUBCOMMAND_ERROR_NOT_FOUND:

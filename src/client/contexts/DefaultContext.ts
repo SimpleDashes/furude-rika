@@ -3,9 +3,9 @@ import DBChannel from '../../database/entity/DBChannel';
 import DBGuild from '../../database/entity/DBGuild';
 import DBUser from '../../database/entity/DBUser';
 import FurudeLocales from '../../localization/FurudeLocales';
-import BaseDependency from './BaseDependency';
+import BaseContext from './BaseContext';
 
-export default class extends BaseDependency {
+export default class DefaultContext extends BaseContext {
   public dbUser!: DBUser;
   public dbGuild?: DBGuild;
   public dbChannel?: DBChannel;

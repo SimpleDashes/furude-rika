@@ -1,6 +1,6 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
-import DefaultDependency from '../../client/providers/DefaultDependency';
+import DefaultContext from '../../client/contexts/DefaultContext';
 import BaseCommand from '../../framework/commands/BaseCommand';
 import FurudeCommandWrapper from './FurudeCommandWrapper';
 import IFurudeCommand from './interfaces/IFurudeCommand';
@@ -17,12 +17,12 @@ export default abstract class FurudeCommand
   }
 
   public abstract createRunnerRunnable(
-    runner: IFurudeRunner<DefaultDependency>,
+    runner: IFurudeRunner<DefaultContext>,
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void>;
 
-  public dependencyType(): (runner: IFurudeRunner<any>) => DefaultDependency {
+  public dependencyType(): (runner: IFurudeRunner<any>) => DefaultContext {
     return FurudeCommandWrapper.defaultDependencyType();
   }
 }

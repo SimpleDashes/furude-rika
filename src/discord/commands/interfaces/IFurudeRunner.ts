@@ -1,8 +1,8 @@
 import FurudeRika from '../../../client/FurudeRika';
-import DefaultDependency from '../../../client/providers/DefaultDependency';
+import DefaultContext from '../../../client/contexts/DefaultContext';
 import IRunsCommand from '../../../framework/commands/interfaces/IRunsCommand';
 
-export default interface IFurudeRunner<T extends DefaultDependency>
+export default interface IFurudeRunner<T extends DefaultContext>
   extends IRunsCommand<FurudeRika> {
   args?: T;
 }

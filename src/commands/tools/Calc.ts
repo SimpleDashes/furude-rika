@@ -2,7 +2,7 @@ import { CommandInteraction, CacheType, Collection } from 'discord.js';
 
 import { Parser } from 'expr-eval';
 import FurudeRika from '../../client/FurudeRika';
-import DefaultDependency from '../../client/providers/DefaultDependency';
+import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
@@ -37,7 +37,7 @@ export default class Calc extends FurudeCommand {
   }
 
   public override createRunnerRunnable(
-    runner: IFurudeRunner<DefaultDependency>,
+    runner: IFurudeRunner<DefaultContext>,
     _client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {

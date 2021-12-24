@@ -10,7 +10,7 @@ import ResourceResolver from './ResourceResolver';
 import DirectoryMapper from '../framework/io/DirectoryMapper';
 import path from 'path';
 import IFurudeRunner from '../discord/commands/interfaces/IFurudeRunner';
-import DefaultDependency from '../client/providers/DefaultDependency';
+import DefaultContext from '../client/contexts/DefaultContext';
 
 const resourceResolver = new ResourceResolver(
   new DirectoryMapper(path.join(__dirname, 'resources'))
@@ -24,7 +24,7 @@ const stringWithVariablesManager = new StringWithVariablesManager();
 let builtGlobals = false;
 
 export default class FurudeLocales extends Localizer<IFurudeResource> {
-  private readonly runner?: IFurudeRunner<DefaultDependency>;
+  private readonly runner?: IFurudeRunner<DefaultContext>;
   public language: SupportedFurudeLocales;
 
   public constructor(options?: {

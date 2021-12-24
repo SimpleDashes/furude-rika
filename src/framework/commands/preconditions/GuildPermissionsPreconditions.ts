@@ -6,7 +6,7 @@ import {
 } from 'discord.js';
 import PermissionPrecondition from './abstracts/PermissionPrecondition';
 
-export default class extends PermissionPrecondition {
+export default class GuildPermissionsPrecondition extends PermissionPrecondition {
   public readonly requiredPermissions: PermissionResolvable;
 
   public constructor(requiredPermissions: PermissionResolvable) {

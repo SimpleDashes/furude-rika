@@ -1,7 +1,7 @@
 import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import FurudeRika from '../FurudeRika';
 
-export default abstract class {
+export default abstract class BaseContext {
   public readonly runner;
   public constructor(runner: IRunsCommand<FurudeRika>) {
     this.runner = runner;

@@ -11,6 +11,7 @@ interface IRunsCommand<T extends BaseBot> {
     missingPermissions?: PermissionResolvable
   ) => Promise<void>;
   onMissingRequiredSubCommands?: () => Promise<void>;
+  onMissingRequiredGuild?: () => Promise<void>;
 }
 
 export default IRunsCommand;

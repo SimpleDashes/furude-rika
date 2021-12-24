@@ -8,14 +8,14 @@ import path from 'path';
 import FurudeLocales from '../localization/FurudeLocales';
 import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import FurudeDB from '../database/FurudeDB';
-import DefaultDependency from './providers/DefaultDependency';
+import DefaultContext from './contexts/DefaultContext';
 
 export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
 
-  private readonly forceDeploy = false;
-  private readonly isDebug = true;
+  private readonly forceDeploy = true;
+  private readonly isDebug = false;
 
   public constructor() {
     super(
@@ -44,7 +44,7 @@ export default class FurudeRika extends BaseBot {
   public override async onSubCommandNotFound(
     interaction: CommandInteraction
   ): Promise<void> {
-    const dependency = new DefaultDependency({
+    const dependency = new DefaultContext({
       interaction: interaction,
       client: this,
     });

@@ -1,23 +1,30 @@
+import DefaultContext from '../../../../../client/contexts/DefaultContext';
+import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import { RequirePermissions } from '../../../../../framework/commands/decorators/PreconditionDecorators';
 import FurudeTranslationKeys from '../../../../../localization/FurudeTranslationKeys';
-import CustomizesLocaleSubCommand from '../../../wrapper/CustomizesLocaleSubCommand';
+import SupportedFurudeLocales from '../../../../../localization/SupportedFurudeLocales';
+import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
 @RequirePermissions(['ADMINISTRATOR'])
-export default class CustomizeDefaultGuildLocale extends CustomizesLocaleSubCommand {
+export default class CustomizeDefaultGuildLocale extends CustomizesServerRelatedLocaleSubCommand {
   protected override locale = this.registerOption(
-    this.getLocaleOption(true).setDescription("The guild's new locale.")
+    this.getLocaleOption().setDescription("The guild's new locale.")
   );
 
   public constructor() {
     super(
       'Customizes the guild to have a forced specific locale.',
       FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_GUILD,
-      async (r, l) => {
-        await r.client.db.manipulate(r.args?.dbGuild!, (o) => {
-          o.preferred_locale = l;
-        });
-      },
       FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY
     );
+  }
+
+  public override async manipulate(
+    runner: IFurudeRunner<DefaultContext>,
+    language: SupportedFurudeLocales | null
+  ): Promise<void> {
+    await runner.client.db.manipulate(runner.args?.dbGuild!, (o) => {
+      o.preferred_locale = language;
+    });
   }
 }

@@ -1,13 +1,11 @@
 import { CommandInteraction } from 'discord.js';
 import FurudeRika from '../../../client/FurudeRika';
-import DefaultDependency from '../../../client/providers/DefaultDependency';
+import DefaultContext from '../../../client/contexts/DefaultContext';
 import IRunsCommand from '../../../framework/commands/interfaces/IRunsCommand';
 import IFurudeRunner from './IFurudeRunner';
 
 export default interface IFurudeCommand {
-  dependencyType(): (
-    runner: IFurudeRunner<DefaultDependency>
-  ) => DefaultDependency;
+  dependencyType(): (runner: IFurudeRunner<DefaultContext>) => DefaultContext;
   createRunnerRunnable<T extends FurudeRika>(
     runner: IRunsCommand<T>,
     client: T,

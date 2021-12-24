@@ -1,6 +1,6 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
-import DefaultDependency from '../../client/providers/DefaultDependency';
+import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
@@ -45,7 +45,7 @@ export default class Ping extends FurudeCommand {
   }
 
   public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultDependency>,
+    runner: IFurudeRunner<DefaultContext>,
     _client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {

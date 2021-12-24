@@ -4,7 +4,7 @@ import {
   PermissionResolvable,
 } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
-import DefaultDependency from '../../client/providers/DefaultDependency';
+import DefaultContext from '../../client/contexts/DefaultContext';
 import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import CommandPrecondition from '../../framework/commands/preconditions/abstracts/CommandPrecondition';
 import OwnerPrecondition from '../../framework/commands/preconditions/OwnerPrecondition';
@@ -18,7 +18,7 @@ export default class FurudeCommandWrapper {
     command: IFurudeCommand,
     interaction: CommandInteraction<CacheType>
   ): Promise<IFurudeRunner<any>> {
-    const runner: IFurudeRunner<DefaultDependency> = {
+    const runner: IFurudeRunner<DefaultContext> = {
       interaction: interaction,
       client: interaction.client as FurudeRika,
       onInsufficientPermissions: async (
@@ -34,6 +34,9 @@ export default class FurudeCommandWrapper {
       onMissingRequiredSubCommands: async () => {
         await FurudeCommandWrapper.onInsufficientPermissions(runner);
       },
+      onMissingRequiredGuild: async () => {
+        await this.onMissingRequiredGuild(runner);
+      },
     };
     runner.args = await command.dependencyType()(runner).get();
     runner.run = command.createRunnerRunnable(
@@ -44,8 +47,19 @@ export default class FurudeCommandWrapper {
     return runner;
   }
 
+  public static async onMissingRequiredGuild(
+    runner: IFurudeRunner<DefaultContext>
+  ) {
+    const { interaction } = runner;
+    await interaction.reply({
+      content: MessageFactory.error(
+        runner.args!.localizer.get(FurudeTranslationKeys.ERROR_REQUIRES_GUILD)
+      ),
+    });
+  }
+
   public static async onInsufficientPermissions(
-    runner: IFurudeRunner<DefaultDependency>,
+    runner: IFurudeRunner<DefaultContext>,
     precondition?: CommandPrecondition,
     _missingPermissions?: PermissionResolvable
   ): Promise<void> {
@@ -64,7 +78,7 @@ export default class FurudeCommandWrapper {
   }
 
   public static async onMissingRequiredSubCommands(
-    runner: IFurudeRunner<any>
+    runner: IFurudeRunner<DefaultContext>
   ): Promise<void> {
     const { interaction } = runner;
     await interaction.reply({
@@ -78,7 +92,7 @@ export default class FurudeCommandWrapper {
 
   public static defaultDependencyType(): (
     runner: IRunsCommand<FurudeRika>
-  ) => DefaultDependency {
-    return (runner) => new DefaultDependency(runner);
+  ) => DefaultContext {
+    return (runner) => new DefaultContext(runner);
   }
 }

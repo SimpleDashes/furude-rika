@@ -6,8 +6,10 @@ import CommandPrecondition from '../preconditions/abstracts/CommandPrecondition'
 import GuildPermissionsPreconditions from '../preconditions/GuildPermissionsPreconditions';
 import IHasPreconditions from '../preconditions/interfaces/IHasPreconditions';
 import OwnerPrecondition from '../preconditions/OwnerPrecondition';
+import RequiresGuildPrecondition from '../preconditions/RequiresGuildPrecondition';
 
 let ownerPrecondition: OwnerPrecondition;
+const guildPrecondition = new RequiresGuildPrecondition();
 
 function initOwnerPrecondition(ownerCondition: OwnerPrecondition) {
   ownerPrecondition = ownerCondition;
@@ -30,6 +32,7 @@ function OwnerOnly(target: Constructor<ICommand<any, any>>) {
 
 function RequirePermissions(requiredPermissions: PermissionResolvable) {
   return (target: Constructor<ICommand<any, any>>) => {
+    RequiresGuild(target);
     pushIfPreconditionsExistsElseCreate(
       target,
       new GuildPermissionsPreconditions(requiredPermissions)
@@ -43,6 +46,10 @@ function RequiresSubCommands(target: Constructor<ICommand<any, any>>) {
 
 function RequiresSubGroups(target: Constructor<ICommand<any, any>>) {
   (target.prototype as unknown as IHasPreconditions).requiresSubGroups = true;
+}
+
+function RequiresGuild(target: Constructor<ICommand<any, any>>) {
+  pushIfPreconditionsExistsElseCreate(target, guildPrecondition);
 }
 
 export {

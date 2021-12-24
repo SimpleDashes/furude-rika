@@ -27,6 +27,7 @@ import ICommand from '../commands/interfaces/ICommand';
 import CommandGroup from '../commands/CommandGroup';
 import SubCommandGroupResolver from '../io/object_resolvers/command_resolvers/SubCommandGroupResolver';
 import fs from 'fs/promises';
+import RequiresGuildPrecondition from '../commands/preconditions/RequiresGuildPrecondition';
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
     new Collection();
@@ -283,15 +284,22 @@ export default abstract class BaseBot extends Client implements IBot {
     if (preconditioned?.preconditions) {
       for (const precondition of preconditioned.preconditions) {
         if (!precondition.validate(interaction)) {
-          if (runner.onInsufficientPermissions) {
-            if (precondition instanceof OwnerPrecondition) {
-              await runner.onInsufficientPermissions(precondition);
-            } else if (precondition instanceof GuildPermissionsPreconditions) {
-              await runner.onInsufficientPermissions(
-                precondition,
-                precondition.requiredPermissions
-              );
-            }
+          const isOwnerPrecondition = precondition instanceof OwnerPrecondition;
+          const isGuildPermissions =
+            precondition instanceof GuildPermissionsPreconditions;
+          if (
+            runner.onInsufficientPermissions &&
+            (isOwnerPrecondition || isGuildPermissions)
+          ) {
+            await runner.onInsufficientPermissions(
+              precondition,
+              isGuildPermissions ? precondition.requiredPermissions : undefined
+            );
+          } else if (
+            runner.onMissingRequiredGuild &&
+            precondition instanceof RequiresGuildPrecondition
+          ) {
+            await runner.onMissingRequiredGuild();
           }
           return false;
         }

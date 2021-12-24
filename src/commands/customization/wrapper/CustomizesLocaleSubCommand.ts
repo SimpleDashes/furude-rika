@@ -1,6 +1,6 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../../client/FurudeRika';
-import DefaultDependency from '../../../client/providers/DefaultDependency';
+import DefaultContext from '../../../client/contexts/DefaultContext';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import StringOption from '../../../framework/options/classes/StringOption';
@@ -12,60 +12,31 @@ import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales
 export default abstract class CustomizesLocaleSubCommand extends FurudeSubCommand {
   protected abstract readonly locale: StringOption;
 
-  private readonly manipulate: (
-    runner: IFurudeRunner<DefaultDependency>,
-    preferredLocale: SupportedFurudeLocales | null
-  ) => Promise<void>;
-
   private readonly response: FurudeTranslationKeys;
-  private readonly anyResponse?: FurudeTranslationKeys;
 
   protected static readonly LOCALE_NAME = 'language';
-  protected static readonly ANY_LOCALE = 'any';
 
-  private getAllFurudeLocales(): [name: string, value: string][] {
+  protected getAllFurudeLocales(): [name: string, value: string][] {
     return Object.keys(SupportedFurudeLocales).map((l) => [l, l]);
   }
 
-  private getAllFurudeLocalesWithAny(): [name: string, value: string][] {
-    return [
-      [
-        CustomizesLocaleSubCommand.ANY_LOCALE,
-        CustomizesLocaleSubCommand.ANY_LOCALE,
-      ],
-      ...this.getAllFurudeLocales(),
-    ];
-  }
-
-  protected getLocaleOption(any?: boolean) {
+  protected getLocaleOption() {
     return new StringOption()
       .setRequired(true)
       .setName(CustomizesLocaleSubCommand.LOCALE_NAME)
-      .addChoices(
-        any ? this.getAllFurudeLocalesWithAny() : this.getAllFurudeLocales()
-      );
+      .addChoices(this.getAllFurudeLocales());
   }
 
-  public constructor(
-    description: string,
-    response: FurudeTranslationKeys,
-    manipulate: (
-      runner: IFurudeRunner<DefaultDependency>,
-      preferredLocale: SupportedFurudeLocales | null
-    ) => Promise<void>,
-    anyResponse?: FurudeTranslationKeys
-  ) {
+  public constructor(description: string, response: FurudeTranslationKeys) {
     super({
       name: CustomizesLocaleSubCommand.LOCALE_NAME,
       description,
     });
-    this.manipulate = manipulate;
-    this.anyResponse = anyResponse;
     this.response = response;
   }
 
   public override createRunnerRunnable(
-    runner: IFurudeRunner<DefaultDependency>,
+    runner: IFurudeRunner<DefaultContext>,
     _client: FurudeRika,
     _interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
@@ -85,14 +56,17 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
           content: MessageFactory.success(localizer.get(this.response)),
         });
       } else {
-        if (this.anyResponse) {
-          await runner.interaction.editReply({
-            content: MessageFactory.success(
-              runner.args!.localizer.get(this.anyResponse)
-            ),
-          });
-        }
+        await this.onLocaleNotFound(runner);
       }
     };
   }
+
+  public abstract manipulate(
+    runner: IFurudeRunner<DefaultContext>,
+    language: SupportedFurudeLocales | null
+  ): Promise<void>;
+
+  public async onLocaleNotFound(
+    _runner: IFurudeRunner<DefaultContext>
+  ): Promise<void> {}
 }
