@@ -10,24 +10,24 @@ import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
 
 export default abstract class CustomizesLocaleSubCommand extends FurudeSubCommand {
-  public abstract readonly locale: StringOption;
+  protected abstract readonly locale: StringOption;
 
-  public readonly manipulate: (
+  private readonly manipulate: (
     runner: IFurudeRunner<DefaultDependency>,
     preferredLocale: SupportedFurudeLocales | null
   ) => Promise<void>;
 
-  public readonly response: FurudeTranslationKeys;
-  public readonly anyResponse?: FurudeTranslationKeys;
+  private readonly response: FurudeTranslationKeys;
+  private readonly anyResponse?: FurudeTranslationKeys;
 
-  protected static readonly LOCALE_NAME = 'locale';
+  protected static readonly LOCALE_NAME = 'language';
   protected static readonly ANY_LOCALE = 'any';
 
-  protected getAllFurudeLocales(): [name: string, value: string][] {
+  private getAllFurudeLocales(): [name: string, value: string][] {
     return Object.keys(SupportedFurudeLocales).map((l) => [l, l]);
   }
 
-  protected getAllFurudeLocalesWithAny(): [name: string, value: string][] {
+  private getAllFurudeLocalesWithAny(): [name: string, value: string][] {
     return [
       [
         CustomizesLocaleSubCommand.ANY_LOCALE,
@@ -56,7 +56,7 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
     anyResponse?: FurudeTranslationKeys
   ) {
     super({
-      name: CustomizesLocaleSubCommand.ANY_LOCALE,
+      name: CustomizesLocaleSubCommand.LOCALE_NAME,
       description,
     });
     this.manipulate = manipulate;

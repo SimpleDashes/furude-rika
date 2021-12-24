@@ -4,7 +4,7 @@ import CustomizesLocaleSubCommand from '../../../wrapper/CustomizesLocaleSubComm
 
 @RequirePermissions(['ADMINISTRATOR'])
 export default class CustomizeDefaultChannelLocale extends CustomizesLocaleSubCommand {
-  public override locale = this.registerOption(
+  protected override locale = this.registerOption(
     this.getLocaleOption(true).setDescription("The channel's new locale.")
   );
 

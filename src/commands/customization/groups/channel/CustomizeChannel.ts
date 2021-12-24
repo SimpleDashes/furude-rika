@@ -8,7 +8,7 @@ import { RequiresSubCommands } from '../../../../framework/commands/decorators/P
 export default class CustomizeChannel extends FurudeCommandGroup {
   public constructor() {
     super({
-      name: 'guild',
+      name: 'channel',
       description:
         'Customizes things related to the current channel you are in.',
     });

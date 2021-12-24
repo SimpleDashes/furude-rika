@@ -135,15 +135,15 @@ export default abstract class BaseBot extends Client implements IBot {
 
       for await (const file of dir) {
         if (file.isDirectory()) {
-          pathName = path.join(pathName, file.name);
+          const dirPathName = path.join(pathName, file.name);
           if (
             (selectedDirectoryBase == this.subCommandGroupsDirectory &&
-              !pathName.endsWith(this.subCommandsDirectory)) ||
+              !dirPathName.endsWith(this.subCommandsDirectory)) ||
             selectedDirectoryBase == this.subCommandsDirectory
           ) {
             await this.registerSubOrGroup(
               commandRes,
-              pathName,
+              dirPathName,
               collection,
               resolver,
               manipulator,
