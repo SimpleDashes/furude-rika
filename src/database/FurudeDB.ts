@@ -7,6 +7,8 @@ import {
 } from 'typeorm';
 import Constructor from '../framework/interfaces/Constructor';
 import SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
+import DBChannel from './entity/DBChannel';
+import DBCitizen from './entity/DBCitizen';
 import DBGuild from './entity/DBGuild';
 import DBUser from './entity/DBUser';
 import IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
@@ -28,7 +30,7 @@ export default class FurudeDB {
       type: 'mongodb',
       url: this.uri,
       useNewUrlParser: true,
-      synchronize: true,
+      synchronize: false,
       logging: true,
       useUnifiedTopology: true,
       entities: ['dist/database/entity/*.js'],
@@ -37,17 +39,21 @@ export default class FurudeDB {
 
   private async createEntityWhenNotFound<T extends BaseEntity>(
     constructor: Constructor<T>,
-    findEntity: () => Promise<T>
+    findEntity: () => Promise<T>,
+    onNotFound?: (o: T) => Promise<void>
   ) {
+    let foundOnDB: boolean = false;
     let find: T | null = null;
     try {
       const found = await findEntity();
       if (found) {
         find = found;
+        foundOnDB = true;
       }
     } catch {}
     const entity = new constructor();
     Object.assign(entity, find);
+    if (onNotFound && !foundOnDB) onNotFound(entity);
     return entity;
   }
 
@@ -71,44 +77,42 @@ export default class FurudeDB {
     return entity;
   }
 
-  public async getUser(user: User): Promise<DBUser> {
+  private async getSnowFlake(snowflakeable: IHasSnowFlakeID, type: any) {
+    const identifyJustCreated = (o: any, justCreated: boolean) => {
+      const asJustCreated = o as IHasJustCreatedIdentifier;
+      asJustCreated.justCreated = justCreated;
+    };
     return this.identifySnowflake(
       await this.createEntityWhenNotFound(
-        DBUser,
-        async () => await DBUser.findOne(this.getSnowFlakeQuery(user))
+        type,
+        async () => {
+          const found = await type.findOne(
+            this.getSnowFlakeQuery(snowflakeable)
+          );
+          identifyJustCreated(found, false);
+          return found;
+        },
+        async (o) => {
+          identifyJustCreated(o, true);
+        }
       ),
-      user
+      snowflakeable
     );
+  }
+
+  public async getUser(user: User): Promise<DBUser> {
+    return await this.getSnowFlake(user, DBUser);
+  }
+
+  public async getCitizen(user: User): Promise<DBCitizen> {
+    return await this.getSnowFlake(user, DBCitizen);
   }
 
   public async getGuild(guild: Guild): Promise<DBGuild> {
-    return this.identifySnowflake(
-      await this.createEntityWhenNotFound(
-        DBGuild,
-        async () => await DBGuild.findOne(this.getSnowFlakeQuery(guild))
-      ),
-      guild
-    );
+    return await this.getSnowFlake(guild, DBGuild);
   }
 
   public async getChannel(channel: GuildChannel): Promise<DBGuild> {
-    return this.identifySnowflake(
-      await this.createEntityWhenNotFound(
-        DBGuild,
-        async () => await DBGuild.findOne(this.getSnowFlakeQuery(channel))
-      ),
-      channel
-    );
-  }
-
-  /**
-   * Manipulates an object then saves it right after
-   */
-  public async manipulate<T extends BaseEntity>(
-    object: T,
-    manipulator: (object: T) => void
-  ) {
-    manipulator(object);
-    await object.save();
+    return await this.getSnowFlake(channel, DBChannel);
   }
 }

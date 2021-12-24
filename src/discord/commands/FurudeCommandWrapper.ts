@@ -38,7 +38,7 @@ export default class FurudeCommandWrapper {
         await this.onMissingRequiredGuild(runner);
       },
     };
-    runner.args = await command.dependencyType()(runner).get();
+    runner.args = await command.ContextType()(runner).get();
     runner.run = command.createRunnerRunnable(
       runner,
       runner.client as FurudeRika,

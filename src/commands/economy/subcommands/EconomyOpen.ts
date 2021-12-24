@@ -1,0 +1,37 @@
+import { CommandInteraction, CacheType } from 'discord.js';
+
+import FurudeRika from '../../../client/FurudeRika';
+import CurrencyContainer from '../../../containers/CurrencyContainer';
+import FurudeOperations from '../../../database/FurudeOperations';
+
+import MessageFactory from '../../../helpers/MessageFactory';
+import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
+import EconomySubCommand, { EconomyRunner } from '../wrapper/EconomySubCommand';
+
+export default class EconomyOpen extends EconomySubCommand {
+  private static readonly STARTING_CAPITAL = 100;
+
+  public constructor() {
+    super({
+      name: 'open',
+      description: `Opens a ${CurrencyContainer.CURRENCY_NAME} currency account. (Starting with ${EconomyOpen.STARTING_CAPITAL} ${CurrencyContainer.CURRENCY_NAME}'s)`,
+    });
+  }
+
+  public createRunnerRunnableInternally(
+    runner: EconomyRunner,
+    _client: FurudeRika,
+    interaction: CommandInteraction<CacheType>
+  ): () => Promise<void> {
+    return async () => {
+      await interaction.deferReply();
+
+      const citizen = await runner.getCitizen(interaction.user)!;
+      const operation = citizen.openAccount(runner.args!.localizer);
+
+      await citizen.save();
+
+      await FurudeOperations.answerInteraction(interaction, operation);
+    };
+  }
+}

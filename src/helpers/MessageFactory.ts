@@ -31,6 +31,10 @@ export default abstract class MessageFactory {
     return `[${value}](${url})`;
   }
 
+  public static underLine(value: string): string {
+    return `__${value}__`;
+  }
+
   public static objectToKeyValueString(
     obj: any,
     options: {

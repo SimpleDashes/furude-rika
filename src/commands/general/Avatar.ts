@@ -4,14 +4,13 @@ import DefaultContext from '../../client/contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import BaseEmbed from '../../framework/embeds/BaseEmbed';
 import UserOption from '../../framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 export default class Avatar extends FurudeCommand {
   private readonly user: UserOption = this.registerOption(
-    new UserOption()
+    new UserOption(true)
       .setName(CommandOptions.user)
       .setDescription('The user you want the avatar from.')
   );
@@ -31,7 +30,7 @@ export default class Avatar extends FurudeCommand {
     return async () => {
       await interaction.deferReply();
 
-      const selectedUser = this.user.apply(interaction) ?? interaction.user;
+      const selectedUser = this.user.apply(interaction)!;
 
       const embed = new BaseEmbed(
         {
@@ -39,11 +38,12 @@ export default class Avatar extends FurudeCommand {
             FurudeTranslationKeys.AVATAR_RESPONSE,
             [selectedUser.username]
           ),
+          image: {
+            url: selectedUser.avatarURL({ dynamic: true, size: 1024 })!,
+          },
         },
         interaction
       );
-
-      embed.setImage(selectedUser.avatarURL({ dynamic: true, size: 1024 })!);
 
       await interaction.editReply({
         embeds: [embed],

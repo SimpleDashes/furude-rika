@@ -8,6 +8,8 @@ import MessageFactory from '../../../helpers/MessageFactory';
 import FurudeLocales from '../../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
+import IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
+import SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
 
 export default abstract class CustomizesLocaleSubCommand extends FurudeSubCommand {
   protected abstract readonly locale: StringOption;
@@ -48,7 +50,11 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
           this.locale.apply(runner.interaction)! as SupportedFurudeLocales
         ] ?? null;
 
-      await this.manipulate(runner, preferredLocale);
+      const entityToLocalize = this.entityToLocalize(runner);
+
+      entityToLocalize.preferred_locale = preferredLocale;
+
+      await entityToLocalize.save();
 
       if (preferredLocale) {
         const localizer = new FurudeLocales({ language: preferredLocale });
@@ -61,10 +67,9 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
     };
   }
 
-  public abstract manipulate(
-    runner: IFurudeRunner<DefaultContext>,
-    language: SupportedFurudeLocales | null
-  ): Promise<void>;
+  public abstract entityToLocalize(
+    runner: IFurudeRunner<DefaultContext>
+  ): IHasPreferredLocale & SnowFlakeIDEntity;
 
   public async onLocaleNotFound(
     _runner: IFurudeRunner<DefaultContext>

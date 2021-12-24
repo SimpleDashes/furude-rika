@@ -15,9 +15,9 @@ import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 export default class Deploy extends FurudeCommand {
   private readonly commandName = this.registerOption(
     new StringOption()
+      .setRequired(true)
       .setName(CommandOptions.name)
       .setDescription('Name of the command to be deployed')
-      .setRequired(true)
   );
 
   private readonly debug = this.registerOption(

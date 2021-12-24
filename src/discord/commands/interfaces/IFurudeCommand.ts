@@ -5,7 +5,7 @@ import IRunsCommand from '../../../framework/commands/interfaces/IRunsCommand';
 import IFurudeRunner from './IFurudeRunner';
 
 export default interface IFurudeCommand {
-  dependencyType(): (runner: IFurudeRunner<DefaultContext>) => DefaultContext;
+  ContextType(): (runner: IFurudeRunner<DefaultContext>) => DefaultContext;
   createRunnerRunnable<T extends FurudeRika>(
     runner: IRunsCommand<T>,
     client: T,

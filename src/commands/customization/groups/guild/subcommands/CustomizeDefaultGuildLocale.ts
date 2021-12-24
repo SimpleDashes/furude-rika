@@ -1,4 +1,6 @@
 import DefaultContext from '../../../../../client/contexts/DefaultContext';
+import SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlakeIDEntity';
+import IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import { RequirePermissions } from '../../../../../framework/commands/decorators/PreconditionDecorators';
 import FurudeTranslationKeys from '../../../../../localization/FurudeTranslationKeys';
@@ -19,12 +21,9 @@ export default class CustomizeDefaultGuildLocale extends CustomizesServerRelated
     );
   }
 
-  public override async manipulate(
-    runner: IFurudeRunner<DefaultContext>,
-    language: SupportedFurudeLocales | null
-  ): Promise<void> {
-    await runner.client.db.manipulate(runner.args?.dbGuild!, (o) => {
-      o.preferred_locale = language;
-    });
+  public entityToLocalize(
+    runner: IFurudeRunner<DefaultContext>
+  ): IHasPreferredLocale & SnowFlakeIDEntity {
+    return runner.args!.dbGuild!;
   }
 }

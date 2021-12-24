@@ -5,10 +5,8 @@ import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import CollectionHelper from '../../framework/helpers/CollectionHelper';
 import StringUtils from '../../framework/helpers/StringUtils';
-import Constructor from '../../framework/interfaces/Constructor';
 import StringOption from '../../framework/options/classes/StringOption';
 import MessageFactory from '../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
@@ -16,9 +14,9 @@ import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 export default class Calc extends FurudeCommand {
   private readonly expression = this.registerOption(
     new StringOption()
+      .setRequired(true)
       .setName('expression')
       .setDescription('The expression for my lazy mind to evaluate')
-      .setRequired(true)
   );
 
   private readonly variables = this.registerOption(

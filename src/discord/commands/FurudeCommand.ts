@@ -22,7 +22,7 @@ export default abstract class FurudeCommand
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void>;
 
-  public dependencyType(): (runner: IFurudeRunner<any>) => DefaultContext {
+  public ContextType(): (runner: IFurudeRunner<any>) => DefaultContext {
     return FurudeCommandWrapper.defaultDependencyType();
   }
 }
