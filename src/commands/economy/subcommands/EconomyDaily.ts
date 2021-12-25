@@ -28,8 +28,7 @@ export default class EconomyDaily extends EconomySubCommand {
       const citizen = await runner.getCitizen(interaction.user);
       const operation = citizen.claimDaily(runner.args!.localizer);
 
-      await citizen.save();
-
+      await FurudeOperations.saveWhenSuccess(citizen, operation);
       await FurudeOperations.answerInteraction(interaction, operation);
     };
   }

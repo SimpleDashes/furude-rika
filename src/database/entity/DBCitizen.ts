@@ -1,5 +1,5 @@
-import { CommandInteraction } from 'discord.js';
-import { Column, Entity } from 'typeorm';
+import { addDays, formatDuration, intervalToDuration } from 'date-fns';
+import { Column, Entity, SaveOptions } from 'typeorm';
 import CurrencyContainer from '../../containers/CurrencyContainer';
 import MessageFactory from '../../helpers/MessageFactory';
 import FurudeLocales from '../../localization/FurudeLocales';
@@ -8,6 +8,11 @@ import FurudeOperations from '../FurudeOperations';
 import IDatabaseOperation from '../interfaces/IDatabaseOperation';
 
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
+
+interface IStreakOperation extends IDatabaseOperation {
+  readonly lostStreak: boolean;
+  readonly gotMaxStreak: boolean;
+}
 
 /**
  * This class contains information related to a Furude citizen,
@@ -29,6 +34,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
   @Column('date')
   lastTimeClaimedDaily?: Date;
 
+  @Column({ update: false, nullable: true })
   justCreated?: boolean | null;
 
   /**
@@ -55,14 +61,37 @@ export default class DBCitizen extends SnowFlakeIDEntity {
    * @param amount Amount of days to be incremented (usually will always be 1)
    * @returns wether we reached the max streak.
    */
-  private incrementStreak(amount = 1): IDatabaseOperation {
-    const incrementSuccess = ', incremented streak successfully.';
+  private incrementStreak(duration: Duration, amount = 1): IStreakOperation {
+    const INCREMENT_SUCCESS = ', incremented streak successfully.';
+
+    const DEFAULT_UNFORTUNATELY = ' but unfortunately ';
+    let unfortunately = DEFAULT_UNFORTUNATELY;
+
+    let lostStreak = false;
+    let gotMaxStreak = false;
+
     const makeSuccess = (prefix: string) => {
-      return FurudeOperations.success(`${prefix}${incrementSuccess}`);
+      let response = `${prefix}${INCREMENT_SUCCESS}$`;
+      if (unfortunately != DEFAULT_UNFORTUNATELY) {
+        response += unfortunately;
+      }
+      return {
+        ...FurudeOperations.success(response),
+        ...{ lostStreak, gotMaxStreak },
+      };
     };
+
+    if (this.lastTimeClaimedDaily) {
+      if (duration.days && duration.days > 1) {
+        this.streak = amount - 1;
+        lostStreak = true;
+        unfortunately += ' lost the streak...';
+      }
+    }
 
     this.streak += amount;
     if (this.streak == DBCitizen.MAX_STREAK) {
+      gotMaxStreak = true;
       this.streak = amount;
       return makeSuccess('Streak achieved');
     }
@@ -80,16 +109,30 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     amount = DBCitizen.AMOUNT_DAILY
   ): IDatabaseOperation {
     const dateNow = new Date();
+    const startDate = this.lastTimeClaimedDaily ?? dateNow;
 
-    if (this.lastTimeClaimedDaily?.getDay() === dateNow.getDay()) {
+    const duration = intervalToDuration({
+      start: startDate,
+      end: dateNow,
+    });
+
+    if (duration.days == 0) {
+      const ableToClaimWhen = intervalToDuration({
+        start: dateNow,
+        end: addDays(startDate, 1),
+      });
       return FurudeOperations.error(
-        localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_ALREADY_CLAIMED)
+        localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_ALREADY_CLAIMED, [
+          MessageFactory.block(formatDuration(ableToClaimWhen)),
+        ])
       );
     } else {
       this.lastTimeClaimedDaily = dateNow;
     }
 
-    if (this.incrementStreak()) {
+    const streakOperation = this.incrementStreak(duration);
+
+    if (streakOperation.gotMaxStreak) {
       amount *= 2;
     }
 
@@ -97,9 +140,9 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_CLAIM_SUCCESS, [
-        amount.toFixed(),
-        this.streak.toString(),
-        this.capital.toFixed(),
+        MessageFactory.block(amount.toFixed()),
+        MessageFactory.block(this.streak.toString()),
+        MessageFactory.block(this.capital.toFixed()),
       ])
     );
   }
@@ -120,5 +163,10 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.ECONOMY_OPEN_SUCCESS)
     );
+  }
+
+  override async save(options?: SaveOptions): Promise<this> {
+    this.justCreated = null;
+    return await super.save(options);
   }
 }

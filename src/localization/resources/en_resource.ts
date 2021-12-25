@@ -65,7 +65,7 @@ export default class extends FurudeResource {
       ECONOMY_BALANCE_FAIL: `You or said user doesn't have an open ${CurrencyContainer.CURRENCY_NAME} account...`,
       ECONOMY_MUST_HAVE_ACCOUNT: `You must open a ${CurrencyContainer.CURRENCY_NAME} account to use this command!`,
 
-      DATABASE_CITIZEN_ALREADY_CLAIMED: `You had already claim your daily ${CurrencyContainer.CURRENCY_NAME} today...`,
+      DATABASE_CITIZEN_ALREADY_CLAIMED: `You had already claim your daily ${CurrencyContainer.CURRENCY_NAME} today... you can claim again in: [$TIME]`,
       DATABASE_CITIZEN_CLAIM_SUCCESS: `You claimed [$AMOUNT] ${CurrencyContainer.CURRENCY_NAME} today! you are in a [$STREAK] days streak, with a total balance of [$TOTAl] ${CurrencyContainer.CURRENCY_NAME}`,
     });
   }

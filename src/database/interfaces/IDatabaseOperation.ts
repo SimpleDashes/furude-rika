@@ -1,5 +1,6 @@
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-
+/**
+ * Represents a database operation
+ */
 export default interface IDatabaseOperation {
   /**
    *  Wether said operation was achieved successfully or not.

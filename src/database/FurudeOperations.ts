@@ -1,4 +1,5 @@
 import { CommandInteraction } from 'discord.js';
+import { BaseEntity } from 'typeorm';
 import MessageFactory from '../helpers/MessageFactory';
 import IDatabaseOperation from './interfaces/IDatabaseOperation';
 
@@ -32,5 +33,19 @@ export default class FurudeOperations {
     return interaction.deferred
       ? await interaction.editReply(displayString)
       : await interaction.reply(displayString);
+  }
+
+  /**
+   *
+   * @param entity The entity which will be saved if all operations where finished successfully
+   * @param operations The said operations that will determine if the entity will be saved or not.
+   */
+  public static async saveWhenSuccess(
+    entity: BaseEntity,
+    ...operations: IDatabaseOperation[]
+  ) {
+    if (operations.every((o) => o.successfully)) {
+      await entity.save();
+    }
   }
 }

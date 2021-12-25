@@ -66,7 +66,7 @@ export default class extends FurudeResource {
       ECONOMY_BALANCE_FAIL: `Você ou o usuário mencionado não possui uma conta ${CurrencyContainer.CURRENCY_NAME}...`,
       ECONOMY_MUST_HAVE_ACCOUNT: `Você primeiro precisa ter aberto uma conta ${CurrencyContainer.CURRENCY_NAME} para usar este comando...`,
 
-      DATABASE_CITIZEN_ALREADY_CLAIMED: `Você já resgatou as suas ${CurrencyContainer.CURRENCY_NAME}s diarias hoje...`,
+      DATABASE_CITIZEN_ALREADY_CLAIMED: `Você já resgatou as suas ${CurrencyContainer.CURRENCY_NAME}s diarias hoje... Você pode regatar ${CurrencyContainer.CURRENCY_NAME}s novamente em: [$TIME]`,
       DATABASE_CITIZEN_CLAIM_SUCCESS: `Você acaba de resgatar [$AMOUNT] ${CurrencyContainer.CURRENCY_NAME}s! Você agora está em um streak de [$STREAK] dias, com um saldo de [$TOTAL] ${CurrencyContainer.CURRENCY_NAME}s`,
     });
   }

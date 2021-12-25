@@ -3,9 +3,6 @@ import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../../client/FurudeRika';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import FurudeOperations from '../../../database/FurudeOperations';
-
-import MessageFactory from '../../../helpers/MessageFactory';
-import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand, { EconomyRunner } from '../wrapper/EconomySubCommand';
 
 export default class EconomyOpen extends EconomySubCommand {
@@ -29,8 +26,7 @@ export default class EconomyOpen extends EconomySubCommand {
       const citizen = await runner.getCitizen(interaction.user)!;
       const operation = citizen.openAccount(runner.args!.localizer);
 
-      await citizen.save();
-
+      await FurudeOperations.saveWhenSuccess(citizen, operation);
       await FurudeOperations.answerInteraction(interaction, operation);
     };
   }
