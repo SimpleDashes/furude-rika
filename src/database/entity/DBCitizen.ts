@@ -22,7 +22,7 @@ interface IStreakOperation extends IDatabaseOperation {
 @Entity()
 export default class DBCitizen extends SnowFlakeIDEntity {
   public static readonly STARTING_CAPITAL = 100;
-  public static readonly MAX_STREAK = 10;
+  public static readonly WEEKLY_STREAK = 7;
   public static readonly AMOUNT_DAILY = 50;
 
   @Column('int')
@@ -83,16 +83,15 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
     if (this.lastTimeClaimedDaily) {
       if (duration.days && duration.days > 1) {
-        this.streak = amount - 1;
+        this.streak = 0;
         lostStreak = true;
         unfortunately += ' lost the streak...';
       }
     }
 
     this.streak += amount;
-    if (this.streak == DBCitizen.MAX_STREAK) {
+    if (this.streak % DBCitizen.WEEKLY_STREAK == 0) {
       gotMaxStreak = true;
-      this.streak = amount;
       return makeSuccess('Streak achieved');
     }
 

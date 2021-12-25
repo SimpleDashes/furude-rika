@@ -13,7 +13,7 @@ export default class EconomyDaily extends EconomySubCommand {
   public constructor() {
     super({
       name: 'daily',
-      description: `Collect your daily ${DBCitizen.AMOUNT_DAILY} ${CurrencyContainer.CURRENCY_NAME}'s, with a special bounty when you get to a ${DBCitizen.MAX_STREAK} streak!`,
+      description: `Collect your daily ${DBCitizen.AMOUNT_DAILY} ${CurrencyContainer.CURRENCY_NAME}'s, with a special bounty when you get to a ${DBCitizen.WEEKLY_STREAK} streak!`,
     });
   }
 
