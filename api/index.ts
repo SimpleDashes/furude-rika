@@ -10,8 +10,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   await bot.start();
 
   if (req.method != 'POST') {
-    res.send({ error: 'unknown' });
-    return;
+    return res.send({ error: 'unknown' });
   }
 
   const signature = req.headers['x-signature-ed25519'];
@@ -20,8 +19,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   const isValidRequest = verifyKey(
     rawBody,
-    signature as any,
-    timestamp as any,
+    signature as string,
+    timestamp as string,
     process.env.PUBLIC_KEY
   );
 
@@ -35,4 +34,6 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   if (content.type == 'APPLICATION_COMMAND') {
     await bot.runCommandFromInteraction(content);
   }
+
+  return res.status(200).send('Command ran successfully!');
 };
