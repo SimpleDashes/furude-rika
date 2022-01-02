@@ -1,7 +1,5 @@
 import {
-  ApplicationCommandData,
   ApplicationCommandDataResolvable,
-  ApplicationCommandOptionData,
   CacheType,
   CommandInteraction,
   Guild,
@@ -55,7 +53,10 @@ export default class DeployHandler {
       commandReceiver = client.application?.commands;
     }
 
-    await commandReceiver?.create(command.toJSON());
+    await commandReceiver?.create(
+      command.toJSON() as ApplicationCommandDataResolvable
+    );
+
     if (onSuccess) onSuccess();
   }
 

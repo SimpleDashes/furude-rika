@@ -34,23 +34,30 @@ export default class BaseEmbed extends MessageEmbed {
     }
 
     if (extraOption.author) {
-      this.setAuthor(
-        extraOption.author.tag,
-        extraOption.author.avatarURL({ dynamic: true }) ?? undefined
-      );
+      this.author = {
+        name: extraOption.author.tag,
+        iconURL: extraOption.author.avatarURL({ dynamic: true }) ?? undefined,
+      };
     }
 
     if (interaction?.client) {
       const { client } = interaction;
+
       const defaultText = client.user?.username;
+
       const args = {
         text: defaultText ?? '',
         iconURL: client.user!.avatarURL() ?? '',
       };
+
       if (this.footer) {
         args.text = `${this.footer.text} | ${defaultText}`;
       }
-      this.setFooter(args.text, args.iconURL);
+
+      this.footer = {
+        text: args.text,
+        iconURL: args.iconURL,
+      };
     }
   }
 }
