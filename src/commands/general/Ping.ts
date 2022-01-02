@@ -3,7 +3,6 @@ import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import BaseEmbed from '../../framework/embeds/BaseEmbed';
 import UserType from '../../framework/enums/UserType';
 import PingContainer from '../../framework/ping/PingContainer';

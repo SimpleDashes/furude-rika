@@ -3,7 +3,6 @@ import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import ArrayHelper from '../../framework/helpers/ArrayHelper';
 import MessageFactory from '../../helpers/MessageFactory';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';

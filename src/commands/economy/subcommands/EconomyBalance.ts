@@ -1,10 +1,8 @@
 import { CommandInteraction, CacheType } from 'discord.js';
-import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 
 import FurudeRika from '../../../client/FurudeRika';
 import CommandOptions from '../../../containers/CommandOptions';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
-import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import BaseEmbed from '../../../framework/embeds/BaseEmbed';
 import UserOption from '../../../framework/options/classes/UserOption';
 import MessageFactory from '../../../helpers/MessageFactory';

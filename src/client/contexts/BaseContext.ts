@@ -1,4 +1,3 @@
-import FurudeDB from '../../database/FurudeDB';
 import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import FurudeRika from '../FurudeRika';
 

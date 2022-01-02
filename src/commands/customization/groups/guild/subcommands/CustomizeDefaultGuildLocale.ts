@@ -4,7 +4,6 @@ import IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferre
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import { RequirePermissions } from '../../../../../framework/commands/decorators/PreconditionDecorators';
 import FurudeTranslationKeys from '../../../../../localization/FurudeTranslationKeys';
-import SupportedFurudeLocales from '../../../../../localization/SupportedFurudeLocales';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
 @RequirePermissions(['ADMINISTRATOR'])
