@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { verifyKey } from 'discord-interactions';
+import { InteractionResponseType, verifyKey } from 'discord-interactions';
 import getRawBody from 'raw-body';
 import { Interaction } from 'discord.js';
 import FurudeRika from '../src/client/FurudeRika';
@@ -10,8 +10,6 @@ const bot = new FurudeRika();
  * This is used to try to emulate the bot as a serverless function
  */
 export default async (req: VercelRequest, res: VercelResponse) => {
-  await bot.start();
-
   if (req.method != 'POST') {
     return res.send({ error: 'unknown' });
   }
@@ -34,9 +32,18 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   const content = req.body as Interaction;
 
-  if (content.type == 'APPLICATION_COMMAND') {
-    await bot.runCommandFromInteraction(content);
+  if (content.type == 'PING') {
+    return res.status(200).send({
+      type: InteractionResponseType.PONG,
+    });
   }
 
-  return res.status(200).send('Command ran successfully!');
+  if (content.type == 'APPLICATION_COMMAND') {
+    await bot.start();
+    await bot.runCommandFromInteraction(content);
+
+    return res.status(200).send({ content: 'Command ran successfully!' });
+  }
+
+  return res.status(400).send({ error: 'Unknown.' });
 };
