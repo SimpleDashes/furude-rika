@@ -6,9 +6,6 @@ import FurudeRika from '../src/client/FurudeRika';
 
 const bot = new FurudeRika();
 
-/**
- * This is used to try to emulate the bot as a serverless function
- */
 export default async (req: VercelRequest, res: VercelResponse) => {
   await bot.start();
 
