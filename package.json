@@ -8,6 +8,9 @@
     "start": "node dist/index.js",
     "format": "npx prettier -w src"
   },
+  "engines": {
+    "node": "16.x"
+  },
   "author": "",
   "license": "ISC",
   "description": "",
