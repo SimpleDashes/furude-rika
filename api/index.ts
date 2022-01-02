@@ -19,8 +19,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   const isValidRequest = verifyKey(
     rawBody,
-    signature as unknown as string,
-    timestamp as unkown as string,
+    signature as string,
+    timestamp as string,
     process.env.PUBLIC_KEY
   );
 
