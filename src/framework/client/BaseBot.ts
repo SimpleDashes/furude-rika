@@ -3,6 +3,7 @@ import {
   ClientOptions,
   Collection,
   CommandInteraction,
+  Interaction,
 } from 'discord.js';
 import DirectoryMapper from '../io/DirectoryMapper';
 import CommandResolver from '../io/object_resolvers/command_resolvers/CommandResolver';
@@ -190,87 +191,91 @@ export default abstract class BaseBot extends Client implements IBot {
     });
 
     this.on('interactionCreate', async (interaction) => {
-      if (!interaction.isCommand) return;
-
-      if (!(interaction instanceof CommandInteraction)) return;
-
-      const command = this.commands.get(interaction.commandName);
-
-      if (!command) return;
-
-      const preconditionedCommand =
-        command as unknown as Partial<IHasPreconditions>;
-
-      const subCommandOption = interaction.options.getSubcommand(
-        !!preconditionedCommand.requiresSubCommands
-      );
-
-      const subGroupOption = interaction.options.getSubcommandGroup(
-        !!preconditionedCommand.requiresSubGroups
-      );
-
-      let runner: IRunsCommand<BaseBot> | null = null;
-      let groupToRunSubcommand: ICommand<any, any> = command;
-      let runnerCommand: ICommand<any, any> = command;
-
-      if (subGroupOption) {
-        const gotGroup = this.subGroups
-          .get(command)
-          ?.find((group) => group.name == subGroupOption);
-        if (gotGroup) {
-          groupToRunSubcommand = gotGroup;
-        }
-      }
-
-      if (subCommandOption) {
-        const runnableSubCommand = this.subCommands
-          .get(groupToRunSubcommand)
-          ?.find((sub) => sub.name == subCommandOption);
-        if (runnableSubCommand) {
-          runnerCommand = runnableSubCommand;
-          runner = await runnableSubCommand.createRunner(interaction);
-        } else {
-          await this.onSubCommandNotFound(interaction);
-          return;
-        }
-      } else {
-        runnerCommand = runnerCommand;
-        runner = await command.createRunner(interaction);
-      }
-
-      if (runner) {
-        const canRun = async (
-          can: ICommand<any, any> | Partial<IHasPreconditions>
-        ) => {
-          return await this.verifyPermissionsToRunCommand(
-            runner!,
-            can as unknown as Partial<IHasPreconditions>
-          );
-        };
-
-        const canRunInner = async (inner: ICommand<any, any>) => {
-          return inner == preconditionedCommand ? true : await canRun(inner);
-        };
-
-        const canRunCommandBase = await canRun(preconditionedCommand);
-
-        const canRunCommandGroup = await canRunInner(groupToRunSubcommand);
-
-        const canRunSubCommand = await canRunInner(runnerCommand);
-
-        if (!(canRunCommandBase && canRunCommandGroup && canRunSubCommand)) {
-          return;
-        }
-
-        if (runner.run) {
-          await runner.run();
-          this.onCommandRun({
-            interaction,
-            command: runnerCommand,
-          });
-        }
-      }
+      await this.runCommandFromInteraction(interaction);
     });
+  }
+
+  public async runCommandFromInteraction(interaction: Interaction) {
+    if (!interaction.isCommand) return;
+
+    if (!(interaction instanceof CommandInteraction)) return;
+
+    const command = this.commands.get(interaction.commandName);
+
+    if (!command) return;
+
+    const preconditionedCommand =
+      command as unknown as Partial<IHasPreconditions>;
+
+    const subCommandOption = interaction.options.getSubcommand(
+      !!preconditionedCommand.requiresSubCommands
+    );
+
+    const subGroupOption = interaction.options.getSubcommandGroup(
+      !!preconditionedCommand.requiresSubGroups
+    );
+
+    let runner: IRunsCommand<BaseBot> | null = null;
+    let groupToRunSubcommand: ICommand<any, any> = command;
+    let runnerCommand: ICommand<any, any> = command;
+
+    if (subGroupOption) {
+      const gotGroup = this.subGroups
+        .get(command)
+        ?.find((group) => group.name == subGroupOption);
+      if (gotGroup) {
+        groupToRunSubcommand = gotGroup;
+      }
+    }
+
+    if (subCommandOption) {
+      const runnableSubCommand = this.subCommands
+        .get(groupToRunSubcommand)
+        ?.find((sub) => sub.name == subCommandOption);
+      if (runnableSubCommand) {
+        runnerCommand = runnableSubCommand;
+        runner = await runnableSubCommand.createRunner(interaction);
+      } else {
+        await this.onSubCommandNotFound(interaction);
+        return;
+      }
+    } else {
+      runnerCommand = runnerCommand;
+      runner = await command.createRunner(interaction);
+    }
+
+    if (runner) {
+      const canRun = async (
+        can: ICommand<any, any> | Partial<IHasPreconditions>
+      ) => {
+        return await this.verifyPermissionsToRunCommand(
+          runner!,
+          can as unknown as Partial<IHasPreconditions>
+        );
+      };
+
+      const canRunInner = async (inner: ICommand<any, any>) => {
+        return inner == preconditionedCommand ? true : await canRun(inner);
+      };
+
+      const canRunCommandBase = await canRun(preconditionedCommand);
+
+      const canRunCommandGroup = await canRunInner(groupToRunSubcommand);
+
+      const canRunSubCommand = await canRunInner(runnerCommand);
+
+      if (!(canRunCommandBase && canRunCommandGroup && canRunSubCommand)) {
+        return;
+      }
+
+      if (runner.run) {
+        await runner.run();
+        this.onCommandRun({
+          interaction,
+          command: runnerCommand,
+        });
+      }
+    }
   }
 
   /**

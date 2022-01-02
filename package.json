@@ -17,18 +17,21 @@
     "consola": "^2.15.3",
     "date-fns": "^2.27.0",
     "discord-api-types": "^0.25.2",
+    "discord-interactions": "^2.0.2",
     "discord.js": "^13.5.0",
     "dotenv": "^10.0.0",
     "expr-eval": "^2.0.2",
     "i18next": "^21.6.3",
     "mongodb": "^3.6.0",
+    "raw-body": "^2.4.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.41"
   },
   "devDependencies": {
     "@types/node": "^17.0.2",
     "prettier": "^2.5.1",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "@vercel/node": "^1.10.0"
   },
   "prettier": {
     "trailingComma": "es5",
