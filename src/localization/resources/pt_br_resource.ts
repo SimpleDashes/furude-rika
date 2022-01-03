@@ -22,11 +22,11 @@ export default class extends FurudeResource {
 
       // CALC
       CALC_RESULTS: '[$EXPR] resulta em: [$RES]',
-      CALC_ADDITIONAL_VARIABLES: 'Com as variaveis sendo: [$VARS]',
+      CALC_ADDITIONAL_VARIABLES: 'Com as variáveis sendo: [$VARS]',
       CALC_EVALUATE_ERROR:
         'Talvez eu seja burra, MAS, eu não acho que [$EXPR] é uma expressão matemática',
       CALC_MISSING_VARIABLES:
-        'Você se esqueceu de adicionar as seguintes variaveis: [$VARS], para a expressão: [$EXPR]',
+        'Você se esqueceu de adicionar as seguintes variáveis: [$VARS], para a expressão: [$EXPR]',
 
       // COIN FLIP
       COIN_FLIP_HEADS: 'Cara',
@@ -68,6 +68,16 @@ export default class extends FurudeResource {
 
       DATABASE_CITIZEN_ALREADY_CLAIMED: `Você já resgatou as suas ${CurrencyContainer.CURRENCY_NAME}s diárias hoje... Você pode regatar ${CurrencyContainer.CURRENCY_NAME}s novamente em: [$TIME].`,
       DATABASE_CITIZEN_CLAIM_SUCCESS: `Você acaba de resgatar [$AMOUNT] ${CurrencyContainer.CURRENCY_NAME}s! Você agora está em um streak de [$STREAK] dia(s), com um saldo de [$TOTAL] ${CurrencyContainer.CURRENCY_NAME}s`,
+
+      // GUILD
+      DATABASE_GUILD_WHITELISTED_XP_CHANNEL:
+        'CLoquei o [$CHANNEL] pra dar uns xp legal pros membro ai.',
+      DATABASE_GUILD_BLACKLISTED_XP_CHANNEL:
+        'O [$CHANNEL] não vai mais dar xp então chefe...',
+      DATABASE_GUILD_ALREADY_WHITELISTED_XP_CHANNEL:
+        '[$CHANNEL] já ta dando xp...',
+      DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL:
+        '[$CHANNEL] já ta bloqueado de dar xp...',
     });
   }
 }

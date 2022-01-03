@@ -10,6 +10,7 @@ import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDat
 import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import DBCitizen from './DBCitizen';
+import DBGuild from './DBGuild';
 
 /**
  * This class contains general information
@@ -43,7 +44,10 @@ export default class DBUser
    */
   public incrementExperience(
     user: User,
-    guild?: Guild | null
+    guildInfo?: {
+      rawGuild: Guild;
+      dbGuild: DBGuild;
+    }
   ): IDatabaseOperation {
     const dateNow = new Date();
     const differenceGlobal = intervalToDuration({
@@ -64,32 +68,35 @@ export default class DBUser
       this.lastTimeGotExperience.global = dateNow;
       success = true;
     }
-    if (guild) {
-      const nullableLocalLastTimeGotExperience =
-        this.lastTimeGotExperience.currentLocal(guild);
-      const currentLocalLastTimeGotExperience =
-        nullableLocalLastTimeGotExperience ?? dateNow;
-      const localDifference = intervalToDuration({
-        start: currentLocalLastTimeGotExperience,
-        end: dateNow,
-      });
-      const guildMinMinutesForExperiences =
-        DBUser.MIN_MINUTES_FOR_EXPERIENCE_GLOBAL;
-      if (
-        !nullableLocalLastTimeGotExperience ||
-        (localDifference.minutes &&
-          localDifference.minutes >= guildMinMinutesForExperiences)
-      ) {
-        const incrementedLocalExperience = Globals.CHANCE.integer({
-          min: DBUser.MIN_GLOBAL_EXPERIENCE_ADD,
-          max: DBUser.MAX_GLOBAL_EXPERIENCE_ADD,
+    if (guildInfo) {
+      const { rawGuild, dbGuild } = guildInfo;
+      if (!dbGuild.blocked_xp_channels.find((o) => o == rawGuild.id)) {
+        const nullableLocalLastTimeGotExperience =
+          this.lastTimeGotExperience.currentLocal(rawGuild);
+        const currentLocalLastTimeGotExperience =
+          nullableLocalLastTimeGotExperience ?? dateNow;
+        const localDifference = intervalToDuration({
+          start: currentLocalLastTimeGotExperience,
+          end: dateNow,
         });
-        this.experience.setLocal(
-          guild,
-          this.experience.currentLocal(guild)! + incrementedLocalExperience
-        );
-        this.lastTimeGotExperience.setLocal(guild, dateNow);
-        success = true;
+        const guildMinMinutesForExperiences =
+          DBUser.MIN_MINUTES_FOR_EXPERIENCE_GLOBAL;
+        if (
+          !nullableLocalLastTimeGotExperience ||
+          (localDifference.minutes &&
+            localDifference.minutes >= guildMinMinutesForExperiences)
+        ) {
+          const incrementedLocalExperience = Globals.CHANCE.integer({
+            min: DBUser.MIN_GLOBAL_EXPERIENCE_ADD,
+            max: DBUser.MAX_GLOBAL_EXPERIENCE_ADD,
+          });
+          this.experience.setLocal(
+            rawGuild,
+            this.experience.currentLocal(rawGuild)! + incrementedLocalExperience
+          );
+          this.lastTimeGotExperience.setLocal(rawGuild, dateNow);
+          success = true;
+        }
       }
     }
     return success

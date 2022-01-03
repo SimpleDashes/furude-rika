@@ -15,8 +15,8 @@ export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
 
-  private readonly forceDeploy = false;
-  private readonly isDebug = true;
+  private readonly forceDeploy = true;
+  private readonly isDebug = false;
 
   public constructor() {
     super(
@@ -41,12 +41,12 @@ export default class FurudeRika extends BaseBot {
     await this.localizer.build();
     await this.db.connect();
     this.on('messageCreate', async (message) => {
-      if (!message.member || message.member.user.bot) return;
+      if (!message.guild || !message.member || message.member.user.bot) return;
       const user = await this.db.getUser(message.member.user);
-      const operation = user.incrementExperience(
-        message.member.user,
-        message.guild
-      );
+      const operation = user.incrementExperience(message.member.user, {
+        rawGuild: message.guild,
+        dbGuild: await this.db.getGuild(message.guild),
+      });
       if (operation.successfully) {
         consola.success(operation.response);
       }

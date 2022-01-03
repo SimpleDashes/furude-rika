@@ -67,6 +67,16 @@ export default class extends FurudeResource {
 
       DATABASE_CITIZEN_ALREADY_CLAIMED: `You had already claim your daily ${CurrencyContainer.CURRENCY_NAME} today... you can claim again in: [$TIME]`,
       DATABASE_CITIZEN_CLAIM_SUCCESS: `You claimed [$AMOUNT] ${CurrencyContainer.CURRENCY_NAME} today! you are in a [$STREAK] days streak, you now have [$TOTAL] ${CurrencyContainer.CURRENCY_NAME}`,
+
+      // GUILD
+      DATABASE_GUILD_WHITELISTED_XP_CHANNEL:
+        'Whitelisted the channel: [$CHANNEL] (It is now rewarding experience).',
+      DATABASE_GUILD_BLACKLISTED_XP_CHANNEL:
+        'Blacklisted the channel: [$CHANNEL] (It is no longer rewarding experience).',
+      DATABASE_GUILD_ALREADY_WHITELISTED_XP_CHANNEL:
+        '[$CHANNEL] is already whitelisted...',
+      DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL:
+        '[$CHANNEL] is already blacklisted...',
     });
   }
 }
