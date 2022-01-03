@@ -1,12 +1,15 @@
 import { addDays, formatDuration, intervalToDuration } from 'date-fns';
-import { Column, Entity, SaveOptions } from 'typeorm';
+import { CommandInteraction } from 'discord.js';
+import { Column, Entity } from 'typeorm';
 import CurrencyContainer from '../../containers/CurrencyContainer';
 import MessageFactory from '../../helpers/MessageFactory';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import FurudeOperations from '../FurudeOperations';
 import IDatabaseOperation from '../interfaces/IDatabaseOperation';
-
+import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDate';
+import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
+import { HyperTypes } from '../objects/hypervalues/HyperTypes';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 
 interface IStreakOperation extends IDatabaseOperation {
@@ -25,25 +28,23 @@ export default class DBCitizen extends SnowFlakeIDEntity {
   public static readonly WEEKLY_STREAK = 7;
   public static readonly AMOUNT_DAILY = 50;
 
-  @Column('int')
-  capital: number = 0;
+  @Column((_type) => GuildHyperNumber)
+  capital = new GuildHyperNumber();
 
-  @Column('int')
-  streak: number = 0;
+  @Column((_type) => GuildHyperNumber)
+  streak = new GuildHyperNumber();
 
-  @Column('date')
-  lastTimeClaimedDaily?: Date;
+  @Column((_type) => GuildHyperDate)
+  lastTimeClaimedDaily = new GuildHyperDate(null);
 
-  @Column({ update: false, nullable: true })
-  justCreated?: boolean | null;
+  private incrementCapital(
+    interaction: CommandInteraction,
+    type: HyperTypes,
+    amount: number
+  ): IDatabaseOperation {
+    let capital = this.capital.getValueSwitchedForType(interaction, type)!;
 
-  /**
-   *
-   * @param amount the amount of coins to be incremented
-   * @returns wether the operation has succeeded
-   */
-  public incrementCapital(amount: number): IDatabaseOperation {
-    const resultingCapital = this.capital + amount;
+    const resultingCapital = capital + amount;
 
     if (resultingCapital < 0) {
       return FurudeOperations.error(
@@ -51,7 +52,9 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       );
     }
 
-    this.capital = Math.max(0, resultingCapital);
+    capital = Math.max(0, resultingCapital);
+
+    this.capital.setValueSwitchedForType(interaction, type, capital);
 
     return FurudeOperations.success(`Incremented ${this.id} capital.`);
   }
@@ -61,7 +64,13 @@ export default class DBCitizen extends SnowFlakeIDEntity {
    * @param amount Amount of days to be incremented (usually will always be 1)
    * @returns wether we reached the max streak.
    */
-  private incrementStreak(duration: Duration, amount = 1): IStreakOperation {
+  private incrementStreak(
+    interaction: CommandInteraction,
+    type: HyperTypes,
+    duration: Duration,
+    selectedLastTimeClaimedDaily: Date | null | undefined,
+    amount = 1
+  ): IStreakOperation {
     const INCREMENT_SUCCESS = ', incremented streak successfully.';
 
     const DEFAULT_UNFORTUNATELY = ' but unfortunately ';
@@ -81,16 +90,20 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       };
     };
 
-    if (this.lastTimeClaimedDaily) {
+    let streak = this.streak.getValueSwitchedForType(interaction, type)!;
+
+    if (selectedLastTimeClaimedDaily) {
       if (duration.days && duration.days > 1) {
-        this.streak = 0;
+        streak = 0;
         lostStreak = true;
         unfortunately += ' lost the streak...';
       }
     }
 
-    this.streak += amount;
-    if (this.streak % DBCitizen.WEEKLY_STREAK == 0) {
+    streak += amount;
+    this.streak.setValueSwitchedForType(interaction, type, streak);
+
+    if (streak % DBCitizen.WEEKLY_STREAK == 0) {
       gotMaxStreak = true;
       return makeSuccess('Streak achieved');
     }
@@ -104,18 +117,22 @@ export default class DBCitizen extends SnowFlakeIDEntity {
    * @returns wether you could claim or not because you had already claimed this day
    */
   public claimDaily(
+    interaction: CommandInteraction,
     localizer: FurudeLocales,
+    type: HyperTypes,
     amount = DBCitizen.AMOUNT_DAILY
   ): IDatabaseOperation {
     const dateNow = new Date();
-    const startDate = this.lastTimeClaimedDaily ?? dateNow;
+    const selectedLastTimeClaimedDaily =
+      this.lastTimeClaimedDaily.getValueSwitchedForType(interaction, type);
+    const startDate = selectedLastTimeClaimedDaily ?? dateNow;
 
     const duration = intervalToDuration({
       start: startDate,
       end: dateNow,
     });
 
-    if (duration.days == 0) {
+    if (selectedLastTimeClaimedDaily && duration.days == 0) {
       const ableToClaimWhen = intervalToDuration({
         start: dateNow,
         end: addDays(startDate, 1),
@@ -126,22 +143,35 @@ export default class DBCitizen extends SnowFlakeIDEntity {
         ])
       );
     } else {
-      this.lastTimeClaimedDaily = dateNow;
+      this.lastTimeClaimedDaily.setValueSwitchedForType(
+        interaction,
+        type,
+        dateNow
+      );
     }
 
-    const streakOperation = this.incrementStreak(duration);
+    const streakOperation = this.incrementStreak(
+      interaction,
+      type,
+      duration,
+      selectedLastTimeClaimedDaily
+    );
 
     if (streakOperation.gotMaxStreak) {
       amount *= 2;
     }
 
-    this.incrementCapital(amount);
+    this.incrementCapital(interaction, type, amount);
 
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_CLAIM_SUCCESS, [
         MessageFactory.block(amount.toFixed()),
-        MessageFactory.block(this.streak.toString()),
-        MessageFactory.block(this.capital.toFixed()),
+        MessageFactory.block(
+          this.streak.getValueSwitchedForType(interaction, type)!.toString()
+        ),
+        MessageFactory.block(
+          this.capital.getValueSwitchedForType(interaction, type)!.toFixed()
+        ),
       ])
     );
   }
@@ -157,15 +187,11 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       );
     }
 
-    this.capital = DBCitizen.STARTING_CAPITAL;
+    this.capital = new GuildHyperNumber();
+    this.capital.global = DBCitizen.STARTING_CAPITAL;
 
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.ECONOMY_OPEN_SUCCESS)
     );
-  }
-
-  override async save(options?: SaveOptions): Promise<this> {
-    this.justCreated = null;
-    return await super.save(options);
   }
 }

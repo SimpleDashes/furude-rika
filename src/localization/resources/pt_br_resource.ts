@@ -54,7 +54,7 @@ export default class extends FurudeResource {
       CUSTOMIZE_LOCALE_RESPONSE_GUILD:
         'Coé, configurei para os membros do servidor serem respondidos assim, bróder... tmj.',
       CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY:
-        'Ah então ok, vou deixar seus ~~escravos~~ escolherem suas propias linguagens!',
+        'Ah então ok, vou deixar seus ~~escravos~~ escolherem suas próprias linguagens!',
       CUSTOMIZE_LOCALE_RESPONSE_CHANNEL:
         'Ok então, este canal é para os crias, certo!',
       CUSTOMIZE_LOCALE_RESPONSE_CHANNEL_ANY:
@@ -66,8 +66,8 @@ export default class extends FurudeResource {
       ECONOMY_BALANCE_FAIL: `Você ou o usuário mencionado não possui uma conta ${CurrencyContainer.CURRENCY_NAME}...`,
       ECONOMY_MUST_HAVE_ACCOUNT: `Você primeiro precisa ter aberto uma conta ${CurrencyContainer.CURRENCY_NAME} para usar este comando...`,
 
-      DATABASE_CITIZEN_ALREADY_CLAIMED: `Você já resgatou as suas ${CurrencyContainer.CURRENCY_NAME}s diarias hoje... Você pode regatar ${CurrencyContainer.CURRENCY_NAME}s novamente em: [$TIME]`,
-      DATABASE_CITIZEN_CLAIM_SUCCESS: `Você acaba de resgatar [$AMOUNT] ${CurrencyContainer.CURRENCY_NAME}s! Você agora está em um streak de [$STREAK] dias, com um saldo de [$TOTAL] ${CurrencyContainer.CURRENCY_NAME}s`,
+      DATABASE_CITIZEN_ALREADY_CLAIMED: `Você já resgatou as suas ${CurrencyContainer.CURRENCY_NAME}s diárias hoje... Você pode regatar ${CurrencyContainer.CURRENCY_NAME}s novamente em: [$TIME].`,
+      DATABASE_CITIZEN_CLAIM_SUCCESS: `Você acaba de resgatar [$AMOUNT] ${CurrencyContainer.CURRENCY_NAME}s! Você agora está em um streak de [$STREAK] dia(s), com um saldo de [$TOTAL] ${CurrencyContainer.CURRENCY_NAME}s`,
     });
   }
 }

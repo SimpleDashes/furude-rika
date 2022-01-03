@@ -1,5 +1,5 @@
 import { Collection } from 'discord.js';
-import IKeyValue from '../interfaces/IKeyValue';
+import IKeyValueSet from '../interfaces/IKeyValueSet';
 
 export default class StringUtils {
   public static toCollectionSplittedByEqualSign<T>(
@@ -10,7 +10,7 @@ export default class StringUtils {
     const keyValueSets = separated
       .map((rawArg) => {
         const splitByEqual = rawArg.split('=');
-        const returnValue: IKeyValue<string | undefined, T | undefined> = {
+        const returnValue: IKeyValueSet<string | undefined, T | undefined> = {
           key: splitByEqual[0],
           value:
             splitByEqual[1] == undefined

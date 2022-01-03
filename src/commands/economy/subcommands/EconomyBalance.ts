@@ -34,7 +34,6 @@ export default class EconomyOpen extends EconomySubCommand {
       await interaction.deferReply();
 
       const selectedUser = this.user.apply(interaction)!;
-
       const citizen = await runner.getCitizen(selectedUser);
 
       if (citizen.justCreated) {
@@ -57,7 +56,8 @@ export default class EconomyOpen extends EconomySubCommand {
             MessageFactory.bold(
               MessageFactory.objectToKeyValueString({
                 name: selectedUser.username,
-                balance: citizen.capital,
+                global_capital: citizen.capital!.global,
+                local_capital: citizen.capital!.currentLocal(interaction),
               })
             )
           ),

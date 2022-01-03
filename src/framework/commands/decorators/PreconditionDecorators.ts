@@ -58,4 +58,5 @@ export {
   RequirePermissions,
   RequiresSubCommands,
   RequiresSubGroups,
+  RequiresGuild,
 };
