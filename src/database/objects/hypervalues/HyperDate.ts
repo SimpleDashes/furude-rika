@@ -1,6 +1,6 @@
 import HyperValue from './HyperValue';
 
-export default abstract class HyperDate extends HyperValue<Date> {
+export default abstract class HyperDate<K> extends HyperValue<Date, K> {
   public defaultValue(): Date {
     return new Date();
   }

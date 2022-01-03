@@ -47,6 +47,20 @@ export default class EconomyOpen extends EconomySubCommand {
         return;
       }
 
+      let responseObject = {
+        name: selectedUser.username,
+        global_capital: citizen.capital!.global,
+      };
+
+      if (interaction.guild) {
+        responseObject = {
+          ...responseObject,
+          ...{
+            local_capital: citizen.capital!.currentLocal(interaction.guild),
+          },
+        };
+      }
+
       const embed = new BaseEmbed(
         {
           title: MessageFactory.bold(
@@ -54,11 +68,7 @@ export default class EconomyOpen extends EconomySubCommand {
           ),
           description: MessageFactory.blockQuote(
             MessageFactory.bold(
-              MessageFactory.objectToKeyValueString({
-                name: selectedUser.username,
-                global_capital: citizen.capital!.global,
-                local_capital: citizen.capital!.currentLocal(interaction),
-              })
+              MessageFactory.objectToKeyValueString(responseObject)
             )
           ),
         },

@@ -42,7 +42,10 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     type: HyperTypes,
     amount: number
   ): IDatabaseOperation {
-    let capital = this.capital.getValueSwitchedForType(interaction, type)!;
+    let capital = this.capital.getValueSwitchedForType(
+      interaction.guild,
+      type
+    )!;
 
     const resultingCapital = capital + amount;
 
@@ -54,7 +57,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
     capital = Math.max(0, resultingCapital);
 
-    this.capital.setValueSwitchedForType(interaction, type, capital);
+    this.capital.setValueSwitchedForType(interaction.guild, type, capital);
 
     return FurudeOperations.success(`Incremented ${this.id} capital.`);
   }
@@ -90,7 +93,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       };
     };
 
-    let streak = this.streak.getValueSwitchedForType(interaction, type)!;
+    let streak = this.streak.getValueSwitchedForType(interaction.guild, type)!;
 
     if (selectedLastTimeClaimedDaily) {
       if (duration.days && duration.days > 1) {
@@ -101,7 +104,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     }
 
     streak += amount;
-    this.streak.setValueSwitchedForType(interaction, type, streak);
+    this.streak.setValueSwitchedForType(interaction.guild, type, streak);
 
     if (streak % DBCitizen.WEEKLY_STREAK == 0) {
       gotMaxStreak = true;
@@ -124,7 +127,10 @@ export default class DBCitizen extends SnowFlakeIDEntity {
   ): IDatabaseOperation {
     const dateNow = new Date();
     const selectedLastTimeClaimedDaily =
-      this.lastTimeClaimedDaily.getValueSwitchedForType(interaction, type);
+      this.lastTimeClaimedDaily.getValueSwitchedForType(
+        interaction.guild,
+        type
+      );
     const startDate = selectedLastTimeClaimedDaily ?? dateNow;
 
     const duration = intervalToDuration({
@@ -144,7 +150,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       );
     } else {
       this.lastTimeClaimedDaily.setValueSwitchedForType(
-        interaction,
+        interaction.guild,
         type,
         dateNow
       );
@@ -167,10 +173,14 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_CLAIM_SUCCESS, [
         MessageFactory.block(amount.toFixed()),
         MessageFactory.block(
-          this.streak.getValueSwitchedForType(interaction, type)!.toString()
+          this.streak
+            .getValueSwitchedForType(interaction.guild, type)!
+            .toFixed()
         ),
         MessageFactory.block(
-          this.capital.getValueSwitchedForType(interaction, type)!.toFixed()
+          this.capital
+            .getValueSwitchedForType(interaction.guild, type)!
+            .toFixed()
         ),
       ])
     );

@@ -42,18 +42,15 @@ export default class FurudeDB {
     findEntity: () => Promise<T>,
     onNotFound?: (o: T) => Promise<void>
   ) {
-    let foundOnDB: boolean = false;
     let find: T | null = null;
     try {
-      const found = await findEntity();
-      if (found) {
-        find = found;
-        foundOnDB = true;
-      }
+      find = await findEntity();
     } catch {}
     const entity = new constructor();
-    Object.assign(entity, find);
-    if (onNotFound && !foundOnDB) onNotFound(entity);
+    if (find) {
+      Object.assign(entity, find);
+    }
+    if (onNotFound && !find) onNotFound(entity);
     return entity;
   }
 

@@ -9,6 +9,7 @@ import FurudeLocales from '../localization/FurudeLocales';
 import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import FurudeDB from '../database/FurudeDB';
 import DefaultContext from './contexts/DefaultContext';
+import FurudeOperations from '../database/FurudeOperations';
 
 export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
@@ -20,7 +21,7 @@ export default class FurudeRika extends BaseBot {
   public constructor() {
     super(
       {
-        intents: [Intents.FLAGS.GUILDS],
+        intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
       },
       {
         ENV_TOKEN_VAR: 'BOT_TOKEN',
@@ -39,6 +40,18 @@ export default class FurudeRika extends BaseBot {
     super.start();
     await this.localizer.build();
     await this.db.connect();
+    this.on('messageCreate', async (message) => {
+      if (!message.member || message.member.user.bot) return;
+      const user = await this.db.getUser(message.member.user);
+      const operation = user.incrementExperience(
+        message.member.user,
+        message.guild
+      );
+      if (operation.successfully) {
+        consola.success(operation.response);
+      }
+      FurudeOperations.saveWhenSuccess(user, operation);
+    });
   }
 
   public override async onSubCommandNotFound(
