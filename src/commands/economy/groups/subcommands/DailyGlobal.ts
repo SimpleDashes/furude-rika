@@ -9,7 +9,7 @@ import EconomySubCommand, {
 import DailyHelper from '../../wrapper/DailyHelper';
 
 @MustHaveOpenAccount
-export default class DailyLocal extends EconomySubCommand {
+export default class DailyGlobal extends EconomySubCommand {
   public constructor() {
     super({
       name: 'global',
