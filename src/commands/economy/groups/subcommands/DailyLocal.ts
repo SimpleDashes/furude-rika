@@ -4,10 +4,11 @@ import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
 import { RequiresGuild } from '../../../../framework/commands/decorators/PreconditionDecorators';
 import EconomySubCommand, {
-  EconomyRunner,
+  EconomyRunner, MustHaveOpenAccount
 } from '../../wrapper/EconomySubCommand';
 import DailyHelper from '../../wrapper/DailyHelper';
 
+@MustHaveOpenAccount
 @RequiresGuild
 export default class DailyLocal extends EconomySubCommand {
   public constructor() {
