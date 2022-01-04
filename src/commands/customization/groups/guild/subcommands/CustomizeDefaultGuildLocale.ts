@@ -3,7 +3,6 @@ import SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlak
 import IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import { RequirePermissions } from '../../../../../framework/commands/decorators/PreconditionDecorators';
-import FurudeTranslationKeys from '../../../../../localization/FurudeTranslationKeys';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
 @RequirePermissions(['MANAGE_GUILD'])
@@ -13,11 +12,7 @@ export default class CustomizeDefaultGuildLocale extends CustomizesServerRelated
   );
 
   public constructor() {
-    super(
-      'Customizes the guild to have a forced specific locale.',
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_GUILD,
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY
-    );
+    super('Customizes the guild to have a forced specific locale.');
   }
 
   public entityToLocalize(

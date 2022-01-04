@@ -3,7 +3,6 @@ import SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlak
 import IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import { RequirePermissions } from '../../../../../framework/commands/decorators/PreconditionDecorators';
-import FurudeTranslationKeys from '../../../../../localization/FurudeTranslationKeys';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
 @RequirePermissions(['MANAGE_CHANNELS'])
@@ -14,9 +13,7 @@ export default class CustomizeDefaultChannelLocale extends CustomizesServerRelat
 
   public constructor() {
     super(
-      'Customizes the current channel to have an specific required locale.',
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_CHANNEL,
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_CHANNEL_ANY
+      'Customizes the current channel to have an specific required locale.'
     );
   }
 

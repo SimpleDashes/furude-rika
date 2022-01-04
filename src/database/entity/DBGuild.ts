@@ -11,6 +11,7 @@ import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
 import EntityExtension from '../objects/abstracts/EntityExtension';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import DBUser from './DBUser';
+import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 
 class DBGuildExtension extends EntityExtension<DBGuild> {
   private getBindableRewardedXP(): BindableInteger {
@@ -53,6 +54,19 @@ export default class DBGuild
 
   @Column('number')
   time_for_xp?: number;
+
+  setPreferredLocale(
+    localizer: FurudeLocales,
+    locale: SupportedFurudeLocales | null | undefined
+  ): IDatabaseOperation {
+    return EntityWithLocaleHelper.setPreferredLocale(
+      this,
+      localizer,
+      locale,
+      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_GUILD,
+      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY
+    );
+  }
 
   /**
    * Guild channels which the guild users

@@ -2,6 +2,8 @@ import { intervalToDuration } from 'date-fns';
 import { Guild, User } from 'discord.js';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import Globals from '../../containers/Globals';
+import FurudeLocales from '../../localization/FurudeLocales';
+import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
 import FurudeOperations from '../FurudeOperations';
 import IDatabaseOperation from '../interfaces/IDatabaseOperation';
@@ -11,6 +13,7 @@ import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperN
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import DBCitizen from './DBCitizen';
 import DBGuild from './DBGuild';
+import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 
 /**
  * This class contains general information
@@ -39,6 +42,18 @@ export default class DBUser
   @OneToOne((_type) => DBCitizen, { cascade: true })
   @JoinColumn()
   citizen!: DBCitizen;
+
+  setPreferredLocale(
+    localizer: FurudeLocales,
+    locale: SupportedFurudeLocales | null | undefined
+  ): IDatabaseOperation {
+    return EntityWithLocaleHelper.setPreferredLocale(
+      this,
+      localizer,
+      locale,
+      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_USER
+    );
+  }
 
   /**
    * Increments the user experience, both globally
