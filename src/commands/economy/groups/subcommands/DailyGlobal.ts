@@ -3,10 +3,11 @@ import FurudeRika from '../../../../client/FurudeRika';
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
 import EconomySubCommand, {
-  EconomyRunner,
+  EconomyRunner, MustHaveOpenAccount
 } from '../../wrapper/EconomySubCommand';
 import DailyHelper from '../../wrapper/DailyHelper';
 
+@MustHaveOpenAccount
 export default class DailyLocal extends EconomySubCommand {
   public constructor() {
     super({
