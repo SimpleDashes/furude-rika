@@ -1,6 +1,7 @@
 import { GuildChannel, Snowflake } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import BindableInteger from '../../framework/bindables/BindableInteger';
+import MessageFactory from '../../helpers/MessageFactory';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
@@ -9,6 +10,7 @@ import IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
 import EntityExtension from '../objects/abstracts/EntityExtension';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
+import DBUser from './DBUser';
 
 class DBGuildExtension extends EntityExtension<DBGuild> {
   private getBindableRewardedXP(): BindableInteger {
@@ -21,6 +23,15 @@ class DBGuildExtension extends EntityExtension<DBGuild> {
   public min_rewarded_xp: BindableInteger = this.getBindableRewardedXP();
 
   public max_rewarded_xp: BindableInteger = this.getBindableRewardedXP();
+
+  public time_for_xp: BindableInteger = new BindableInteger(
+    undefined,
+    undefined,
+    {
+      minValue: DBUser.MIN_MIN_SECONDS_FOR_EXPERIENCE,
+      maxValue: DBUser.MAX_MIN_SECONDS_FOR_EXPERIENCE,
+    }
+  );
 }
 
 @Entity()
@@ -39,6 +50,9 @@ export default class DBGuild
 
   @Column('number')
   max_rewarded_xp_value?: number;
+
+  @Column('number')
+  time_for_xp?: number;
 
   /**
    * Guild channels which the guild users
@@ -113,12 +127,25 @@ export default class DBGuild
   public setMinXPValue(value: number) {
     this.min_rewarded_xp_value = this.extension!.min_rewarded_xp.Current =
       value;
-    return FurudeOperations.success('Changed minimal rewarded xp successfully');
+    return FurudeOperations.success(
+      'Changed minimal rewarded xp successfully!'
+    );
   }
 
   public setMaxXPValue(value: number) {
     this.max_rewarded_xp_value = this.extension!.max_rewarded_xp.Current =
       value;
-    return FurudeOperations.success('Changed maximal rewarded xp successfully');
+    return FurudeOperations.success(
+      'Changed maximal rewarded xp successfully!'
+    );
+  }
+
+  public setTimeForXP(localizer: FurudeLocales, time: number) {
+    this.time_for_xp = this.extension!.time_for_xp.Current = time;
+    return FurudeOperations.success(
+      localizer.get(FurudeTranslationKeys.DATABASE_GUILD_CHANGED_TIME_FOR_XP, [
+        MessageFactory.block(time.toFixed()),
+      ])
+    );
   }
 }

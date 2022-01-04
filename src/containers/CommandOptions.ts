@@ -7,6 +7,7 @@ enum CommandOptions {
   whitelist = 'whitelist',
   min = 'min',
   max = 'max',
+  seconds = 'seconds',
 }
 
 export default CommandOptions;

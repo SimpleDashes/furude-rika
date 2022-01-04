@@ -78,6 +78,8 @@ export default class extends FurudeResource {
         '[$CHANNEL] já ta dando xp...',
       DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL:
         '[$CHANNEL] já ta bloqueado de dar xp...',
+      DATABASE_GUILD_CHANGED_TIME_FOR_XP:
+        'Ok, os mano vai ter que esperar [$TIME] segundos se quiser xp agora...',
     });
   }
 }

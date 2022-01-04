@@ -16,7 +16,7 @@ export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
 
-  private readonly forceDeploy = false;
+  private readonly forceDeploy = true;
   private readonly isDebug = true;
 
   public constructor() {

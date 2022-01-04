@@ -23,7 +23,9 @@ export default class DBUser
 {
   public static MIN_GLOBAL_EXPERIENCE_ADD = 0;
   public static MAX_GLOBAL_EXPERIENCE_ADD = 10;
-  public static MIN_MINUTES_FOR_EXPERIENCE_GLOBAL = 2;
+  public static MIN_MIN_SECONDS_FOR_EXPERIENCE = 30;
+  public static MAX_MIN_SECONDS_FOR_EXPERIENCE = 60 * 60;
+  public static MIN_SECONDS_FOR_EXPERIENCE_GLOBAL = 60;
 
   @Column()
   preferred_locale?: SupportedFurudeLocales | undefined | null;
@@ -57,8 +59,8 @@ export default class DBUser
     let success = false;
     if (
       !this.lastTimeGotExperience.global ||
-      (differenceGlobal.minutes &&
-        differenceGlobal.minutes >= DBUser.MIN_MINUTES_FOR_EXPERIENCE_GLOBAL)
+      (differenceGlobal.seconds &&
+        differenceGlobal.seconds >= DBUser.MIN_SECONDS_FOR_EXPERIENCE_GLOBAL)
     ) {
       const incrementedGlobalExperience = Globals.CHANCE.integer({
         min: DBUser.MIN_GLOBAL_EXPERIENCE_ADD,
@@ -80,11 +82,11 @@ export default class DBUser
           end: dateNow,
         });
         const guildMinMinutesForExperiences =
-          DBUser.MIN_MINUTES_FOR_EXPERIENCE_GLOBAL;
+          DBUser.MIN_SECONDS_FOR_EXPERIENCE_GLOBAL;
         if (
           !nullableLocalLastTimeGotExperience ||
-          (localDifference.minutes &&
-            localDifference.minutes >= guildMinMinutesForExperiences)
+          (localDifference.seconds &&
+            localDifference.seconds >= guildMinMinutesForExperiences)
         ) {
           const incrementedLocalExperience = Globals.CHANCE.integer({
             min:

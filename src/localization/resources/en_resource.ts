@@ -77,6 +77,8 @@ export default class extends FurudeResource {
         '[$CHANNEL] is already whitelisted...',
       DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL:
         '[$CHANNEL] is already blacklisted...',
+      DATABASE_GUILD_CHANGED_TIME_FOR_XP:
+        'Ok, now users need to wait [$TIME] seconds so they get any xp...',
     });
   }
 }
