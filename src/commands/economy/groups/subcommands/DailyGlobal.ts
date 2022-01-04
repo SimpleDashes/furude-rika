@@ -4,10 +4,12 @@ import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
 import EconomySubCommand, {
   EconomyRunner,
+  MustHaveOpenAccount,
 } from '../../wrapper/EconomySubCommand';
 import DailyHelper from '../../wrapper/DailyHelper';
 
-export default class DailyGlobal extends EconomySubCommand {
+@MustHaveOpenAccount
+export default class DailyLocal extends EconomySubCommand {
   public constructor() {
     super({
       name: 'global',
