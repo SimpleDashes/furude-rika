@@ -6,7 +6,7 @@ import { RequirePermissions } from '../../../../../framework/commands/decorators
 import FurudeTranslationKeys from '../../../../../localization/FurudeTranslationKeys';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
-@RequirePermissions(['ADMINISTRATOR'])
+@RequirePermissions(['MANAGE_CHANNELS'])
 export default class CustomizeDefaultChannelLocale extends CustomizesServerRelatedLocaleSubCommand {
   protected override locale = this.registerOption(
     this.getLocaleOption().setDescription("The channel's new locale.")

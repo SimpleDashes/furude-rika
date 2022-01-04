@@ -51,7 +51,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
     if (resultingCapital < 0) {
       return FurudeOperations.error(
-        `${this.id} couldn't complete increment capital operation, because he doesn't have enough ${CurrencyContainer.CURRENCY_NAME}`
+        `${this.s_id} couldn't complete increment capital operation, because he doesn't have enough ${CurrencyContainer.CURRENCY_NAME}`
       );
     }
 
@@ -59,7 +59,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
     this.capital.setValueSwitchedForType(interaction.guild, type, capital);
 
-    return FurudeOperations.success(`Incremented ${this.id} capital.`);
+    return FurudeOperations.success(`Incremented ${this.s_id} capital.`);
   }
 
   /**

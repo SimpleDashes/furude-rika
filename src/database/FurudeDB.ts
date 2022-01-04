@@ -3,6 +3,7 @@ import {
   BaseEntity,
   Connection,
   createConnection,
+  FindManyOptions,
   FindOneOptions,
 } from 'typeorm';
 import Constructor from '../framework/interfaces/Constructor';
@@ -37,29 +38,37 @@ export default class FurudeDB {
     });
   }
 
+  private assignNewEntityToEntity<T extends BaseEntity>(
+    constructor: Constructor<T>,
+    findEntity: T | null,
+    onNotFound?: (o: T) => void
+  ) {
+    const entity = new constructor();
+    if (findEntity) {
+      Object.assign(entity, findEntity);
+    }
+    if (onNotFound && !findEntity) onNotFound(entity);
+    return entity;
+  }
+
   private async createEntityWhenNotFound<T extends BaseEntity>(
     constructor: Constructor<T>,
     findEntity: () => Promise<T>,
-    onNotFound?: (o: T) => Promise<void>
+    onNotFound?: (o: T) => void
   ) {
     let find: T | null = null;
     try {
       find = await findEntity();
     } catch {}
-    const entity = new constructor();
-    if (find) {
-      Object.assign(entity, find);
-    }
-    if (onNotFound && !find) onNotFound(entity);
-    return entity;
+    return this.assignNewEntityToEntity(constructor, find, onNotFound);
   }
 
-  private getSnowFlakeQuery(
+  public getSnowFlakeQuery(
     snowflakeable: IHasSnowFlakeID
-  ): FindOneOptions<any> {
+  ): FindOneOptions<SnowFlakeIDEntity> {
     return {
       where: {
-        id: snowflakeable.id,
+        s_id: snowflakeable.id,
       },
     };
   }
@@ -68,13 +77,16 @@ export default class FurudeDB {
     entity: T,
     snowflakeable: IHasSnowFlakeID
   ): T {
-    if (!entity.id) {
-      entity.id = snowflakeable.id;
+    if (!entity.s_id) {
+      entity.s_id = snowflakeable.id;
     }
     return entity;
   }
 
-  private async getSnowFlake(snowflakeable: IHasSnowFlakeID, type: any) {
+  public async getSnowflake<T extends SnowFlakeIDEntity>(
+    snowflake: IHasSnowFlakeID,
+    type: any
+  ): Promise<T> {
     const identifyJustCreated = (o: any, justCreated: boolean) => {
       const asJustCreated = o as IHasJustCreatedIdentifier;
       asJustCreated.justCreated = justCreated;
@@ -83,33 +95,148 @@ export default class FurudeDB {
       await this.createEntityWhenNotFound(
         type,
         async () => {
-          const found = await type.findOne(
-            this.getSnowFlakeQuery(snowflakeable)
-          );
+          const found = await type.findOne(this.getSnowFlakeQuery(snowflake));
           identifyJustCreated(found, false);
           return found;
         },
-        async (o) => {
+        (o) => {
           identifyJustCreated(o, true);
         }
       ),
-      snowflakeable
+      snowflake
     );
   }
 
-  public async getUser(user: User): Promise<DBUser> {
-    return await this.getSnowFlake(user, DBUser);
+  public async getSnowflakes<T extends SnowFlakeIDEntity>(
+    query: FindManyOptions<T>,
+    type: any
+  ): Promise<T[]> {
+    const snowFlakes: T[] = await type.find(query);
+    for (const snowFlake of snowFlakes) {
+      this.assignNewEntityToEntity(type, snowFlake);
+    }
+    return snowFlakes;
   }
 
-  public async getCitizen(user: User): Promise<DBCitizen> {
-    return await this.getSnowFlake(user, DBCitizen);
+  public USER = new UserGetter(this);
+
+  public CITIZEN = new CitizenGetter(this);
+
+  public GUILD = new GuildGetter(this);
+
+  public CHANNEL = new ChannelGetter(this);
+}
+
+interface IDatabaseGetterGetOnly<
+  K extends IHasSnowFlakeID,
+  T extends SnowFlakeIDEntity
+> {
+  get(key: K): Promise<T>;
+}
+
+interface IDatabaseGetterGetAllOnly<T extends SnowFlakeIDEntity> {
+  getAllOn(query: FindManyOptions<T>): Promise<T[]>;
+}
+
+interface IDatabaseGetter<
+  K extends IHasSnowFlakeID,
+  T extends SnowFlakeIDEntity
+> extends IDatabaseGetterGetOnly<K, T>,
+    IDatabaseGetterGetAllOnly<T> {}
+
+abstract class BaseDatabaseGetter {
+  protected db: FurudeDB;
+  protected abstract typeObject: any;
+
+  public constructor(db: FurudeDB) {
+    this.db = db;
   }
 
-  public async getGuild(guild: Guild): Promise<DBGuild> {
-    return await this.getSnowFlake(guild, DBGuild);
+  protected static async get<
+    K extends IHasSnowFlakeID,
+    T extends SnowFlakeIDEntity
+  >(that: BaseDatabaseGetter, key: K): Promise<T> {
+    return await that.db.getSnowflake(key, that.typeObject);
   }
 
-  public async getChannel(channel: GuildChannel): Promise<DBGuild> {
-    return await this.getSnowFlake(channel, DBChannel);
+  protected static async getAllOn<T extends SnowFlakeIDEntity>(
+    that: BaseDatabaseGetter,
+    query: FindManyOptions<T>
+  ): Promise<T[]> {
+    return await that.db.getSnowflakes(query, that.typeObject);
+  }
+}
+
+abstract class DatabaseGetterGetOnly<
+    K extends IHasSnowFlakeID,
+    T extends SnowFlakeIDEntity
+  >
+  extends BaseDatabaseGetter
+  implements IDatabaseGetterGetOnly<K, T>
+{
+  public async get(key: K): Promise<T> {
+    return await BaseDatabaseGetter.get(this, key);
+  }
+}
+
+/**
+abstract class DatabaseGetterGetAllOnly<
+    M extends IHasSnowFlakeID,
+    T extends SnowFlakeIDEntity
+  >
+  extends BaseDatabaseGetter
+  implements IDatabaseGetterGetAllOnly<M, T>
+{
+  public async getAllOn(key: M): Promise<T[]> {
+    return await BaseDatabaseGetter.getAll(this, key);
+  }
+}
+ */
+
+abstract class DatabaseGetter<
+    K extends IHasSnowFlakeID,
+    T extends SnowFlakeIDEntity
+  >
+  extends BaseDatabaseGetter
+  implements IDatabaseGetter<K, T>
+{
+  public async get(key: K): Promise<T> {
+    return await BaseDatabaseGetter.get(this, key);
+  }
+  public async getAllOn(query: FindManyOptions<T>): Promise<T[]> {
+    return await BaseDatabaseGetter.getAllOn(this, query);
+  }
+}
+
+abstract class UserBasedDatabaseGetter<
+  T extends SnowFlakeIDEntity
+> extends DatabaseGetter<User, T> {
+  public override async get(user: User): Promise<T> {
+    return super.get(user);
+  }
+  public override async getAllOn(query: FindManyOptions<T>): Promise<T[]> {
+    return super.getAllOn(query);
+  }
+}
+
+class UserGetter extends UserBasedDatabaseGetter<DBUser> {
+  protected typeObject: any = DBUser;
+}
+
+class CitizenGetter extends UserBasedDatabaseGetter<DBCitizen> {
+  protected typeObject: any = DBCitizen;
+}
+
+class GuildGetter extends DatabaseGetterGetOnly<Guild, DBGuild> {
+  protected typeObject: any = DBGuild;
+  public override async get(guild: Guild): Promise<DBGuild> {
+    return super.get(guild);
+  }
+}
+
+class ChannelGetter extends DatabaseGetter<GuildChannel, DBChannel> {
+  protected typeObject: any = DBChannel;
+  public override async get(channel: GuildChannel): Promise<DBChannel> {
+    return super.get(channel);
   }
 }

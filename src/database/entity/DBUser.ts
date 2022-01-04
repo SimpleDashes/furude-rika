@@ -87,8 +87,10 @@ export default class DBUser
             localDifference.minutes >= guildMinMinutesForExperiences)
         ) {
           const incrementedLocalExperience = Globals.CHANCE.integer({
-            min: DBUser.MIN_GLOBAL_EXPERIENCE_ADD,
-            max: DBUser.MAX_GLOBAL_EXPERIENCE_ADD,
+            min:
+              dbGuild.min_rewarded_xp_value ?? DBUser.MIN_GLOBAL_EXPERIENCE_ADD,
+            max:
+              dbGuild.max_rewarded_xp_value ?? DBUser.MAX_GLOBAL_EXPERIENCE_ADD,
           });
           this.experience.setLocal(
             rawGuild,

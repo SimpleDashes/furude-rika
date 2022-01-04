@@ -5,6 +5,8 @@ enum CommandOptions {
   value = 'value',
   channel = 'channel',
   whitelist = 'whitelist',
+  min = 'min',
+  max = 'max',
 }
 
 export default CommandOptions;

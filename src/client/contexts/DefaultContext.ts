@@ -12,11 +12,11 @@ export default class DefaultContext extends BaseContext {
   public localizer!: FurudeLocales;
 
   protected async build(): Promise<void> {
-    this.dbUser = await this.db.getUser(this.runner.interaction.user);
+    this.dbUser = await this.db.USER.get(this.runner.interaction.user);
     if (this.runner.interaction.guild) {
-      this.dbGuild = await this.db.getGuild(this.runner.interaction.guild);
+      this.dbGuild = await this.db.GUILD.get(this.runner.interaction.guild);
       if (this.runner.interaction.channel) {
-        this.dbChannel = await this.db.getChannel(
+        this.dbChannel = await this.db.CHANNEL.get(
           this.runner.interaction.channel as GuildChannel
         );
       }

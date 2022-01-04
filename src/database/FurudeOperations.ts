@@ -39,6 +39,7 @@ export default class FurudeOperations {
    *
    * @param entity The entity which will be saved if all operations where finished successfully
    * @param operations The said operations that will determine if the entity will be saved or not.
+   * @returns wether we saved the entity or not.
    */
   public static async saveWhenSuccess(
     entity: BaseEntity,
@@ -46,6 +47,8 @@ export default class FurudeOperations {
   ) {
     if (operations.every((o) => o.successfully)) {
       await entity.save();
+      return true;
     }
+    return false;
   }
 }

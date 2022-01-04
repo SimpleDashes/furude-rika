@@ -1,20 +1,44 @@
 import { GuildChannel, Snowflake } from 'discord.js';
 import { Column, Entity } from 'typeorm';
+import BindableInteger from '../../framework/bindables/BindableInteger';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
 import FurudeOperations from '../FurudeOperations';
 import IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
+import EntityExtension from '../objects/abstracts/EntityExtension';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
+
+class DBGuildExtension extends EntityExtension<DBGuild> {
+  private getBindableRewardedXP(): BindableInteger {
+    return new BindableInteger(undefined, undefined, {
+      minValue: DBGuild.MIN_XP_CHANGE_VALUE,
+      maxValue: DBGuild.MAX_XP_CHANGE_VALUE,
+    });
+  }
+
+  public min_rewarded_xp: BindableInteger = this.getBindableRewardedXP();
+
+  public max_rewarded_xp: BindableInteger = this.getBindableRewardedXP();
+}
 
 @Entity()
 export default class DBGuild
   extends SnowFlakeIDEntity
   implements IHasPreferredLocale
 {
+  public static MIN_XP_CHANGE_VALUE = 0;
+  public static MAX_XP_CHANGE_VALUE = 100;
+
   @Column()
   preferred_locale?: SupportedFurudeLocales | undefined | null;
+
+  @Column('number')
+  min_rewarded_xp_value?: number;
+
+  @Column('number')
+  max_rewarded_xp_value?: number;
 
   /**
    * Guild channels which the guild users
@@ -22,6 +46,17 @@ export default class DBGuild
    */
   @Column('array')
   blocked_xp_channels: Snowflake[] = [];
+
+  private extension? = new DBGuildExtension(this);
+
+  public constructor() {
+    super();
+    this.registerSaveListener({
+      beforeSaving: () => {
+        this.extension = undefined;
+      },
+    });
+  }
 
   /**
    * Blacklists a channel from rewarding experience
@@ -73,5 +108,17 @@ export default class DBGuild
         [channel.toString()]
       )
     );
+  }
+
+  public setMinXPValue(value: number) {
+    this.min_rewarded_xp_value = this.extension!.min_rewarded_xp.Current =
+      value;
+    return FurudeOperations.success('Changed minimal rewarded xp successfully');
+  }
+
+  public setMaxXPValue(value: number) {
+    this.max_rewarded_xp_value = this.extension!.max_rewarded_xp.Current =
+      value;
+    return FurudeOperations.success('Changed maximal rewarded xp successfully');
   }
 }

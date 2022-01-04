@@ -32,7 +32,7 @@ export default abstract class EconomySubCommand extends FurudeSubCommand {
     runner.getCitizen = async (user: User) => {
       return user == interaction.user
         ? runner.args!.dbUser.citizen
-        : await runner.client!.db.getCitizen(user);
+        : await runner.client!.db.CITIZEN.get(user);
     };
     runner.getResultMessage = (key: FurudeTranslationKeys) => {
       return runner.args!.localizer.get(key, [CurrencyContainer.CURRENCY_NAME]);
