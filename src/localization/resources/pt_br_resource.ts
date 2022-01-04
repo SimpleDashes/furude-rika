@@ -71,7 +71,7 @@ export default class extends FurudeResource {
 
       // GUILD
       DATABASE_GUILD_WHITELISTED_XP_CHANNEL:
-        'CLoquei o [$CHANNEL] pra dar uns xp legal pros membro ai.',
+        'Coloquei o [$CHANNEL] pra dar uns xp legal pros membro ai.',
       DATABASE_GUILD_BLACKLISTED_XP_CHANNEL:
         'O [$CHANNEL] não vai mais dar xp então chefe...',
       DATABASE_GUILD_ALREADY_WHITELISTED_XP_CHANNEL:

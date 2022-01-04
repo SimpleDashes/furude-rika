@@ -7,7 +7,7 @@ import EconomySubCommand, {
 } from '../../wrapper/EconomySubCommand';
 import DailyHelper from '../../wrapper/DailyHelper';
 
-export default class DailyLocal extends EconomySubCommand {
+export default class DailyGlobal extends EconomySubCommand {
   public constructor() {
     super({
       name: 'global',

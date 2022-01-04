@@ -5,7 +5,7 @@ export default class KeySetHelper {
     array: IKeyValueSet<K, V>[],
     key: K
   ): IKeyValueSet<K, V> | undefined {
-    return array.find((o) => o.key == key);
+    return array.find((o) => o.key === key);
   }
 
   public static getValue<K, V>(

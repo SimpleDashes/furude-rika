@@ -8,7 +8,7 @@ import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import CollectionHelper from '../../framework/helpers/CollectionHelper';
 import StringUtils from '../../framework/helpers/StringUtils';
 import StringOption from '../../framework/options/classes/StringOption';
-import MessageFactory from '../../helpers/MessageFactory';
+import MessageCreator from '../../framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 export default class Calc extends FurudeCommand {
@@ -59,15 +59,15 @@ export default class Calc extends FurudeCommand {
         gotVariables
       );
 
-      const expressionText = MessageFactory.block(gotExpression!.trim());
+      const expressionText = MessageCreator.block(gotExpression!.trim());
 
       if (missingVariables.length != 0) {
         await interaction.editReply(
-          MessageFactory.error(
+          MessageCreator.error(
             runner.args!.localizer.get(
               FurudeTranslationKeys.CALC_MISSING_VARIABLES,
               [
-                MessageFactory.block(missingVariables.toString()),
+                MessageCreator.block(missingVariables.toString()),
                 expressionText,
               ]
             )
@@ -89,17 +89,17 @@ export default class Calc extends FurudeCommand {
       if (evaluatedResult) {
         displayText = runner.args!.localizer.get(
           FurudeTranslationKeys.CALC_RESULTS,
-          [expressionText, MessageFactory.block(evaluatedResult.toString())]
+          [expressionText, MessageCreator.block(evaluatedResult.toString())]
         );
         if (gotVariables && gotVariablesRaw) {
           displayText += `, ${runner.args!.localizer.get(
             FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
-            [MessageFactory.block(gotVariablesRaw.trim())]
+            [MessageCreator.block(gotVariablesRaw.trim())]
           )}`;
         }
-        displayText = MessageFactory.success(displayText);
+        displayText = MessageCreator.success(displayText);
       } else {
-        displayText = MessageFactory.error(
+        displayText = MessageCreator.error(
           runner.args!.localizer.get(
             FurudeTranslationKeys.CALC_EVALUATE_ERROR,
             [expressionText]

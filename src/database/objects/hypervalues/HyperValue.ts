@@ -45,7 +45,7 @@ export default abstract class GlobalLocalValue<T, K> {
   }
 
   private assertKeyNotUndefined(key: K | undefined | null): key is K {
-    if (key == undefined) {
+    if (key === undefined) {
       throw 'Key should be present when getting or setting a local value!';
     }
     return true;

@@ -3,6 +3,7 @@ import { CommandInteraction, CacheType, GuildChannel } from 'discord.js';
 import DefaultContext from '../../../../../client/contexts/DefaultContext';
 import FurudeRika from '../../../../../client/FurudeRika';
 import CommandOptions from '../../../../../containers/CommandOptions';
+import Strings from '../../../../../containers/Strings';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
@@ -11,6 +12,8 @@ import {
   RequirePermissions,
   RequiresGuild,
 } from '../../../../../framework/commands/decorators/PreconditionDecorators';
+import BaseEmbed from '../../../../../framework/embeds/BaseEmbed';
+import MessageCreator from '../../../../../framework/helpers/MessageCreator';
 import BooleanOption from '../../../../../framework/options/classes/BooleanOption';
 import ChannelOption from '../../../../../framework/options/classes/ChannelOption';
 
@@ -67,8 +70,20 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand {
         );
       }
 
+      let blockedChannelsString = Strings.EMPTY;
+      for (const channel of runner.args!.dbGuild!.blocked_xp_channels) {
+        blockedChannelsString += `<#${channel}>\n`;
+      }
+
+      const embed = new BaseEmbed({
+        title: 'XP Blacklist',
+        description: MessageCreator.bold(blockedChannelsString),
+      });
+
       await FurudeOperations.saveWhenSuccess(runner.args!.dbGuild!, operation);
-      await FurudeOperations.answerInteraction(interaction, operation);
+      await FurudeOperations.answerInteraction(interaction, operation, {
+        embeds: [embed],
+      });
     };
   }
 }

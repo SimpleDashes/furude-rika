@@ -12,7 +12,7 @@ import {
 } from '../../../../../framework/commands/decorators/PreconditionDecorators';
 import BaseEmbed from '../../../../../framework/embeds/BaseEmbed';
 import IntegerOption from '../../../../../framework/options/classes/IntegerOption';
-import MessageFactory from '../../../../../helpers/MessageFactory';
+import MessageCreator from '../../../../../framework/helpers/MessageCreator';
 
 class XPChangeOption extends IntegerOption {
   public constructor() {
@@ -73,10 +73,10 @@ export default class CustomizeMinXP extends FurudeSubCommand {
       );
 
       const embed = new BaseEmbed({
-        title: MessageFactory.bold('XP Rewarding settings'),
-        description: MessageFactory.blockQuote(
-          MessageFactory.bold(
-            MessageFactory.objectToKeyValueString({
+        title: MessageCreator.bold('XP Rewarding settings'),
+        description: MessageCreator.blockQuote(
+          MessageCreator.bold(
+            MessageCreator.objectToKeyValueString({
               minimal_xp: runner.args!.dbGuild!.min_rewarded_xp_value,
               maximal_xp: runner.args!.dbGuild!.max_rewarded_xp_value,
             })

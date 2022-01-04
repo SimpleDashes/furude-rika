@@ -4,7 +4,7 @@ import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import ArrayHelper from '../../framework/helpers/ArrayHelper';
-import MessageFactory from '../../helpers/MessageFactory';
+import MessageCreator from '../../framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 enum COIN {
@@ -30,7 +30,7 @@ export default class CoinFlip extends FurudeCommand {
     return async () => {
       const selectedCoin = ArrayHelper.getRandomArrayElement(this.coinsArray);
       await interaction.reply({
-        content: MessageFactory.success(
+        content: MessageCreator.success(
           runner.args!.localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, [
             runner.args!.localizer.get(
               selectedCoin as unknown as FurudeTranslationKeys

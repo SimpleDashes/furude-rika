@@ -7,7 +7,7 @@ import BaseEmbed from '../../framework/embeds/BaseEmbed';
 import UserType from '../../framework/enums/UserType';
 import PingContainer from '../../framework/ping/PingContainer';
 import PingData from '../../framework/ping/PingData';
-import MessageFactory from '../../helpers/MessageFactory';
+import MessageCreator from '../../framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 interface IPingCallbackArguments {
@@ -70,7 +70,7 @@ export default class Ping extends FurudeCommand {
           : runner.args!.localizer.get(
               FurudeTranslationKeys.PING_NOT_REACHABLE
             );
-        const value = MessageFactory.bold(MessageFactory.blockQuote(text));
+        const value = MessageCreator.bold(MessageCreator.blockQuote(text));
         embed.addField(pingData.pingWhat, value);
       });
 

@@ -30,7 +30,7 @@ export default class StringWithVariablesManager {
   public getString(args: IVariableManagerGetter) {
     const find = this.stringsWithVariables[args.key];
     if (!find) return;
-    if (!(args.args.length == find.args.length)) {
+    if (!(args.args.length === find.args.length)) {
       throw `Invalid number of arguments for this string with variables`;
     }
     let returnString = find.string;

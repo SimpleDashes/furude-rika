@@ -5,6 +5,6 @@ export default class RequiresSubCommands extends CommandPrecondition {
   protected validateInternally(
     interaction: CommandInteraction<CacheType>
   ): boolean {
-    return !!interaction.options.getSubcommand(false);
+    return Boolean(interaction.options.getSubcommand(false));
   }
 }

@@ -21,7 +21,7 @@ export default class BaseEmbed extends MessageEmbed {
     extraOption.defaultsTo = extraOption.defaultsTo ?? UserType.BOT;
 
     const guildMember =
-      extraOption.defaultsTo == UserType.MEMBER
+      extraOption.defaultsTo === UserType.MEMBER
         ? interaction?.guild?.members.cache.get(interaction.user.id)
         : interaction?.guild?.me;
 

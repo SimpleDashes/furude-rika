@@ -5,7 +5,7 @@ import CommandOptions from '../../../containers/CommandOptions';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import BaseEmbed from '../../../framework/embeds/BaseEmbed';
 import UserOption from '../../../framework/options/classes/UserOption';
-import MessageFactory from '../../../helpers/MessageFactory';
+import MessageCreator from '../../../framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand, { EconomyRunner } from '../wrapper/EconomySubCommand';
 
@@ -38,7 +38,7 @@ export default class EconomyOpen extends EconomySubCommand {
 
       if (citizen.justCreated) {
         await interaction.editReply({
-          content: MessageFactory.error(
+          content: MessageCreator.error(
             runner.args!.localizer.get(
               FurudeTranslationKeys.ECONOMY_BALANCE_FAIL
             )
@@ -63,12 +63,12 @@ export default class EconomyOpen extends EconomySubCommand {
 
       const embed = new BaseEmbed(
         {
-          title: MessageFactory.bold(
-            MessageFactory.underLine(CurrencyContainer.CURRENCY_NAME)
+          title: MessageCreator.bold(
+            MessageCreator.underLine(CurrencyContainer.CURRENCY_NAME)
           ),
-          description: MessageFactory.blockQuote(
-            MessageFactory.bold(
-              MessageFactory.objectToKeyValueString(responseObject)
+          description: MessageCreator.blockQuote(
+            MessageCreator.bold(
+              MessageCreator.objectToKeyValueString(responseObject)
             )
           ),
         },

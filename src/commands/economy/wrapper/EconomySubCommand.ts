@@ -6,7 +6,7 @@ import DBCitizen from '../../../database/entity/DBCitizen';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import Constructor from '../../../framework/interfaces/Constructor';
-import MessageFactory from '../../../helpers/MessageFactory';
+import MessageCreator from '../../../framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 
 export interface EconomyRunner extends IFurudeRunner<CurrencyContext> {
@@ -30,7 +30,7 @@ export default abstract class EconomySubCommand extends FurudeSubCommand {
       interaction
     );
     runner.getCitizen = async (user: User) => {
-      return user == interaction.user
+      return user === interaction.user
         ? runner.args!.dbUser.citizen
         : await runner.client!.db.CITIZEN.get(user);
     };
@@ -52,7 +52,7 @@ export default abstract class EconomySubCommand extends FurudeSubCommand {
     ) {
       return async () => {
         await interaction.reply({
-          content: MessageFactory.error(
+          content: MessageCreator.error(
             runner.args!.localizer.get(
               FurudeTranslationKeys.ECONOMY_MUST_HAVE_ACCOUNT
             )

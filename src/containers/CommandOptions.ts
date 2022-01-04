@@ -8,6 +8,7 @@ enum CommandOptions {
   min = 'min',
   max = 'max',
   seconds = 'seconds',
+  page = 'page',
 }
 
 export default CommandOptions;

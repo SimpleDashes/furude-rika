@@ -2,7 +2,7 @@ import { addDays, formatDuration, intervalToDuration } from 'date-fns';
 import { CommandInteraction } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import CurrencyContainer from '../../containers/CurrencyContainer';
-import MessageFactory from '../../helpers/MessageFactory';
+import MessageCreator from '../../framework/helpers/MessageCreator';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import FurudeOperations from '../FurudeOperations';
@@ -106,7 +106,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     streak += amount;
     this.streak.setValueSwitchedForType(interaction.guild, type, streak);
 
-    if (streak % DBCitizen.WEEKLY_STREAK == 0) {
+    if (streak % DBCitizen.WEEKLY_STREAK === 0) {
       gotMaxStreak = true;
       return makeSuccess('Streak achieved');
     }
@@ -145,7 +145,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       });
       return FurudeOperations.error(
         localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_ALREADY_CLAIMED, [
-          MessageFactory.block(formatDuration(ableToClaimWhen)),
+          MessageCreator.block(formatDuration(ableToClaimWhen)),
         ])
       );
     } else {
@@ -171,13 +171,13 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_CLAIM_SUCCESS, [
-        MessageFactory.block(amount.toFixed()),
-        MessageFactory.block(
+        MessageCreator.block(amount.toFixed()),
+        MessageCreator.block(
           this.streak
             .getValueSwitchedForType(interaction.guild, type)!
             .toFixed()
         ),
-        MessageFactory.block(
+        MessageCreator.block(
           this.capital
             .getValueSwitchedForType(interaction.guild, type)!
             .toFixed()

@@ -10,7 +10,6 @@ import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import FurudeDB from '../database/FurudeDB';
 import DefaultContext from './contexts/DefaultContext';
 import FurudeOperations from '../database/FurudeOperations';
-import DBGuild from '../database/entity/DBGuild';
 
 export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
@@ -44,6 +43,7 @@ export default class FurudeRika extends BaseBot {
     this.on('messageCreate', async (message) => {
       if (!message.guild || !message.member || message.member.user.bot) return;
       const user = await this.db.USER.get(message.member.user);
+      user.setUsername(message.member.user.username);
       const operation = user.incrementExperience(message.member.user, {
         rawGuild: message.guild,
         dbGuild: await this.db.GUILD.get(message.guild),
@@ -53,9 +53,6 @@ export default class FurudeRika extends BaseBot {
       }
       FurudeOperations.saveWhenSuccess(user, operation);
     });
-    const guilds = await DBGuild.find();
-    for await (const _dbGuild of guilds) {
-    }
   }
 
   public override async onSubCommandNotFound(

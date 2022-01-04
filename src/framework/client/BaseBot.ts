@@ -138,9 +138,9 @@ export default abstract class BaseBot extends Client implements IBot {
         if (file.isDirectory()) {
           const dirPathName = path.join(pathName, file.name);
           if (
-            (selectedDirectoryBase == this.subCommandGroupsDirectory &&
+            (selectedDirectoryBase === this.subCommandGroupsDirectory &&
               !dirPathName.endsWith(this.subCommandsDirectory)) ||
-            selectedDirectoryBase == this.subCommandsDirectory
+            selectedDirectoryBase === this.subCommandsDirectory
           ) {
             await this.registerSubOrGroup(
               commandRes,
@@ -202,11 +202,11 @@ export default abstract class BaseBot extends Client implements IBot {
         command as unknown as Partial<IHasPreconditions>;
 
       const subCommandOption = interaction.options.getSubcommand(
-        !!preconditionedCommand.requiresSubCommands
+        Boolean(preconditionedCommand.requiresSubCommands)
       );
 
       const subGroupOption = interaction.options.getSubcommandGroup(
-        !!preconditionedCommand.requiresSubGroups
+        Boolean(preconditionedCommand.requiresSubGroups)
       );
 
       let runner: IRunsCommand<BaseBot> | null = null;
@@ -216,7 +216,7 @@ export default abstract class BaseBot extends Client implements IBot {
       if (subGroupOption) {
         const gotGroup = this.subGroups
           .get(command)
-          ?.find((group) => group.name == subGroupOption);
+          ?.find((group) => group.name === subGroupOption);
         if (gotGroup) {
           groupToRunSubcommand = gotGroup;
         }
@@ -225,7 +225,7 @@ export default abstract class BaseBot extends Client implements IBot {
       if (subCommandOption) {
         const runnableSubCommand = this.subCommands
           .get(groupToRunSubcommand)
-          ?.find((sub) => sub.name == subCommandOption);
+          ?.find((sub) => sub.name === subCommandOption);
         if (runnableSubCommand) {
           runnerCommand = runnableSubCommand;
           runner = await runnableSubCommand.createRunner(interaction);
@@ -249,7 +249,7 @@ export default abstract class BaseBot extends Client implements IBot {
         };
 
         const canRunInner = async (inner: ICommand<any, any>) => {
-          return inner == preconditionedCommand ? true : await canRun(inner);
+          return inner === preconditionedCommand ? true : await canRun(inner);
         };
 
         const canRunCommandBase = await canRun(preconditionedCommand);

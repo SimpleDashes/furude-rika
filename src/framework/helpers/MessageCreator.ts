@@ -1,6 +1,6 @@
-import ClientEmojis from '../containers/ClientEmojis';
+import ClientEmojis from '../../containers/ClientEmojis';
 
-export default abstract class MessageFactory {
+export default abstract class MessageCreator {
   private constructor() {}
 
   public static prefixedString(prefix: string, value: string): string {

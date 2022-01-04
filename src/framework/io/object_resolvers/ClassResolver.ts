@@ -62,7 +62,7 @@ export default abstract class ClassResolver<T> {
     directoryMapper: DirectoryMapper
   ): Promise<resolvedClass<T>[]> {
     const objects: resolvedClass<T>[] = [];
-    if (directoryMapper.subDirectories?.length == 0) {
+    if (directoryMapper.subDirectories?.length === 0) {
       objects.push(...(await this.getObjectsForMapper(directoryMapper)));
       return objects;
     }

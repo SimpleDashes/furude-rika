@@ -1,7 +1,7 @@
 import { GuildChannel, Snowflake } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import BindableInteger from '../../framework/bindables/BindableInteger';
-import MessageFactory from '../../helpers/MessageFactory';
+import MessageCreator from '../../framework/helpers/MessageCreator';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
@@ -95,7 +95,7 @@ export default class DBGuild
     localizer: FurudeLocales,
     channel: GuildChannel
   ): IDatabaseOperation {
-    if (this.blocked_xp_channels.find((o) => o == channel.id)) {
+    if (this.blocked_xp_channels.find((o) => o === channel.id)) {
       return FurudeOperations.error(
         localizer.get(
           FurudeTranslationKeys.DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL,
@@ -121,7 +121,7 @@ export default class DBGuild
     localizer: FurudeLocales,
     channel: GuildChannel
   ): IDatabaseOperation {
-    if (!this.blocked_xp_channels.find((o) => o == channel.id)) {
+    if (!this.blocked_xp_channels.find((o) => o === channel.id)) {
       return FurudeOperations.error(
         localizer.get(
           FurudeTranslationKeys.DATABASE_GUILD_ALREADY_WHITELISTED_XP_CHANNEL,
@@ -129,7 +129,9 @@ export default class DBGuild
         )
       );
     }
-    this.blocked_xp_channels.filter((o) => o != channel.id);
+    this.blocked_xp_channels = this.blocked_xp_channels.filter(
+      (o) => o != channel.id
+    );
     return FurudeOperations.success(
       localizer.get(
         FurudeTranslationKeys.DATABASE_GUILD_WHITELISTED_XP_CHANNEL,
@@ -158,7 +160,7 @@ export default class DBGuild
     this.time_for_xp = this.extension!.time_for_xp.Current = time;
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.DATABASE_GUILD_CHANGED_TIME_FOR_XP, [
-        MessageFactory.block(time.toFixed()),
+        MessageCreator.block(time.toFixed()),
       ])
     );
   }

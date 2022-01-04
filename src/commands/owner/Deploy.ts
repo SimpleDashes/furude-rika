@@ -8,7 +8,7 @@ import { OwnerOnly } from '../../framework/commands/decorators/PreconditionDecor
 import BooleanOption from '../../framework/options/classes/BooleanOption';
 import StringOption from '../../framework/options/classes/StringOption';
 import DeployHandler from '../../framework/rest/DeployHandler';
-import MessageFactory from '../../helpers/MessageFactory';
+import MessageCreator from '../../framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 @OwnerOnly
@@ -52,7 +52,7 @@ export default class Deploy extends FurudeCommand {
         resFunctions: {
           onCommandNotFound: async () => {
             await interaction.editReply({
-              content: MessageFactory.error(
+              content: MessageCreator.error(
                 runner.args!.localizer.get(
                   FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND
                 )
@@ -61,7 +61,7 @@ export default class Deploy extends FurudeCommand {
           },
           onInvalidCommand: async () => {
             await interaction.editReply({
-              content: MessageFactory.error(
+              content: MessageCreator.error(
                 runner.args!.localizer.get(
                   FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED
                 )
@@ -70,7 +70,7 @@ export default class Deploy extends FurudeCommand {
           },
           onError: async () => {
             await interaction.editReply({
-              content: MessageFactory.error(
+              content: MessageCreator.error(
                 runner.args!.localizer.get(
                   FurudeTranslationKeys.DEPLOY_COMMAND_ERROR
                 )
@@ -79,7 +79,7 @@ export default class Deploy extends FurudeCommand {
           },
           onSuccess: async () => {
             await interaction.editReply({
-              content: MessageFactory.success(
+              content: MessageCreator.success(
                 runner.args!.localizer.get(
                   FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS
                 )

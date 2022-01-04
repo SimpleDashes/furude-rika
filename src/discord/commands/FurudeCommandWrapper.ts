@@ -8,7 +8,7 @@ import DefaultContext from '../../client/contexts/DefaultContext';
 import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
 import CommandPrecondition from '../../framework/commands/preconditions/abstracts/CommandPrecondition';
 import OwnerPrecondition from '../../framework/commands/preconditions/OwnerPrecondition';
-import MessageFactory from '../../helpers/MessageFactory';
+import MessageCreator from '../../framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import IFurudeCommand from './interfaces/IFurudeCommand';
 import IFurudeRunner from './interfaces/IFurudeRunner';
@@ -52,7 +52,7 @@ export default class FurudeCommandWrapper {
   ) {
     const { interaction } = runner;
     await interaction.reply({
-      content: MessageFactory.error(
+      content: MessageCreator.error(
         runner.args!.localizer.get(FurudeTranslationKeys.ERROR_REQUIRES_GUILD)
       ),
     });
@@ -65,7 +65,7 @@ export default class FurudeCommandWrapper {
   ): Promise<void> {
     const { interaction } = runner;
     await interaction.reply({
-      content: MessageFactory.error(
+      content: MessageCreator.error(
         precondition instanceof OwnerPrecondition
           ? runner.args!.localizer.get(
               FurudeTranslationKeys.ERRO_OWNER_ONLY_COMMAND
@@ -82,7 +82,7 @@ export default class FurudeCommandWrapper {
   ): Promise<void> {
     const { interaction } = runner;
     await interaction.reply({
-      content: MessageFactory.error(
+      content: MessageCreator.error(
         runner.args!.localizer.get(
           FurudeTranslationKeys.SUBCOMMAND_MISSING_REQUIRED
         )

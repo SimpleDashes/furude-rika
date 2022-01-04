@@ -2,6 +2,7 @@ import { intervalToDuration } from 'date-fns';
 import { Guild, User } from 'discord.js';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import Globals from '../../containers/Globals';
+import Strings from '../../containers/Strings';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
@@ -33,6 +34,9 @@ export default class DBUser
   @Column()
   preferred_locale?: SupportedFurudeLocales | undefined | null;
 
+  @Column('string')
+  username: string = Strings.UNKNOWN;
+
   @Column((_type) => GuildHyperNumber)
   experience = new GuildHyperNumber();
 
@@ -53,6 +57,10 @@ export default class DBUser
       locale,
       FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_USER
     );
+  }
+
+  public setUsername(username: string) {
+    this.username = username.trim();
   }
 
   /**
@@ -87,7 +95,7 @@ export default class DBUser
     }
     if (guildInfo) {
       const { rawGuild, dbGuild } = guildInfo;
-      if (!dbGuild.blocked_xp_channels.find((o) => o == rawGuild.id)) {
+      if (!dbGuild.blocked_xp_channels.find((o) => o === rawGuild.id)) {
         const nullableLocalLastTimeGotExperience =
           this.lastTimeGotExperience.currentLocal(rawGuild);
         const currentLocalLastTimeGotExperience =
@@ -96,12 +104,12 @@ export default class DBUser
           start: currentLocalLastTimeGotExperience,
           end: dateNow,
         });
-        const guildMinMinutesForExperiences =
-          DBUser.MIN_SECONDS_FOR_EXPERIENCE_GLOBAL;
+        const guildMinSecondsForExperiences =
+          dbGuild.time_for_xp ?? DBUser.MIN_SECONDS_FOR_EXPERIENCE_GLOBAL;
         if (
           !nullableLocalLastTimeGotExperience ||
           (localDifference.seconds &&
-            localDifference.seconds >= guildMinMinutesForExperiences)
+            localDifference.seconds >= guildMinSecondsForExperiences)
         ) {
           const incrementedLocalExperience = Globals.CHANCE.integer({
             min:

@@ -74,7 +74,7 @@ export default class BindableValue<T> implements IValueChangeListener<T> {
   public triggerValueChange(source: this, event: ValueChangeEvent<T>): void {
     if (event.oldValue != event.newValue) {
       for (const listener of this.onValueChangeListeners) {
-        if (listener == source) continue;
+        if (listener === source) continue;
         listener.onValueChange(event);
       }
     }

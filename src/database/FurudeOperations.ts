@@ -1,6 +1,11 @@
-import { CommandInteraction } from 'discord.js';
+import {
+  CommandInteraction,
+  InteractionReplyOptions,
+  MessagePayload,
+  WebhookEditMessageOptions,
+} from 'discord.js';
 import { BaseEntity } from 'typeorm';
-import MessageFactory from '../helpers/MessageFactory';
+import MessageCreator from '../framework/helpers/MessageCreator';
 import IDatabaseOperation from './interfaces/IDatabaseOperation';
 
 export default class FurudeOperations {
@@ -24,15 +29,22 @@ export default class FurudeOperations {
 
   public static async answerInteraction(
     interaction: CommandInteraction,
-    operation: IDatabaseOperation
+    operation: IDatabaseOperation,
+    options:
+      | string
+      | MessagePayload
+      | WebhookEditMessageOptions
+      | (InteractionReplyOptions & { fetchReply: true }) = {}
   ) {
     const displayString = operation.successfully
-      ? MessageFactory.success(operation.response)
-      : MessageFactory.error(operation.response);
+      ? MessageCreator.success(operation.response)
+      : MessageCreator.error(operation.response);
+
+    Object.assign(options, { content: displayString });
 
     return interaction.deferred
-      ? await interaction.editReply(displayString)
-      : await interaction.reply(displayString);
+      ? await interaction.editReply(options)
+      : await interaction.reply(options);
   }
 
   /**

@@ -16,7 +16,7 @@ export default class Localizer<I extends ILocalizerStructure> {
 
   protected onReady() {
     const foundDefaultLocale = this.locales.find(
-      (locale) => locale.locale == this.defaultLocale
+      (locale) => locale.locale === this.defaultLocale
     );
 
     if (!foundDefaultLocale) {

@@ -85,7 +85,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
         this.language;
     }
     const find = translations.find((translation) => {
-      return translation.locale == this.language;
+      return translation.locale === this.language;
     })?.structure[key];
     if (!find) return '';
     if (values.args) {

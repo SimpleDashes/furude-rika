@@ -108,8 +108,8 @@ export default class FurudeDB {
   }
 
   public async getSnowflakes<T extends SnowFlakeIDEntity>(
-    query: FindManyOptions<T>,
-    type: any
+    type: any,
+    query?: FindManyOptions<T>
   ): Promise<T[]> {
     const snowFlakes: T[] = await type.find(query);
     for (const snowFlake of snowFlakes) {
@@ -135,7 +135,7 @@ interface IDatabaseGetterGetOnly<
 }
 
 interface IDatabaseGetterGetAllOnly<T extends SnowFlakeIDEntity> {
-  getAllOn(query: FindManyOptions<T>): Promise<T[]>;
+  getAllOn(query?: FindManyOptions<T>): Promise<T[]>;
 }
 
 interface IDatabaseGetter<
@@ -161,9 +161,9 @@ abstract class BaseDatabaseGetter {
 
   protected static async getAllOn<T extends SnowFlakeIDEntity>(
     that: BaseDatabaseGetter,
-    query: FindManyOptions<T>
+    query?: FindManyOptions<T>
   ): Promise<T[]> {
-    return await that.db.getSnowflakes(query, that.typeObject);
+    return await that.db.getSnowflakes(that.typeObject, query);
   }
 }
 
@@ -203,7 +203,7 @@ abstract class DatabaseGetter<
   public async get(key: K): Promise<T> {
     return await BaseDatabaseGetter.get(this, key);
   }
-  public async getAllOn(query: FindManyOptions<T>): Promise<T[]> {
+  public async getAllOn(query?: FindManyOptions<T>): Promise<T[]> {
     return await BaseDatabaseGetter.getAllOn(this, query);
   }
 }
@@ -214,7 +214,7 @@ abstract class UserBasedDatabaseGetter<
   public override async get(user: User): Promise<T> {
     return super.get(user);
   }
-  public override async getAllOn(query: FindManyOptions<T>): Promise<T[]> {
+  public override async getAllOn(query?: FindManyOptions<T>): Promise<T[]> {
     return super.getAllOn(query);
   }
 }
@@ -240,3 +240,17 @@ class ChannelGetter extends DatabaseGetter<GuildChannel, DBChannel> {
     return super.get(channel);
   }
 }
+
+export {
+  UserGetter,
+  ChannelGetter,
+  GuildGetter,
+  CitizenGetter,
+  UserBasedDatabaseGetter,
+  DatabaseGetter,
+  DatabaseGetterGetOnly,
+  BaseDatabaseGetter,
+  IDatabaseGetter,
+  IDatabaseGetterGetAllOnly,
+  IDatabaseGetterGetOnly,
+};
