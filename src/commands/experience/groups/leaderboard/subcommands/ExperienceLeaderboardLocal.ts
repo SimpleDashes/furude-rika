@@ -4,7 +4,6 @@ import DBUser from '../../../../../database/entity/DBUser';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import { RequiresGuild } from '../../../../../framework/commands/decorators/PreconditionDecorators';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
-import _ from 'lodash';
 
 @RequiresGuild
 export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSubCommand {
