@@ -10,11 +10,12 @@ import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import FurudeDB from '../database/FurudeDB';
 import DefaultContext from './contexts/DefaultContext';
 import FurudeOperations from '../database/FurudeOperations';
-import ReminderManager from './ReminderManager';
+import ReminderManager from './managers/ReminderManager';
 
 export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
+  public readonly reminderManager = new ReminderManager(this);
 
   private readonly forceDeploy = true;
   private readonly isDebug = true;
@@ -42,7 +43,7 @@ export default class FurudeRika extends BaseBot {
     await this.localizer.build();
     await this.db.connect();
 
-    await ReminderManager.setupReminders(this);
+    await this.reminderManager.setupReminders;
 
     this.on('messageCreate', async (message) => {
       if (!message.guild || !message.member || message.member.user.bot) return;

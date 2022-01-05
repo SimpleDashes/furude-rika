@@ -2,7 +2,8 @@ import { Snowflake } from 'discord-api-types';
 import { CommandInteraction, InteractionReplyOptions } from 'discord.js';
 import Strings from '../../containers/Strings';
 import { MessageButtonCreator } from '../../framework/creators/MessageButtonCreator';
-import PageOption from '../options/PageOption';
+import StringHelper from '../../framework/helpers/StringHelper';
+import PageOption from '../../framework/options/custom/PageOption';
 
 type Column = {
   name: string;
@@ -44,7 +45,12 @@ export default class FurudeButtonCreator {
             throw 'Column should be indexed for createRow()';
           }
           const columnContents = filledTables.map((table) => table[i]);
-          const longest = Math.max(...columnContents.map((v) => v!.length));
+          const longest = Math.max(
+            ...columnContents.map((v) =>
+              StringHelper.getUnicodeStringLength(v!)
+            )
+          );
+
           output += ` | ${(name ?? ' - ').padEnd(
             Math.max(column.padding ?? 0, longest)
           )}`;

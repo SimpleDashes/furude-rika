@@ -68,7 +68,7 @@ export default class RemindMe extends FurudeCommand {
 
   public createRunnerRunnable(
     runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
+    client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
@@ -84,13 +84,17 @@ export default class RemindMe extends FurudeCommand {
 
       const reminder = DBReminder.create().build(interaction.user, remindWhat);
 
-      const operation = reminder.fireReminderWhen(runner.args!.localizer, {
-        seconds,
-        minutes,
-        hours,
-        days,
-        weeks,
-      });
+      const operation = reminder.fireReminderWhen(
+        client,
+        runner.args!.localizer,
+        {
+          seconds,
+          minutes,
+          hours,
+          days,
+          weeks,
+        }
+      );
 
       await FurudeOperations.saveWhenSuccess(reminder, operation);
       await FurudeOperations.answerInteraction(interaction, operation);

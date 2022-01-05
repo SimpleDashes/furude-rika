@@ -1,6 +1,6 @@
 import { CommandInteraction } from 'discord.js';
-import CommandOptions from '../../containers/CommandOptions';
-import IntegerOption from '../../framework/options/classes/IntegerOption';
+import CommandOptions from '../../../containers/CommandOptions';
+import IntegerOption from '../classes/IntegerOption';
 import { clamp } from '@stdlib/math/base/special';
 
 export default class PageOption extends IntegerOption {

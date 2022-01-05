@@ -1,7 +1,7 @@
 import { addDays, addHours, addMinutes, addSeconds, addWeeks } from 'date-fns';
 import { User } from 'discord.js';
 import { BaseEntity, Column, Entity, ObjectIdColumn } from 'typeorm';
-import ReminderManager from '../../client/ReminderManager';
+import FurudeRika from '../../client/FurudeRika';
 import Strings from '../../containers/Strings';
 import Numbers from '../../framework/helpers/Numbers';
 import FurudeLocales from '../../localization/FurudeLocales';
@@ -35,6 +35,7 @@ export default class DBReminder extends BaseEntity {
   }
 
   public fireReminderWhen(
+    rika: FurudeRika,
     localizer: FurudeLocales,
     end_time: {
       seconds?: number | null;
@@ -55,7 +56,7 @@ export default class DBReminder extends BaseEntity {
     }
 
     if (
-      ReminderManager.reminders.filter(
+      rika.reminderManager.reminders.filter(
         (r) => r.reminder_owner == this.reminder_owner
       ).length > DBReminder.MAX_NUMBER_OF_REMINDERS
     ) {
@@ -92,7 +93,7 @@ export default class DBReminder extends BaseEntity {
       Numbers.defaultOptionalNumber(end_time.weeks)
     );
 
-    ReminderManager.addReminder(this, localizer);
+    rika.reminderManager.addReminder(this, localizer);
 
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.REMINDER_WILL_REMIND_YOU)

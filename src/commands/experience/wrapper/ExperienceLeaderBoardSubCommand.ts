@@ -6,8 +6,8 @@ import DBUser from '../../../database/entity/DBUser';
 import FurudeButtonCreator from '../../../discord/buttons/FurudeButtonCreator';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
-import PageOption from '../../../discord/options/PageOption';
 import ArrayHelper from '../../../framework/helpers/ArrayHelper';
+import PageOption from '../../../framework/options/custom/PageOption';
 
 export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubCommand {
   private pageOption = this.registerOption(
