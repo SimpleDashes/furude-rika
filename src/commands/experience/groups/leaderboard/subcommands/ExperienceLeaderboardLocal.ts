@@ -25,11 +25,12 @@ export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSub
   public async getUsers(
     runner: IFurudeRunner<DefaultContext>
   ): Promise<DBUser[]> {
-    // TODO: ACTUALLY DO A QUERY TO GET ONLY THE THE USERS THAT ARE IN THE GUILD
-    // I couldn't find a method on typeorm for that (That works with mongodb)
-    // so i probably should migrate to other orm.
-    return (await runner.args!.db.USER.getAllOn()).filter((u) =>
-      u.experience.locals.find((e) => e.key == runner.interaction.guildId!)
-    );
+    return await runner.args!.db.USER.getAllOn({
+      where: {
+        'experience.locals': {
+          $elemMatch: { key: runner.interaction.guildId! },
+        },
+      },
+    });
   }
 }

@@ -79,6 +79,14 @@ export default class extends FurudeResource {
         '[$CHANNEL] is already blacklisted...',
       DATABASE_GUILD_CHANGED_TIME_FOR_XP:
         'Ok, now users need to wait [$TIME] seconds so they get any xp...',
+
+      // REMINDER
+      REMINDER_NEEDS_TIME_FRAME:
+        'Hey you need to put at least one time frame for the reminder.',
+      REMINDER_MAX_NUMBER_OF_REMINDERS_REACHED:
+        'You can only have up to [$LIMIT] pending reminders. i am sorry!',
+      REMINDER_WILL_REMIND_YOU: 'Ok! i will remind you about that!',
+      REMINDER_REMINDING_YOU: 'Reminder: [$TEXT]',
     });
   }
 }

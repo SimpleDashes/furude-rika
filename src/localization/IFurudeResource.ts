@@ -46,4 +46,9 @@ export default interface IFurudeResource extends ILocalizerStructure {
 
   DATABASE_CITIZEN_ALREADY_CLAIMED: string;
   DATABASE_CITIZEN_CLAIM_SUCCESS: string;
+
+  REMINDER_NEEDS_TIME_FRAME: string;
+  REMINDER_MAX_NUMBER_OF_REMINDERS_REACHED: string;
+  REMINDER_WILL_REMIND_YOU: string;
+  REMINDER_REMINDING_YOU: string;
 }

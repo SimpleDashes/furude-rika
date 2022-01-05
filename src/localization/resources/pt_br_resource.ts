@@ -80,6 +80,15 @@ export default class extends FurudeResource {
         '[$CHANNEL] já ta bloqueado de dar xp...',
       DATABASE_GUILD_CHANGED_TIME_FOR_XP:
         'Ok, os mano vai ter que esperar [$TIME] segundos se quiser xp agora...',
+
+      // REMINDER
+      REMINDER_NEEDS_TIME_FRAME:
+        'Você tem que por ao menos um intervalo de tempo né tio... não sou adivinha não.',
+      REMINDER_MAX_NUMBER_OF_REMINDERS_REACHED:
+        'Você só pode ter [$LIMIT] lembretes pendentes, cê ta ligado disso né.',
+      REMINDER_WILL_REMIND_YOU:
+        'Ja ja te lembro disso ai então... enquanto isso vou preparar meu cafe!',
+      REMINDER_REMINDING_YOU: 'Lembrete: [$TEXT]',
     });
   }
 }
