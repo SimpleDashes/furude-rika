@@ -76,7 +76,20 @@ export default class Calc extends FurudeCommand {
         return;
       }
 
-      const parsedExpression = Parser.parse(gotExpression!);
+      let parsedExpression;
+      try {
+        parsedExpression = Parser.parse(gotExpression!);
+      } catch {
+        await interaction.editReply(
+          MessageCreator.error(
+            runner.args!.localizer.get(
+              FurudeTranslationKeys.CALC_EVALUATE_ERROR,
+              [expressionText]
+            )
+          )
+        );
+        return;
+      }
 
       let evaluatedResult: number | null = null;
       try {
