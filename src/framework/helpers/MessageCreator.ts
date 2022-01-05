@@ -1,3 +1,4 @@
+import { getUnixTime } from 'date-fns';
 import ClientEmojis from '../../containers/ClientEmojis';
 
 export default abstract class MessageCreator {
@@ -33,6 +34,10 @@ export default abstract class MessageCreator {
 
   public static underLine(value: string): string {
     return `__${value}__`;
+  }
+
+  public static timeStamp(date: Date) {
+    return `<t:${getUnixTime(date)}>`;
   }
 
   public static objectToKeyValueString(

@@ -1,4 +1,4 @@
-import { addDays, formatDuration, intervalToDuration } from 'date-fns';
+import { addDays, intervalToDuration } from 'date-fns';
 import { CommandInteraction } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import CurrencyContainer from '../../containers/CurrencyContainer';
@@ -139,13 +139,10 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     });
 
     if (selectedLastTimeClaimedDaily && duration.days == 0) {
-      const ableToClaimWhen = intervalToDuration({
-        start: dateNow,
-        end: addDays(startDate, 1),
-      });
+      const ableToClaimWhen = addDays(startDate, 1);
       return FurudeOperations.error(
         localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_ALREADY_CLAIMED, [
-          MessageCreator.block(formatDuration(ableToClaimWhen)),
+          MessageCreator.timeStamp(ableToClaimWhen),
         ])
       );
     } else {

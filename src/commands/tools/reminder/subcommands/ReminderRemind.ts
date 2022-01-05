@@ -1,14 +1,14 @@
 import { CommandInteraction, CacheType } from 'discord.js';
-import DefaultContext from '../../client/contexts/DefaultContext';
-import FurudeRika from '../../client/FurudeRika';
-import CommandOptions from '../../containers/CommandOptions';
-import TimeFrames from '../../containers/TimeFrames';
-import DBReminder from '../../database/entity/DBReminder';
-import FurudeOperations from '../../database/FurudeOperations';
-import FurudeCommand from '../../discord/commands/FurudeCommand';
-import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import IntegerOption from '../../framework/options/classes/IntegerOption';
-import StringOption from '../../framework/options/classes/StringOption';
+import DefaultContext from '../../../../client/contexts/DefaultContext';
+import FurudeRika from '../../../../client/FurudeRika';
+import CommandOptions from '../../../../containers/CommandOptions';
+import TimeFrames from '../../../../containers/TimeFrames';
+import DBReminder from '../../../../database/entity/DBReminder';
+import FurudeOperations from '../../../../database/FurudeOperations';
+import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
+import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
+import IntegerOption from '../../../../framework/options/classes/IntegerOption';
+import StringOption from '../../../../framework/options/classes/StringOption';
 
 class ReminderTimeOption extends IntegerOption {
   public constructor(name: CommandOptions) {
@@ -20,7 +20,7 @@ class ReminderTimeOption extends IntegerOption {
   }
 }
 
-export default class RemindMe extends FurudeCommand {
+export default class ReminderReminderMe extends FurudeSubCommand {
   private remindWhatOption = this.registerOption(
     new StringOption()
       .setRequired(true)
@@ -60,7 +60,7 @@ export default class RemindMe extends FurudeCommand {
 
   public constructor() {
     super({
-      name: 'reminder',
+      name: 'remind',
       description:
         'Setups a little reminder for you to get your lazy uwu working on next time.',
     });

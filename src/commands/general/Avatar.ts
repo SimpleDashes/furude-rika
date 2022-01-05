@@ -9,7 +9,7 @@ import UserOption from '../../framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 export default class Avatar extends FurudeCommand {
-  private readonly user: UserOption = this.registerOption(
+  private readonly userOption: UserOption = this.registerOption(
     new UserOption(true)
       .setName(CommandOptions.user)
       .setDescription('The user you want the avatar from.')
@@ -30,16 +30,16 @@ export default class Avatar extends FurudeCommand {
     return async () => {
       await interaction.deferReply();
 
-      const selectedUser = this.user.apply(interaction)!;
+      const user = this.userOption.apply(interaction)!;
 
       const embed = new BaseEmbed(
         {
           title: runner.args!.localizer.get(
             FurudeTranslationKeys.AVATAR_RESPONSE,
-            [selectedUser.username]
+            [user.username]
           ),
           image: {
-            url: selectedUser.avatarURL({ dynamic: true, size: 1024 })!,
+            url: user.avatarURL({ dynamic: true, size: 1024 })!,
           },
         },
         interaction

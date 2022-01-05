@@ -1,20 +1,19 @@
 import { addDays, addHours, addMinutes, addSeconds, addWeeks } from 'date-fns';
-import { User } from 'discord.js';
-import { BaseEntity, Column, Entity, ObjectIdColumn } from 'typeorm';
+import { Snowflake, User } from 'discord.js';
+import { Column, Entity } from 'typeorm';
 import FurudeRika from '../../client/FurudeRika';
 import Strings from '../../containers/Strings';
+import MessageCreator from '../../framework/helpers/MessageCreator';
 import Numbers from '../../framework/helpers/Numbers';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import FurudeOperations from '../FurudeOperations';
 import IDatabaseOperation from '../interfaces/IDatabaseOperation';
+import GeneratedIDEntity from './abstracts/GeneratedIDEntity';
 
 @Entity()
-export default class DBReminder extends BaseEntity {
+export default class DBReminder extends GeneratedIDEntity {
   public static readonly MAX_NUMBER_OF_REMINDERS = 10;
-
-  @ObjectIdColumn({ generated: true })
-  id!: string;
 
   @Column('date')
   remind_start_date: Date = new Date();
@@ -55,15 +54,16 @@ export default class DBReminder extends BaseEntity {
       );
     }
 
-    if (
-      rika.reminderManager.reminders.filter(
-        (r) => r.reminder_owner == this.reminder_owner
-      ).length > DBReminder.MAX_NUMBER_OF_REMINDERS
-    ) {
+    const userReminders = DBReminder.getAllRemindersForID(
+      rika,
+      this.reminder_owner
+    );
+
+    if (userReminders.length > DBReminder.MAX_NUMBER_OF_REMINDERS) {
       return FurudeOperations.error(
         localizer.get(
           FurudeTranslationKeys.REMINDER_MAX_NUMBER_OF_REMINDERS_REACHED,
-          [DBReminder.MAX_NUMBER_OF_REMINDERS.toString()]
+          [MessageCreator.block(DBReminder.MAX_NUMBER_OF_REMINDERS.toString())]
         )
       );
     }
@@ -98,5 +98,15 @@ export default class DBReminder extends BaseEntity {
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.REMINDER_WILL_REMIND_YOU)
     );
+  }
+
+  private static getAllRemindersForID(rika: FurudeRika, uid: Snowflake) {
+    return rika.reminderManager.reminders.filter(
+      (r) => r.reminder_owner == uid
+    );
+  }
+
+  public static getAllRemindersForUser(rika: FurudeRika, user: User) {
+    return this.getAllRemindersForID(rika, user.id);
   }
 }

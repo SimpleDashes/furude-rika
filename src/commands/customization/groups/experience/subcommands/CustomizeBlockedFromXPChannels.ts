@@ -46,7 +46,7 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand {
 
   public createRunnerRunnable(
     runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
+    client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
@@ -72,7 +72,11 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand {
 
       let blockedChannelsString = Strings.EMPTY;
       for (const channel of runner.args!.dbGuild!.blocked_xp_channels) {
-        blockedChannelsString += `<#${channel}>\n`;
+        let cacheChannel = client.channels.cache.get(channel);
+        if (cacheChannel) {
+          blockedChannelsString += cacheChannel.toString();
+          blockedChannelsString += '\n';
+        }
       }
 
       const embed = new BaseEmbed(

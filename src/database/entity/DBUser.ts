@@ -25,11 +25,11 @@ export default class DBUser
   extends SnowFlakeIDEntity
   implements IHasPreferredLocale
 {
-  public static MIN_GLOBAL_EXPERIENCE_ADD = 0;
+  public static MIN_GLOBAL_EXPERIENCE_ADD = 5;
   public static MAX_GLOBAL_EXPERIENCE_ADD = 10;
   public static MIN_MIN_SECONDS_FOR_EXPERIENCE = 30;
   public static MAX_MIN_SECONDS_FOR_EXPERIENCE = 60 * 60;
-  public static MIN_SECONDS_FOR_EXPERIENCE_GLOBAL = 60;
+  public static MIN_SECONDS_FOR_EXPERIENCE_GLOBAL = 30;
 
   @Column()
   preferred_locale?: SupportedFurudeLocales | undefined | null;

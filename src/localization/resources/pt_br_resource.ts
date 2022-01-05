@@ -56,7 +56,7 @@ export default class extends FurudeResource {
       CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY:
         'Ah então ok, vou deixar seus ~~escravos~~ escolherem suas próprias linguagens!',
       CUSTOMIZE_LOCALE_RESPONSE_CHANNEL:
-        'Ok então, este canal é para os crias, certo!',
+        'Ok então, este canal é para os(as) crias, certo!',
       CUSTOMIZE_LOCALE_RESPONSE_CHANNEL_ANY:
         'Então, é para os membros falarem o idioma preferido do servidor, neste canal? entendido.',
 
@@ -79,16 +79,24 @@ export default class extends FurudeResource {
       DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL:
         '[$CHANNEL] já ta bloqueado de dar xp...',
       DATABASE_GUILD_CHANGED_TIME_FOR_XP:
-        'Ok, os mano vai ter que esperar [$TIME] segundos se quiser xp agora...',
+        'Ok, os mano(a) vai ter que esperar [$TIME] segundos se quiser xp agora...',
 
       // REMINDER
       REMINDER_NEEDS_TIME_FRAME:
-        'Você tem que por ao menos um intervalo de tempo né tio... não sou adivinha não.',
+        'Você tem que por ao menos um intervalo de tempo né tio(a)... não sou adivinha não.',
       REMINDER_MAX_NUMBER_OF_REMINDERS_REACHED:
         'Você só pode ter [$LIMIT] lembretes pendentes, cê ta ligado disso né.',
       REMINDER_WILL_REMIND_YOU:
         'Ja ja te lembro disso ai então... enquanto isso vou preparar meu cafe!',
       REMINDER_REMINDING_YOU: 'Lembrete: [$TEXT]',
+      REMINDER_REMOVE_FAIL:
+        'Não consegui remover o lembrete de índice [$INDEX]',
+      REMINDER_REMOVE_SUCCESS: 'Removi o lembrete no índice [$INDEX]',
+      REMINDER_WILL_FIRE: '[$CONTENT] ativo em [$TIME]',
+      REMINDERS_STRING: 'Lembretes do(a) [$USER]',
+
+      // MISCELLANEOUS
+      NOTHING_HERE: 'Nada para ver aqui.',
     });
   }
 }

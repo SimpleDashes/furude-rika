@@ -51,4 +51,10 @@ export default interface IFurudeResource extends ILocalizerStructure {
   REMINDER_MAX_NUMBER_OF_REMINDERS_REACHED: string;
   REMINDER_WILL_REMIND_YOU: string;
   REMINDER_REMINDING_YOU: string;
+  REMINDER_REMOVE_FAIL: string;
+  REMINDER_REMOVE_SUCCESS: string;
+  REMINDER_WILL_FIRE: string;
+  REMINDERS_STRING: string;
+
+  NOTHING_HERE: string;
 }

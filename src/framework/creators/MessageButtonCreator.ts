@@ -1,3 +1,4 @@
+import { secondsToMilliseconds } from 'date-fns';
 import {
   ButtonInteraction,
   CommandInteraction,
@@ -146,9 +147,9 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
               components: [],
             });
 
-            setTimeout(() => {
-              interaction.deleteReply();
-            }, 5 * 1000);
+            setTimeout(async () => {
+              await interaction.deleteReply();
+            }, secondsToMilliseconds(5));
           }
         } else {
           await interaction.editReply({
@@ -156,9 +157,9 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
             components: [],
           });
 
-          setTimeout(() => {
-            interaction.deleteReply();
-          }, 5 * 1000);
+          setTimeout(async () => {
+            await interaction.deleteReply();
+          }, secondsToMilliseconds(5));
         }
 
         resolve(collected.first()?.customId === 'yes');
@@ -289,7 +290,6 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
 
       try {
         await interaction.editReply(options);
-        // eslint-disable-next-line no-empty
       } catch {}
     });
 

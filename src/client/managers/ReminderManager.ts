@@ -1,19 +1,14 @@
 import { differenceInMilliseconds } from 'date-fns';
+import { User } from 'discord.js';
 import DBReminder from '../../database/entity/DBReminder';
 import DBUser from '../../database/entity/DBUser';
 import MessageCreator from '../../framework/helpers/MessageCreator';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import FurudeRika from '../FurudeRika';
+import BaseFurudeManager from './BaseFurudeManager';
 
-export default class ReminderManager {
-  private rika: FurudeRika;
-
+export default class ReminderManager extends BaseFurudeManager {
   public reminders: DBReminder[] = [];
-
-  public constructor(rika: FurudeRika) {
-    this.rika = rika;
-  }
 
   public async setupReminders() {
     const reminders = await DBReminder.find();
@@ -32,7 +27,15 @@ export default class ReminderManager {
     this.reminders.push(reminder);
     setTimeout(async () => {
       if (!this.reminders.includes(reminder)) return;
-      const user = await this.rika.users.fetch(reminder.reminder_owner);
+
+      let user: User;
+      try {
+        user = await this.rika.users.fetch(reminder.reminder_owner);
+      } catch {
+        await this.removeReminder(reminder);
+        return;
+      }
+
       await user.send({
         content: MessageCreator.success(
           localizer.get(FurudeTranslationKeys.REMINDER_REMINDING_YOU, [
@@ -40,12 +43,13 @@ export default class ReminderManager {
           ])
         ),
       });
-      await reminder.remove();
-      this.removeReminder(reminder);
-    }, differenceInMilliseconds(reminder.remind_end_date, reminder.remind_start_date));
+
+      await this.removeReminder(reminder);
+    }, differenceInMilliseconds(reminder.remind_end_date, new Date()));
   }
 
-  public removeReminder(reminder: DBReminder) {
+  public async removeReminder(reminder: DBReminder) {
+    await reminder.remove();
     this.reminders = this.reminders.filter((r) => r != reminder);
   }
 }

@@ -1,16 +1,11 @@
 import { Snowflake } from 'discord.js';
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  ObjectIdColumn,
-  SaveOptions,
-} from 'typeorm';
+import { Column, Entity, SaveOptions } from 'typeorm';
 import BindableValue from '../../../framework/bindables/BindableValue';
+import GeneratedIDEntity from './GeneratedIDEntity';
 
 @Entity()
 export default class SnowFlakeIDEntity
-  extends BaseEntity
+  extends GeneratedIDEntity
   implements IHasJustCreatedIdentifier
 {
   private onSaveListeners: IOnSaveListener[] | null = [];
@@ -18,7 +13,7 @@ export default class SnowFlakeIDEntity
   /**
    * Secondary ID
    */
-  @ObjectIdColumn()
+  @Column()
   s_id!: Snowflake;
 
   @Column({ update: false, nullable: true, type: 'bool' })
