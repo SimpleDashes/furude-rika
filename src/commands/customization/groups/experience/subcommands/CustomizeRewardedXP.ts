@@ -72,17 +72,20 @@ export default class CustomizeMinXP extends FurudeSubCommand {
         ...operations
       );
 
-      const embed = new BaseEmbed({
-        title: MessageCreator.bold('XP Rewarding settings'),
-        description: MessageCreator.blockQuote(
-          MessageCreator.bold(
-            MessageCreator.objectToKeyValueString({
-              minimal_xp: runner.args!.dbGuild!.min_rewarded_xp_value,
-              maximal_xp: runner.args!.dbGuild!.max_rewarded_xp_value,
-            })
-          )
-        ),
-      });
+      const embed = new BaseEmbed(
+        {
+          title: MessageCreator.bold('XP Rewarding settings'),
+          description: MessageCreator.blockQuote(
+            MessageCreator.bold(
+              MessageCreator.objectToKeyValueString({
+                minimal_xp: runner.args!.dbGuild!.min_rewarded_xp_value,
+                maximal_xp: runner.args!.dbGuild!.max_rewarded_xp_value,
+              })
+            )
+          ),
+        },
+        interaction
+      );
 
       await interaction.editReply({
         embeds: [embed],

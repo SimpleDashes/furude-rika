@@ -75,10 +75,13 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand {
         blockedChannelsString += `<#${channel}>\n`;
       }
 
-      const embed = new BaseEmbed({
-        title: 'XP Blacklist',
-        description: MessageCreator.bold(blockedChannelsString),
-      });
+      const embed = new BaseEmbed(
+        {
+          title: 'XP Blacklist',
+          description: MessageCreator.bold(blockedChannelsString),
+        },
+        interaction
+      );
 
       await FurudeOperations.saveWhenSuccess(runner.args!.dbGuild!, operation);
       await FurudeOperations.answerInteraction(interaction, operation, {

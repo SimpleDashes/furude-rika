@@ -39,11 +39,22 @@ export default class FurudeCommandWrapper {
       },
     };
     runner.args = await command.ContextType()(runner).get();
-    runner.run = command.createRunnerRunnable(
-      runner,
-      runner.client as FurudeRika,
-      runner.interaction
-    );
+    runner.run = async () => {
+      runner.args!.dbUser!.incrementExperience(
+        runner.interaction.user,
+        runner.interaction.inGuild()
+          ? {
+              rawGuild: runner.interaction.guild!,
+              dbGuild: runner.args!.dbGuild!,
+            }
+          : undefined
+      );
+      await command.createRunnerRunnable(
+        runner,
+        runner.client as FurudeRika,
+        runner.interaction
+      )();
+    };
     return runner;
   }
 
