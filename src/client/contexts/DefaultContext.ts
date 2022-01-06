@@ -12,6 +12,10 @@ export abstract class ContextCreator<C extends DefaultContext, P, T> {
   }
   public abstract create(arg: P): Promise<T>;
   public abstract default(arg: P): Promise<T>;
+
+  protected async baseDefault(arg: P, equals: P, defaultValue: T): Promise<T> {
+    return arg == equals ? defaultValue : await this.create(arg);
+  }
 }
 
 abstract class DefaultContextCreator<P, T> extends ContextCreator<
@@ -25,9 +29,11 @@ export class UsersCreator extends DefaultContextCreator<User, DBUser> {
     return await this.context.db.USER.get(arg);
   }
   public async default(arg: User): Promise<DBUser> {
-    return arg == this.context.runner.interaction.user
-      ? this.context.dbUser
-      : await this.create(arg);
+    return this.baseDefault(
+      arg,
+      this.context.runner.interaction.user,
+      this.context.dbUser
+    );
   }
 }
 
@@ -36,9 +42,11 @@ export class GuildCreator extends DefaultContextCreator<Guild, DBGuild> {
     return await this.context.db.GUILD.get(arg);
   }
   public async default(arg: Guild): Promise<DBGuild> {
-    return arg == this.context.runner.interaction.guild
-      ? this.context.dbGuild!
-      : await this.create(arg);
+    return this.baseDefault(
+      arg,
+      this.context.runner.interaction.guild!,
+      this.context.dbGuild!
+    );
   }
 }
 
@@ -50,9 +58,11 @@ export class ChannelCreator extends DefaultContextCreator<
     return await this.context.db.CHANNEL.get(arg);
   }
   public async default(arg: GuildChannel): Promise<DBChannel> {
-    return arg == this.context.runner.interaction.channel
-      ? this.context.dbChannel!
-      : await this.create(arg);
+    return this.baseDefault(
+      arg,
+      this.context.runner.interaction.channel as GuildChannel,
+      this.context.dbChannel!
+    );
   }
 }
 

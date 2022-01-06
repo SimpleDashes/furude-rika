@@ -1,6 +1,6 @@
 import { intervalToDuration } from 'date-fns';
 import { Guild, User } from 'discord.js';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import Globals from '../../containers/Globals';
 import Strings from '../../containers/Strings';
 import FurudeLocales from '../../localization/FurudeLocales';
@@ -12,9 +12,7 @@ import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
 import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDate';
 import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
-import DBCitizen from './DBCitizen';
 import DBGuild from './DBGuild';
-import DBOsuPlayer from './DBOsuPlayer';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 
 /**
@@ -43,14 +41,6 @@ export default class DBUser
 
   @Column((_type) => GuildHyperDate)
   lastTimeGotExperience = new GuildHyperDate(null);
-
-  @OneToOne((_type) => DBCitizen, { cascade: true })
-  @JoinColumn()
-  citizen!: DBCitizen;
-
-  @OneToOne((_type) => DBOsuPlayer, { cascade: true })
-  @JoinColumn()
-  osu!: DBOsuPlayer;
 
   setPreferredLocale(
     localizer: FurudeLocales,

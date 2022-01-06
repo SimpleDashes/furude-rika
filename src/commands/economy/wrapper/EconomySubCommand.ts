@@ -41,7 +41,7 @@ export default abstract class EconomySubCommand extends FurudeSubCommand {
     const thisWhichMayRequiresAccount = this as unknown as mayMustHaveAccount;
     if (
       thisWhichMayRequiresAccount.mustHaveAccount &&
-      runner.args!.dbUser.citizen.justCreated
+      runner.args!.citizen.justCreated
     ) {
       return async () => {
         await interaction.reply({
