@@ -3,7 +3,7 @@ import APIRoute from '../../../connection/apis/routes/APIRoute';
 import APISubRoute from '../../../connection/apis/routes/APISubRoute';
 import IBanchoOsuParam from '../bancho/params/IBanchoOsuParam';
 import axios from 'axios';
-import TOsuApiRawResponse from '../../users/response/TOsuApiRawResponse';
+import TOsuApiRawResponse from '../interfaces/TOsuApiRawResponse';
 
 export default abstract class OsuGetRoute<T, B, P>
   extends APISubRoute<APIRoute<IBanchoOsuParam>>

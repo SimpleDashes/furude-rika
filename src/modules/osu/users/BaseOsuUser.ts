@@ -6,7 +6,7 @@ import IOsuUserRanks from './interfaces/IOsuUserRanks';
 import IOsuUserScores from './interfaces/IOsuUserScores';
 import IOsuUser from './IOsuUser';
 import IBaseOsuApiUserResponse from './response/IBaseOsuAPIUserResponse';
-import TOsuApiRawResponse from './response/TOsuApiRawResponse';
+import TOsuApiRawResponse from '../servers/interfaces/TOsuApiRawResponse';
 
 export default abstract class BaseOsuUser<T extends IBaseOsuApiUserResponse>
   implements IOsuUser
