@@ -5,7 +5,7 @@ import {
   WebhookEditMessageOptions,
 } from 'discord.js';
 import { BaseEntity } from 'typeorm';
-import MessageCreator from '../framework/helpers/MessageCreator';
+import MessageCreator from '../modules/framework/helpers/MessageCreator';
 import IDatabaseOperation from './interfaces/IDatabaseOperation';
 
 export default class FurudeOperations {

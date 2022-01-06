@@ -1,7 +1,7 @@
 import { GuildChannel, Snowflake } from 'discord.js';
 import { Column, Entity } from 'typeorm';
-import BindableInteger from '../../framework/bindables/BindableInteger';
-import MessageCreator from '../../framework/helpers/MessageCreator';
+import BindableInteger from '../../modules/bindables/BindableInteger';
+import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';

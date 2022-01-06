@@ -5,10 +5,10 @@ import {
 } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
-import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
-import CommandPrecondition from '../../framework/commands/preconditions/abstracts/CommandPrecondition';
-import OwnerPrecondition from '../../framework/commands/preconditions/OwnerPrecondition';
-import MessageCreator from '../../framework/helpers/MessageCreator';
+import IRunsCommand from '../../modules/framework/commands/interfaces/IRunsCommand';
+import CommandPrecondition from '../../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
+import OwnerPrecondition from '../../modules/framework/commands/preconditions/OwnerPrecondition';
+import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import IFurudeCommand from './interfaces/IFurudeCommand';
 import IFurudeRunner from './interfaces/IFurudeRunner';

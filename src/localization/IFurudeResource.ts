@@ -1,4 +1,4 @@
-import ILocalizerStructure from '../framework/localization/ILocalizerStructure';
+import ILocalizerStructure from '../modules/framework/localization/ILocalizerStructure';
 
 export default interface IFurudeResource extends ILocalizerStructure {
   AVATAR_RESPONSE: string;

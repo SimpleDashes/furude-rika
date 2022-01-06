@@ -6,7 +6,7 @@ import {
   FindManyOptions,
   FindOneOptions,
 } from 'typeorm';
-import Constructor from '../framework/interfaces/Constructor';
+import Constructor from '../modules/framework/interfaces/Constructor';
 import SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBCitizen from './entity/DBCitizen';

@@ -1,13 +1,13 @@
-import Localizer from '../framework/localization/Localizer';
-import StringWithVariablesManager from '../framework/localization/StringWithVariablesManager';
+import Localizer from '../modules/framework/localization/Localizer';
+import StringWithVariablesManager from '../modules/framework/localization/StringWithVariablesManager';
 import IFurudeResource from './IFurudeResource';
 import SupportedFurudeLocales from './SupportedFurudeLocales';
-import { variablePrefix } from '../framework/localization/StringWithVariablesManager';
-import IVariableManagerGetter from '../framework/localization/IVariableManagerGetter';
+import { variablePrefix } from '../modules/framework/localization/StringWithVariablesManager';
+import IVariableManagerGetter from '../modules/framework/localization/IVariableManagerGetter';
 import FurudeResource from './FurudeResource';
 import FurudeTranslationKeys from './FurudeTranslationKeys';
 import ResourceResolver from './ResourceResolver';
-import DirectoryMapper from '../framework/io/DirectoryMapper';
+import DirectoryMapper from '../modules/framework/io/DirectoryMapper';
 import path from 'path';
 import IFurudeRunner from '../discord/commands/interfaces/IFurudeRunner';
 import DefaultContext from '../client/contexts/DefaultContext';

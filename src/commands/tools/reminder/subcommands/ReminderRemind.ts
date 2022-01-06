@@ -7,8 +7,8 @@ import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeOperations from '../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
-import IntegerOption from '../../../../framework/options/classes/IntegerOption';
-import StringOption from '../../../../framework/options/classes/StringOption';
+import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
+import StringOption from '../../../../modules/framework/options/classes/StringOption';
 
 class ReminderTimeOption extends IntegerOption {
   public constructor(name: CommandOptions) {

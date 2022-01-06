@@ -18,6 +18,7 @@
     "@discordjs/builders": "^0.11.0",
     "@discordjs/rest": "^0.2.0-canary.0",
     "@stdlib/stdlib": "^0.0.96",
+    "axios": "^0.24.0",
     "chance": "^1.1.8",
     "consola": "^2.15.3",
     "date-fns": "^2.27.0",

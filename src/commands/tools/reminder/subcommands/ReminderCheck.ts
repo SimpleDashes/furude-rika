@@ -6,9 +6,9 @@ import Strings from '../../../../containers/Strings';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
-import BaseEmbed from '../../../../framework/embeds/BaseEmbed';
-import MessageCreator from '../../../../framework/helpers/MessageCreator';
-import UserOption from '../../../../framework/options/classes/UserOption';
+import BaseEmbed from '../../../../modules/framework/embeds/BaseEmbed';
+import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
+import UserOption from '../../../../modules/framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 
 export default class ReminderCheck extends FurudeSubCommand {

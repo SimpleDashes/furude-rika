@@ -1,9 +1,9 @@
 import { Snowflake } from 'discord-api-types';
 import { CommandInteraction, InteractionReplyOptions } from 'discord.js';
 import Strings from '../../containers/Strings';
-import { MessageButtonCreator } from '../../framework/creators/MessageButtonCreator';
-import StringHelper from '../../framework/helpers/StringHelper';
-import PageOption from '../../framework/options/custom/PageOption';
+import { MessageButtonCreator } from '../../modules/framework/creators/MessageButtonCreator';
+import StringHelper from '../../modules/framework/helpers/StringHelper';
+import PageOption from '../../modules/framework/options/custom/PageOption';
 
 type Column = {
   name: string;

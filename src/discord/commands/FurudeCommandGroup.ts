@@ -1,7 +1,7 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
-import CommandGroup from '../../framework/commands/CommandGroup';
+import CommandGroup from '../../modules/framework/commands/CommandGroup';
 import FurudeCommandWrapper from './FurudeCommandWrapper';
 import IFurudeCommand from './interfaces/IFurudeCommand';
 import IFurudeRunner from './interfaces/IFurudeRunner';

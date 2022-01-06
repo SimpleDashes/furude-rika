@@ -11,6 +11,7 @@ declare global {
       DEV_GUILD_ID: string;
       MONGODB_USER: string;
       MONGODB_PASSWORD: string;
+      BANCHO_API_KEY: string;
     }
   }
 }

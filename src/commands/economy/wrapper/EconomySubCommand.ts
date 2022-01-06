@@ -5,8 +5,8 @@ import CurrencyContainer from '../../../containers/CurrencyContainer';
 import DBCitizen from '../../../database/entity/DBCitizen';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
-import Constructor from '../../../framework/interfaces/Constructor';
-import MessageCreator from '../../../framework/helpers/MessageCreator';
+import Constructor from '../../../modules/framework/interfaces/Constructor';
+import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 
 export interface EconomyRunner extends IFurudeRunner<CurrencyContext> {

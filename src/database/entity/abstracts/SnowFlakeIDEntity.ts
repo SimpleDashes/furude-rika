@@ -1,6 +1,6 @@
 import { Snowflake } from 'discord.js';
 import { Column, Entity, SaveOptions } from 'typeorm';
-import BindableValue from '../../../framework/bindables/BindableValue';
+import BindableValue from '../../../modules/bindables/BindableValue';
 import GeneratedIDEntity from './GeneratedIDEntity';
 
 @Entity()

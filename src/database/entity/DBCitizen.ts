@@ -2,7 +2,7 @@ import { addDays, intervalToDuration } from 'date-fns';
 import { CommandInteraction } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import CurrencyContainer from '../../containers/CurrencyContainer';
-import MessageCreator from '../../framework/helpers/MessageCreator';
+import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import FurudeOperations from '../FurudeOperations';

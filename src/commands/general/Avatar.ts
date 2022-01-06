@@ -4,8 +4,8 @@ import DefaultContext from '../../client/contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import BaseEmbed from '../../framework/embeds/BaseEmbed';
-import UserOption from '../../framework/options/classes/UserOption';
+import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
+import UserOption from '../../modules/framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 export default class Avatar extends FurudeCommand {

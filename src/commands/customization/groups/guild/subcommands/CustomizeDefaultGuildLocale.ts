@@ -2,7 +2,7 @@ import DefaultContext from '../../../../../client/contexts/DefaultContext';
 import SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlakeIDEntity';
 import IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
-import { RequirePermissions } from '../../../../../framework/commands/decorators/PreconditionDecorators';
+import { RequirePermissions } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
 @RequirePermissions(['MANAGE_GUILD'])

@@ -1,4 +1,4 @@
-import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
+import IRunsCommand from '../../modules/framework/commands/interfaces/IRunsCommand';
 import FurudeRika from '../FurudeRika';
 
 export default abstract class BaseContext {

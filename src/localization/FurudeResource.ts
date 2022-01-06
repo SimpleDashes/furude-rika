@@ -1,4 +1,4 @@
-import ILocalizerResource from '../framework/localization/ILocalizerResource';
+import ILocalizerResource from '../modules/framework/localization/ILocalizerResource';
 import IFurudeResource from './IFurudeResource';
 import SupportedFurudeLocales from './SupportedFurudeLocales';
 

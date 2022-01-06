@@ -5,8 +5,8 @@ import CommandOptions from '../../../../containers/CommandOptions';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
-import MessageCreator from '../../../../framework/helpers/MessageCreator';
-import IntegerOption from '../../../../framework/options/classes/IntegerOption';
+import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
+import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 
 export default class ReminderRemove extends FurudeSubCommand {

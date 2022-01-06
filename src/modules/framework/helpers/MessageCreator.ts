@@ -1,5 +1,5 @@
 import { getUnixTime } from 'date-fns';
-import ClientEmojis from '../../containers/ClientEmojis';
+import ClientEmojis from '../../../containers/ClientEmojis';
 
 export default abstract class MessageCreator {
   private constructor() {}

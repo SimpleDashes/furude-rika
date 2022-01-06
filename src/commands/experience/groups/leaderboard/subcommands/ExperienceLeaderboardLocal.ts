@@ -2,7 +2,7 @@ import DefaultContext from '../../../../../client/contexts/DefaultContext';
 import GenericNames from '../../../../../containers/GenericNames';
 import DBUser from '../../../../../database/entity/DBUser';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
-import { RequiresGuild } from '../../../../../framework/commands/decorators/PreconditionDecorators';
+import { RequiresGuild } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 
 @RequiresGuild

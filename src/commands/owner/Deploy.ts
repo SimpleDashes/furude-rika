@@ -4,11 +4,11 @@ import DefaultContext from '../../client/contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import { OwnerOnly } from '../../framework/commands/decorators/PreconditionDecorators';
-import BooleanOption from '../../framework/options/classes/BooleanOption';
-import StringOption from '../../framework/options/classes/StringOption';
-import DeployHandler from '../../framework/rest/DeployHandler';
-import MessageCreator from '../../framework/helpers/MessageCreator';
+import { OwnerOnly } from '../../modules/framework/commands/decorators/PreconditionDecorators';
+import BooleanOption from '../../modules/framework/options/classes/BooleanOption';
+import StringOption from '../../modules/framework/options/classes/StringOption';
+import DeployHandler from '../../modules/framework/rest/DeployHandler';
+import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 @OwnerOnly

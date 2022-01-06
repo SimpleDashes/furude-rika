@@ -2,9 +2,10 @@ import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../../../client/FurudeRika';
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
-import { RequiresGuild } from '../../../../framework/commands/decorators/PreconditionDecorators';
+import { RequiresGuild } from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import EconomySubCommand, {
-  EconomyRunner, MustHaveOpenAccount
+  EconomyRunner,
+  MustHaveOpenAccount,
 } from '../../wrapper/EconomySubCommand';
 import DailyHelper from '../../wrapper/DailyHelper';
 

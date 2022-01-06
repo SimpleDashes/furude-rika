@@ -1,7 +1,7 @@
 import { CommandInteraction } from 'discord.js';
 import FurudeRika from '../../../client/FurudeRika';
 import DefaultContext from '../../../client/contexts/DefaultContext';
-import IRunsCommand from '../../../framework/commands/interfaces/IRunsCommand';
+import IRunsCommand from '../../../modules/framework/commands/interfaces/IRunsCommand';
 import IFurudeRunner from './IFurudeRunner';
 
 export default interface IFurudeCommand {

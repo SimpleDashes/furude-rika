@@ -1,8 +1,8 @@
 import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import { RequiresSubCommands } from '../../framework/commands/decorators/PreconditionDecorators';
-import IRunsCommand from '../../framework/commands/interfaces/IRunsCommand';
+import { RequiresSubCommands } from '../../modules/framework/commands/decorators/PreconditionDecorators';
+import IRunsCommand from '../../modules/framework/commands/interfaces/IRunsCommand';
 
 @RequiresSubCommands
 export default class extends FurudeCommand {

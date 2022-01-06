@@ -3,11 +3,11 @@ import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import BaseEmbed from '../../framework/embeds/BaseEmbed';
-import UserType from '../../framework/enums/UserType';
-import PingContainer from '../../framework/ping/PingContainer';
-import PingData from '../../framework/ping/PingData';
-import MessageCreator from '../../framework/helpers/MessageCreator';
+import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
+import UserType from '../../modules/framework/enums/UserType';
+import PingContainer from '../../modules/framework/ping/PingContainer';
+import PingData from '../../modules/framework/ping/PingData';
+import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 interface IPingCallbackArguments {

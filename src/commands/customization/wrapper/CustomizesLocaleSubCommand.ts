@@ -3,7 +3,7 @@ import FurudeRika from '../../../client/FurudeRika';
 import DefaultContext from '../../../client/contexts/DefaultContext';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
-import StringOption from '../../../framework/options/classes/StringOption';
+import StringOption from '../../../modules/framework/options/classes/StringOption';
 import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
 import IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
 import SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';

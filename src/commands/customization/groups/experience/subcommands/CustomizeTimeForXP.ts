@@ -9,8 +9,8 @@ import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRun
 import {
   RequirePermissions,
   RequiresGuild,
-} from '../../../../../framework/commands/decorators/PreconditionDecorators';
-import IntegerOption from '../../../../../framework/options/classes/IntegerOption';
+} from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
 
 @RequiresGuild
 @RequirePermissions(['ADMINISTRATOR'])

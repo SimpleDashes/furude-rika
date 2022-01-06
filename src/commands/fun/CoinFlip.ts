@@ -3,8 +3,8 @@ import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import ArrayHelper from '../../framework/helpers/ArrayHelper';
-import MessageCreator from '../../framework/helpers/MessageCreator';
+import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
+import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 enum COIN {

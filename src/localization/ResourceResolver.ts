@@ -1,4 +1,4 @@
-import ClassResolver from '../framework/io/object_resolvers/ClassResolver';
+import ClassResolver from '../modules/framework/io/object_resolvers/ClassResolver';
 import FurudeResource from './FurudeResource';
 
 export default class ResourceResolver extends ClassResolver<FurudeResource> {

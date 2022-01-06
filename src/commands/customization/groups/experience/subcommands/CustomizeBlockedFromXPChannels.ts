@@ -11,11 +11,11 @@ import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRun
 import {
   RequirePermissions,
   RequiresGuild,
-} from '../../../../../framework/commands/decorators/PreconditionDecorators';
-import BaseEmbed from '../../../../../framework/embeds/BaseEmbed';
-import MessageCreator from '../../../../../framework/helpers/MessageCreator';
-import BooleanOption from '../../../../../framework/options/classes/BooleanOption';
-import ChannelOption from '../../../../../framework/options/classes/ChannelOption';
+} from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
+import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
+import BooleanOption from '../../../../../modules/framework/options/classes/BooleanOption';
+import ChannelOption from '../../../../../modules/framework/options/classes/ChannelOption';
 
 @RequiresGuild
 @RequirePermissions(['ADMINISTRATOR'])

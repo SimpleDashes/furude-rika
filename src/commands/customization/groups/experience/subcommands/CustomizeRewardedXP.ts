@@ -9,10 +9,10 @@ import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRun
 import {
   RequirePermissions,
   RequiresGuild,
-} from '../../../../../framework/commands/decorators/PreconditionDecorators';
-import BaseEmbed from '../../../../../framework/embeds/BaseEmbed';
-import IntegerOption from '../../../../../framework/options/classes/IntegerOption';
-import MessageCreator from '../../../../../framework/helpers/MessageCreator';
+} from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
+import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
+import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 
 class XPChangeOption extends IntegerOption {
   public constructor() {

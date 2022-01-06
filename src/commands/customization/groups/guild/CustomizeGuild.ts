@@ -2,7 +2,7 @@ import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../../../client/FurudeRika';
 import FurudeCommandGroup from '../../../../discord/commands/FurudeCommandGroup';
 import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
-import { RequiresSubCommands } from '../../../../framework/commands/decorators/PreconditionDecorators';
+import { RequiresSubCommands } from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
 
 @RequiresSubCommands
 export default class CustomizeGuild extends FurudeCommandGroup {

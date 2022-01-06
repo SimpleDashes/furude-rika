@@ -1,9 +1,9 @@
 import { CommandInteraction, Intents } from 'discord.js';
-import BaseBot from '../framework/client/BaseBot';
+import BaseBot from '../modules/framework/client/BaseBot';
 import consola from 'consola';
-import ICommandRunResponse from '../framework/client/ICommandRunResponse';
-import DeployHandler from '../framework/rest/DeployHandler';
-import DirectoryMapperFactory from '../framework/io/DirectoryMapperFactory';
+import ICommandRunResponse from '../modules/framework/client/ICommandRunResponse';
+import DeployHandler from '../modules/framework/rest/DeployHandler';
+import DirectoryMapperFactory from '../modules/framework/io/DirectoryMapperFactory';
 import path from 'path';
 import FurudeLocales from '../localization/FurudeLocales';
 import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
@@ -12,12 +12,16 @@ import DefaultContext from './contexts/DefaultContext';
 import FurudeOperations from '../database/FurudeOperations';
 import ReminderManager from './managers/ReminderManager';
 import UserScanner from './managers/UserScanner';
+import OsuServers from '../modules/osu/servers/OsuServers';
 
 export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
   public readonly reminderManager = new ReminderManager(this);
   public readonly userScanner = new UserScanner(this);
+  public readonly osuServers = new OsuServers({
+    bancho_api_key: process.env.BANCHO_API_KEY,
+  });
 
   private readonly forceDeploy = true;
   private readonly isDebug = true;

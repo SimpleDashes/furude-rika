@@ -1,5 +1,5 @@
 import { CommandInteraction } from 'discord.js';
-import CommandOptions from '../../../containers/CommandOptions';
+import CommandOptions from '../../../../containers/CommandOptions';
 import IntegerOption from '../classes/IntegerOption';
 import { clamp } from '@stdlib/math/base/special';
 

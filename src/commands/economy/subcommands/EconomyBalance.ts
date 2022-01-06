@@ -3,9 +3,9 @@ import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../../client/FurudeRika';
 import CommandOptions from '../../../containers/CommandOptions';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
-import BaseEmbed from '../../../framework/embeds/BaseEmbed';
-import UserOption from '../../../framework/options/classes/UserOption';
-import MessageCreator from '../../../framework/helpers/MessageCreator';
+import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
+import UserOption from '../../../modules/framework/options/classes/UserOption';
+import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand, { EconomyRunner } from '../wrapper/EconomySubCommand';
 

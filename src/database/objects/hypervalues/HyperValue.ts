@@ -1,6 +1,6 @@
 import { Snowflake } from 'discord.js';
 import { Column } from 'typeorm';
-import KeySetHelper from '../../../framework/helpers/KeySetHelper';
+import KeySetHelper from '../../../modules/framework/helpers/KeySetHelper';
 import ISnowflakeSet from '../../interfaces/ISnowflakeSet';
 import { HyperTypes } from './HyperTypes';
 

@@ -5,10 +5,10 @@ import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import CollectionHelper from '../../framework/helpers/CollectionHelper';
-import StringUtils from '../../framework/helpers/StringUtils';
-import StringOption from '../../framework/options/classes/StringOption';
-import MessageCreator from '../../framework/helpers/MessageCreator';
+import CollectionHelper from '../../modules/framework/helpers/CollectionHelper';
+import StringUtils from '../../modules/framework/helpers/StringUtils';
+import StringOption from '../../modules/framework/options/classes/StringOption';
+import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 
 export default class Calc extends FurudeCommand {

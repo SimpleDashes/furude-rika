@@ -5,7 +5,7 @@ import CurrencyContainer from '../../../containers/CurrencyContainer';
 import DBCitizen from '../../../database/entity/DBCitizen';
 import FurudeCommandGroup from '../../../discord/commands/FurudeCommandGroup';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
-import { RequiresSubCommands } from '../../../framework/commands/decorators/PreconditionDecorators';
+import { RequiresSubCommands } from '../../../modules/framework/commands/decorators/PreconditionDecorators';
 
 @RequiresSubCommands
 export default class EconomyDaily extends FurudeCommandGroup {

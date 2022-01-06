@@ -2,7 +2,7 @@ import { differenceInMilliseconds } from 'date-fns';
 import { User } from 'discord.js';
 import DBReminder from '../../database/entity/DBReminder';
 import DBUser from '../../database/entity/DBUser';
-import MessageCreator from '../../framework/helpers/MessageCreator';
+import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import BaseFurudeManager from './BaseFurudeManager';
