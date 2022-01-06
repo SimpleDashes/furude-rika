@@ -1,8 +1,7 @@
-import { CommandInteraction, CacheType, User } from 'discord.js';
+import { CommandInteraction, CacheType } from 'discord.js';
 import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import FurudeRika from '../../../client/FurudeRika';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
-import DBCitizen from '../../../database/entity/DBCitizen';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import Constructor from '../../../modules/framework/interfaces/Constructor';
@@ -10,7 +9,6 @@ import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 
 export interface EconomyRunner extends IFurudeRunner<CurrencyContext> {
-  getCitizen: (user: User) => Promise<DBCitizen>;
   getResultMessage: (key: FurudeTranslationKeys) => string;
 }
 
@@ -29,11 +27,6 @@ export default abstract class EconomySubCommand extends FurudeSubCommand {
     const runner: Partial<EconomyRunner> = await super.createRunner(
       interaction
     );
-    runner.getCitizen = async (user: User) => {
-      return user === interaction.user
-        ? runner.args!.dbUser.citizen
-        : await runner.client!.db.CITIZEN.get(user);
-    };
     runner.getResultMessage = (key: FurudeTranslationKeys) => {
       return runner.args!.localizer.get(key, [CurrencyContainer.CURRENCY_NAME]);
     };

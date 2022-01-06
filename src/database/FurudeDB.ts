@@ -85,7 +85,8 @@ export default class FurudeDB {
 
   public async getSnowflake<T extends SnowFlakeIDEntity>(
     snowflake: IHasSnowFlakeID,
-    type: any
+    type: any,
+    query?: FindOneOptions<T>
   ): Promise<T> {
     const identifyJustCreated = (o: any, justCreated: boolean) => {
       const asJustCreated = o as IHasJustCreatedIdentifier;
@@ -95,7 +96,11 @@ export default class FurudeDB {
       await this.createEntityWhenNotFound(
         type,
         async () => {
-          const found = await type.findOne(this.getSnowFlakeQuery(snowflake));
+          const appliedQuery = {
+            ...this.getSnowFlakeQuery(snowflake),
+            ...query,
+          };
+          const found = await type.findOne(appliedQuery);
           identifyJustCreated(found, false);
           return found;
         },
@@ -155,8 +160,8 @@ abstract class BaseDatabaseGetter {
   protected static async get<
     K extends IHasSnowFlakeID,
     T extends SnowFlakeIDEntity
-  >(that: BaseDatabaseGetter, key: K): Promise<T> {
-    return await that.db.getSnowflake(key, that.typeObject);
+  >(that: BaseDatabaseGetter, key: K, query?: FindOneOptions<T>): Promise<T> {
+    return await that.db.getSnowflake(key, that.typeObject, query);
   }
 
   protected static async getAllOn<T extends SnowFlakeIDEntity>(
@@ -174,8 +179,8 @@ abstract class DatabaseGetterGetOnly<
   extends BaseDatabaseGetter
   implements IDatabaseGetterGetOnly<K, T>
 {
-  public async get(key: K): Promise<T> {
-    return await BaseDatabaseGetter.get(this, key);
+  public async get(key: K, query?: FindManyOptions<T>): Promise<T> {
+    return await BaseDatabaseGetter.get(this, key, query);
   }
 }
 
@@ -200,8 +205,8 @@ abstract class DatabaseGetter<
   extends BaseDatabaseGetter
   implements IDatabaseGetter<K, T>
 {
-  public async get(key: K): Promise<T> {
-    return await BaseDatabaseGetter.get(this, key);
+  public async get(key: K, query?: FindManyOptions<T>): Promise<T> {
+    return await BaseDatabaseGetter.get(this, key, query);
   }
   public async getAllOn(query?: FindManyOptions<T>): Promise<T[]> {
     return await BaseDatabaseGetter.getAllOn(this, query);
@@ -211,8 +216,11 @@ abstract class DatabaseGetter<
 abstract class UserBasedDatabaseGetter<
   T extends SnowFlakeIDEntity
 > extends DatabaseGetter<User, T> {
-  public override async get(user: User): Promise<T> {
-    return super.get(user);
+  public override async get(
+    user: User,
+    query?: FindManyOptions<T>
+  ): Promise<T> {
+    return super.get(user, query);
   }
   public override async getAllOn(query?: FindManyOptions<T>): Promise<T[]> {
     return super.getAllOn(query);
@@ -229,15 +237,21 @@ class CitizenGetter extends UserBasedDatabaseGetter<DBCitizen> {
 
 class GuildGetter extends DatabaseGetterGetOnly<Guild, DBGuild> {
   protected typeObject: any = DBGuild;
-  public override async get(guild: Guild): Promise<DBGuild> {
-    return super.get(guild);
+  public override async get(
+    guild: Guild,
+    query?: FindManyOptions<DBGuild>
+  ): Promise<DBGuild> {
+    return await super.get(guild, query);
   }
 }
 
 class ChannelGetter extends DatabaseGetter<GuildChannel, DBChannel> {
   protected typeObject: any = DBChannel;
-  public override async get(channel: GuildChannel): Promise<DBChannel> {
-    return super.get(channel);
+  public override async get(
+    channel: GuildChannel,
+    query?: FindManyOptions<DBChannel>
+  ): Promise<DBChannel> {
+    return await super.get(channel, query);
   }
 }
 

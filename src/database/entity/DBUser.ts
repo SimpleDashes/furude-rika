@@ -14,6 +14,7 @@ import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperN
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import DBCitizen from './DBCitizen';
 import DBGuild from './DBGuild';
+import DBOsuPlayer from './DBOsuPlayer';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 
 /**
@@ -46,6 +47,10 @@ export default class DBUser
   @OneToOne((_type) => DBCitizen, { cascade: true })
   @JoinColumn()
   citizen!: DBCitizen;
+
+  @OneToOne((_type) => DBOsuPlayer, { cascade: true })
+  @JoinColumn()
+  osu!: DBOsuPlayer;
 
   setPreferredLocale(
     localizer: FurudeLocales,

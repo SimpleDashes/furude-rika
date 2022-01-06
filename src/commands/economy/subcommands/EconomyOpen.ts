@@ -23,10 +23,10 @@ export default class EconomyOpen extends EconomySubCommand {
     return async () => {
       await interaction.deferReply();
 
-      const citizen = await runner.getCitizen(interaction.user)!;
-      const operation = citizen.openAccount(runner.args!.localizer);
+      const user = await runner.args!.USERS.default(interaction.user);
+      const operation = user.citizen.openAccount(runner.args!.localizer);
 
-      await FurudeOperations.saveWhenSuccess(citizen, operation);
+      await FurudeOperations.saveWhenSuccess(user, operation);
       await FurudeOperations.answerInteraction(interaction, operation);
     };
   }

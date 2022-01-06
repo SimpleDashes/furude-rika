@@ -13,9 +13,9 @@ export default class DailyHelper {
     return async () => {
       await interaction.deferReply();
 
-      const citizen = await runner.getCitizen(interaction.user);
+      const user = await runner.args!.USERS.default(interaction.user);
 
-      const baseOperation = citizen.claimDaily(
+      const baseOperation = user.citizen.claimDaily(
         interaction,
         runner.args!.localizer,
         type
@@ -28,7 +28,7 @@ export default class DailyHelper {
         },
       };
 
-      await FurudeOperations.saveWhenSuccess(citizen, operation);
+      await FurudeOperations.saveWhenSuccess(user, operation);
       await FurudeOperations.answerInteraction(interaction, operation);
     };
   }

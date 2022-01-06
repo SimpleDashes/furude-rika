@@ -34,9 +34,9 @@ export default class EconomyOpen extends EconomySubCommand {
       await interaction.deferReply();
 
       const selectedUser = this.user.apply(interaction)!;
-      const citizen = await runner.getCitizen(selectedUser);
+      const user = await runner.args!.USERS.default(selectedUser);
 
-      if (citizen.justCreated) {
+      if (user.citizen.justCreated) {
         await interaction.editReply({
           content: MessageCreator.error(
             runner.args!.localizer.get(
@@ -49,14 +49,16 @@ export default class EconomyOpen extends EconomySubCommand {
 
       let responseObject = {
         name: selectedUser.username,
-        global_capital: citizen.capital!.global,
+        global_capital: user.citizen.capital!.global,
       };
 
       if (interaction.guild) {
         responseObject = {
           ...responseObject,
           ...{
-            local_capital: citizen.capital!.currentLocal(interaction.guild),
+            local_capital: user.citizen.capital!.currentLocal(
+              interaction.guild
+            ),
           },
         };
       }
