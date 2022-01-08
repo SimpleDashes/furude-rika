@@ -10,6 +10,7 @@ import StringOption from '../../modules/framework/options/classes/StringOption';
 import DeployHandler from '../../modules/framework/rest/DeployHandler';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
+import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 
 @OwnerOnly
 export default class Deploy extends FurudeCommand {
@@ -39,8 +40,6 @@ export default class Deploy extends FurudeCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const isDebug = this.debug.apply(interaction);
       const commandName = this.commandName.apply(interaction) as string;
 
@@ -51,40 +50,44 @@ export default class Deploy extends FurudeCommand {
         interaction,
         resFunctions: {
           onCommandNotFound: async () => {
-            await interaction.editReply({
-              content: MessageCreator.error(
+            await InteractionUtils.reply(
+              interaction,
+              MessageCreator.error(
                 runner.args!.localizer.get(
                   FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND
                 )
-              ),
-            });
+              )
+            );
           },
           onInvalidCommand: async () => {
-            await interaction.editReply({
-              content: MessageCreator.error(
+            await InteractionUtils.reply(
+              interaction,
+              MessageCreator.error(
                 runner.args!.localizer.get(
                   FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED
                 )
-              ),
-            });
+              )
+            );
           },
           onError: async () => {
-            await interaction.editReply({
-              content: MessageCreator.error(
+            await InteractionUtils.reply(
+              interaction,
+              MessageCreator.error(
                 runner.args!.localizer.get(
                   FurudeTranslationKeys.DEPLOY_COMMAND_ERROR
                 )
-              ),
-            });
+              )
+            );
           },
           onSuccess: async () => {
-            await interaction.editReply({
-              content: MessageCreator.success(
+            await InteractionUtils.reply(
+              interaction,
+              MessageCreator.success(
                 runner.args!.localizer.get(
                   FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS
                 )
-              ),
-            });
+              )
+            );
           },
         },
       });

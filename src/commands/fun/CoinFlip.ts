@@ -6,6 +6,7 @@ import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
+import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 
 enum COIN {
   HEAD = FurudeTranslationKeys.COIN_FLIP_HEADS,
@@ -29,15 +30,16 @@ export default class CoinFlip extends FurudeCommand {
   ): () => Promise<void> {
     return async () => {
       const selectedCoin = ArrayHelper.getRandomArrayElement(this.coinsArray);
-      await interaction.reply({
-        content: MessageCreator.success(
+      await InteractionUtils.reply(
+        interaction,
+        MessageCreator.success(
           runner.args!.localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, [
             runner.args!.localizer.get(
               selectedCoin as unknown as FurudeTranslationKeys
             ),
           ])
-        ),
-      });
+        )
+      );
     };
   }
 }

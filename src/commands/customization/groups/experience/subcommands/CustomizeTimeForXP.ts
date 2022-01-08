@@ -40,8 +40,6 @@ export default class CustomizeTimeForXP extends FurudeSubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const secondsForXP = this.secondsOption.apply(interaction)!;
 
       const operation = runner.args!.dbGuild!.setTimeForXP(

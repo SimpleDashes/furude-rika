@@ -36,13 +36,13 @@ export default class ReminderManager extends BaseFurudeManager {
         return;
       }
 
-      await user.send({
-        content: MessageCreator.success(
+      await user.send(
+        MessageCreator.success(
           localizer.get(FurudeTranslationKeys.REMINDER_REMINDING_YOU, [
             reminder.reminder,
           ])
-        ),
-      });
+        )
+      );
 
       await this.removeReminder(reminder);
     }, differenceInMilliseconds(reminder.remind_end_date, new Date()));

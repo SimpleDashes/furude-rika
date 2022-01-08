@@ -10,6 +10,7 @@ import BaseEmbed from '../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
 import UserOption from '../../../../modules/framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
+import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
 
 export default class ReminderCheck extends FurudeSubCommand {
   public static MAX_REMINDER_LENGTH = 16;
@@ -33,8 +34,6 @@ export default class ReminderCheck extends FurudeSubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const user = this.userOption.apply(interaction)!;
       const reminders = DBReminder.getAllRemindersForUser(client, user);
 
@@ -78,7 +77,7 @@ export default class ReminderCheck extends FurudeSubCommand {
         interaction
       );
 
-      await interaction.editReply({
+      await InteractionUtils.reply(interaction, {
         embeds: [embed],
       });
     };

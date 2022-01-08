@@ -11,8 +11,6 @@ export default class DailyHelper {
     type: HyperTypes
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const citizen = runner.args!.citizen;
 
       const baseOperation = citizen.claimDaily(

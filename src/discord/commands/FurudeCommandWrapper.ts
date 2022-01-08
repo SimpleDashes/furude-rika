@@ -12,6 +12,7 @@ import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import IFurudeCommand from './interfaces/IFurudeCommand';
 import IFurudeRunner from './interfaces/IFurudeRunner';
+import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 
 export default class FurudeCommandWrapper {
   public static async createRunner(
@@ -61,12 +62,12 @@ export default class FurudeCommandWrapper {
   public static async onMissingRequiredGuild(
     runner: IFurudeRunner<DefaultContext>
   ) {
-    const { interaction } = runner;
-    await interaction.reply({
-      content: MessageCreator.error(
+    await InteractionUtils.reply(
+      runner.interaction,
+      MessageCreator.error(
         runner.args!.localizer.get(FurudeTranslationKeys.ERROR_REQUIRES_GUILD)
-      ),
-    });
+      )
+    );
   }
 
   public static async onInsufficientPermissions(
@@ -74,9 +75,9 @@ export default class FurudeCommandWrapper {
     precondition?: CommandPrecondition,
     _missingPermissions?: PermissionResolvable
   ): Promise<void> {
-    const { interaction } = runner;
-    await interaction.reply({
-      content: MessageCreator.error(
+    await InteractionUtils.reply(
+      runner.interaction,
+      MessageCreator.error(
         precondition instanceof OwnerPrecondition
           ? runner.args!.localizer.get(
               FurudeTranslationKeys.ERRO_OWNER_ONLY_COMMAND
@@ -84,21 +85,21 @@ export default class FurudeCommandWrapper {
           : runner.args!.localizer.get(
               FurudeTranslationKeys.ERROR_MISSING_PERMISSIONS
             )
-      ),
-    });
+      )
+    );
   }
 
   public static async onMissingRequiredSubCommands(
     runner: IFurudeRunner<DefaultContext>
   ): Promise<void> {
-    const { interaction } = runner;
-    await interaction.reply({
-      content: MessageCreator.error(
+    await InteractionUtils.reply(
+      runner.interaction,
+      MessageCreator.error(
         runner.args!.localizer.get(
           FurudeTranslationKeys.SUBCOMMAND_MISSING_REQUIRED
         )
-      ),
-    });
+      )
+    );
   }
 
   public static defaultDependencyType(): (

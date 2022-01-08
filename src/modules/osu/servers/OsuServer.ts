@@ -11,6 +11,7 @@ export default abstract class OsuServer<
   U_B extends IBaseOsuAPIUserResponse,
   U_P extends BASE_PARAMS
 > extends ContentHost {
+  public abstract readonly name: string;
   protected apiKey: string = '';
 
   public api: APIRoute<BASE_PARAMS>;

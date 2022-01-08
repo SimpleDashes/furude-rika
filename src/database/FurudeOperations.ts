@@ -6,6 +6,7 @@ import {
 } from 'discord.js';
 import { BaseEntity } from 'typeorm';
 import MessageCreator from '../modules/framework/helpers/MessageCreator';
+import InteractionUtils from '../modules/framework/interactions/InteractionUtils';
 import IDatabaseOperation from './interfaces/IDatabaseOperation';
 
 export default class FurudeOperations {
@@ -42,9 +43,7 @@ export default class FurudeOperations {
 
     Object.assign(options, { content: displayString });
 
-    return interaction.deferred
-      ? await interaction.editReply(options)
-      : await interaction.reply(options);
+    return InteractionUtils.reply(interaction, options);
   }
 
   /**

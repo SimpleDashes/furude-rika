@@ -50,8 +50,6 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const whitelist = this.isWhitelist.apply(interaction) ?? false;
       const selectedChannel = this.channelToManipulate.apply(
         interaction

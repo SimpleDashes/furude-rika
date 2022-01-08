@@ -1,3 +1,4 @@
+import { secondsToMilliseconds } from 'date-fns';
 import {
   ButtonInteraction,
   InteractionCollector,
@@ -24,7 +25,7 @@ export default abstract class InteractionCollectorCreator {
       filter: (i) => i.isButton() && users.includes(i.user.id),
       componentType: 'BUTTON',
       dispose: true,
-      time: duration * 1000,
+      time: secondsToMilliseconds(duration),
     });
   }
 
@@ -45,7 +46,7 @@ export default abstract class InteractionCollectorCreator {
       filter: (i) => i.isSelectMenu() && users.includes(i.user.id),
       componentType: 'SELECT_MENU',
       dispose: true,
-      time: duration * 1000,
+      time: secondsToMilliseconds(duration),
     });
   }
 }

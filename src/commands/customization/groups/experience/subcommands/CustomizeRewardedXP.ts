@@ -13,6 +13,7 @@ import {
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
+import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
 
 class XPChangeOption extends IntegerOption {
   public constructor() {
@@ -52,8 +53,6 @@ export default class CustomizeMinXP extends FurudeSubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const minValue = this.minOption.apply(interaction);
       const maxValue = this.maxOption.apply(interaction);
 
@@ -87,7 +86,7 @@ export default class CustomizeMinXP extends FurudeSubCommand {
         interaction
       );
 
-      await interaction.editReply({
+      await InteractionUtils.reply(interaction, {
         embeds: [embed],
       });
     };

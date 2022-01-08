@@ -95,6 +95,12 @@ export default class extends FurudeResource {
       REMINDER_WILL_FIRE: '[$CONTENT] ativo em [$TIME]',
       REMINDERS_STRING: 'Lembretes do(a) [$USER]',
 
+      // OSU
+      OSU_ACCOUNT_NOT_FOUND:
+        'Não consegui encontrar nenhum usuário com o id ou nickname especificado.',
+      OSU_USER_ADDED_ACCOUNT:
+        'Adicioneis as contas [$USERNAME] ao servidores [$SERVER] para você.',
+
       // MISCELLANEOUS
       NOTHING_HERE: 'Nada para ver aqui.',
     });

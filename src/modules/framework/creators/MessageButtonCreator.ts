@@ -1,6 +1,8 @@
 import { secondsToMilliseconds } from 'date-fns';
 import {
   ButtonInteraction,
+  CacheType,
+  Collection,
   CommandInteraction,
   InteractionCollector,
   InteractionReplyOptions,
@@ -11,10 +13,37 @@ import {
   MessageEmbed,
   Snowflake,
 } from 'discord.js';
+import Strings from '../../../containers/Strings';
 import MessageCreator from '../helpers/MessageCreator';
+import StringHelper from '../helpers/StringHelper';
+import InteractionUtils from '../interactions/InteractionUtils';
+import PageOption from '../options/custom/PageOption';
 import InteractionCollectorCreator from './abstracts/InteractionCollectorCreator';
 import OnButtonPageChange from './interfaces/OnButtonPageChange';
 import Symbols from './Symbols';
+import { capitalize } from '@stdlib/string';
+
+type Column = {
+  name: string;
+  padding?: number;
+};
+
+enum PaginationIDS {
+  back = 'back',
+  next = 'next',
+  backward = 'backward',
+  forward = 'forward',
+}
+
+enum ConfirmationIDS {
+  yes = 'yes',
+  no = 'no',
+}
+
+interface IListenerButton {
+  button: MessageButton;
+  onPress: (interaction: ButtonInteraction) => Promise<void>;
+}
 
 /**
  * A utility to create message buttons.
@@ -98,6 +127,58 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     );
   }
 
+  static async createBaseButtonCollectors(
+    buttonListeners: IListenerButton[],
+    interaction: CommandInteraction | MessageComponentInteraction,
+    options: InteractionReplyOptions,
+    users: Snowflake[],
+    duration: number,
+    runOnce?: boolean,
+    onTimeOut?: () => Promise<void>
+  ): Promise<Collection<string, ButtonInteraction<CacheType>>> {
+    const component: MessageActionRow = new MessageActionRow().addComponents(
+      buttonListeners.map((v) => v.button)
+    );
+
+    options.components ??= [];
+    options.components.push(component);
+
+    const message: Message = (await InteractionUtils.reply(interaction, {
+      ...options,
+      ...{ fetchReply: true },
+    })) as Message;
+
+    const collector: InteractionCollector<ButtonInteraction> =
+      this.createButtonCollector(message, users, duration);
+
+    const replyToEvents = async (buttonInteraction: ButtonInteraction) => {
+      const pressedButton = buttonListeners.find(
+        (l) => l.button.customId == buttonInteraction.customId
+      );
+      pressedButton?.onPress(buttonInteraction);
+    };
+
+    collector.on('collect', async (buttonInteraction) => {
+      if (runOnce) {
+        collector.stop();
+      } else {
+        await replyToEvents(buttonInteraction);
+      }
+    });
+
+    return new Promise((resolve) => {
+      collector.on('end', async (collected) => {
+        const pressed: ButtonInteraction | undefined = collected.first();
+        if (pressed) {
+          await replyToEvents(pressed);
+        } else if (onTimeOut) {
+          await onTimeOut();
+        }
+        resolve(collected);
+      });
+    });
+  }
+
   /**
    * Creates a confirmation interaction using buttons.
    *
@@ -111,58 +192,58 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     interaction: CommandInteraction | MessageComponentInteraction,
     options: InteractionReplyOptions,
     users: Snowflake[],
-    duration: number
+    duration: number,
+    collectTime: number = 5
   ): Promise<boolean> {
     const buttons: MessageButton[] = this.createConfirmationButtons();
 
-    const component: MessageActionRow = new MessageActionRow().addComponents(
-      buttons
-    );
+    const cancel = async (
+      interaction:
+        | ButtonInteraction<CacheType>
+        | MessageComponentInteraction<CacheType>
+        | CommandInteraction<CacheType>,
+      text: string
+    ) => {
+      await InteractionUtils.reply(interaction, {
+        content: MessageCreator.error(text),
+        components: [],
+      });
+      setTimeout(async () => {
+        await interaction.deleteReply();
+      }, secondsToMilliseconds(collectTime));
+    };
 
-    options.components ??= [];
-    options.components.push(component);
-
-    const message: Message = <Message>await interaction.editReply(options);
-
-    const collector: InteractionCollector<ButtonInteraction> =
-      this.createButtonCollector(message, users, duration);
-
-    collector.on('collect', () => {
-      collector.stop();
-    });
-
-    return new Promise((resolve) => {
-      collector.on('end', async (collected) => {
-        const pressed: ButtonInteraction | undefined = collected.first();
-
-        if (pressed) {
-          if (pressed.customId === 'yes') {
-            await interaction.editReply({
-              content: MessageCreator.error(`Please wait... ${Symbols.timer}`),
-              components: [],
-            });
-          } else {
-            await interaction.editReply({
-              content: MessageCreator.error('Action cancelled.'),
-              components: [],
-            });
-
-            setTimeout(async () => {
-              await interaction.deleteReply();
-            }, secondsToMilliseconds(5));
-          }
-        } else {
-          await interaction.editReply({
-            content: MessageCreator.error('Timed out.'),
-            components: [],
-          });
-
-          setTimeout(async () => {
-            await interaction.deleteReply();
-          }, secondsToMilliseconds(5));
+    return new Promise((res) => {
+      this.createBaseButtonCollectors(
+        [
+          {
+            button: buttons.find((b) => b.customId == ConfirmationIDS.yes)!,
+            onPress: async () => {
+              await InteractionUtils.reply(interaction, {
+                content: MessageCreator.error(
+                  `Please wait... ${Symbols.timer}`
+                ),
+                components: [],
+              });
+            },
+          },
+          {
+            button: buttons.find((b) => b.customId == ConfirmationIDS.no)!,
+            onPress: async (i) => {
+              await cancel(i, 'Action cancelled.');
+            },
+          },
+        ],
+        interaction,
+        options,
+        users,
+        duration,
+        true,
+        async () => {
+          await cancel(interaction, 'Timed out.');
         }
-
-        resolve(collected.first()?.customId === 'yes');
+      ).then((collected) => {
+        res(collected.first()?.customId == ConfirmationIDS.yes);
       });
     });
   }
@@ -222,10 +303,8 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     function onPageChangeEmbedEdit(): void {
       if (options.embeds) {
         for (let i = 0; i < options.embeds.length; ++i) {
-          const embed: MessageEmbed = <MessageEmbed>options.embeds[i];
-
+          const embed: MessageEmbed = options.embeds[i] as MessageEmbed;
           embed.spliceFields(0, embed.fields.length);
-
           options.embeds[i] = embed;
         }
       }
@@ -233,7 +312,10 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
 
     await onPageChange(options, startPage, contents, ...onPageChangeArgs);
 
-    const message: Message = <Message>await interaction.editReply(options);
+    const message: Message = (await InteractionUtils.reply(
+      interaction,
+      options
+    )) as Message;
 
     if (pages === 1) {
       return message;
@@ -246,24 +328,24 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
       await i.deferUpdate();
 
       switch (i.customId) {
-        case 'backward':
+        case PaginationIDS.backward:
           currentPage = Math.max(1, currentPage - 10);
           break;
-        case 'back':
+        case PaginationIDS.back:
           if (currentPage === 1) {
             currentPage = pages;
           } else {
             --currentPage;
           }
           break;
-        case 'next':
+        case PaginationIDS.next:
           if (currentPage === pages) {
             currentPage = 1;
           } else {
             ++currentPage;
           }
           break;
-        case 'forward':
+        case PaginationIDS.forward:
           currentPage = Math.min(currentPage + 10, pages);
           break;
         default:
@@ -282,14 +364,9 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     });
 
     collector.on('end', async () => {
-      // Disable all buttons
-
-      component.components.forEach((component) => {
-        component.setDisabled(true);
-      });
-
+      component.components.forEach((component) => component.setDisabled(true));
       try {
-        await interaction.editReply(options);
+        await InteractionUtils.reply(interaction, options);
       } catch {}
     });
 
@@ -310,17 +387,17 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
   ): MessageButton[] {
     return [
       new MessageButton()
-        .setCustomId('backward')
+        .setCustomId(PaginationIDS.backward)
         .setEmoji(Symbols.skipBackward)
         .setStyle('PRIMARY')
         .setDisabled(currentPage === 1 || maxPage <= 5),
       new MessageButton()
-        .setCustomId('back')
+        .setCustomId(PaginationIDS.back)
         .setEmoji(Symbols.leftArrow)
         .setStyle('SUCCESS')
         .setDisabled(maxPage === 1),
       new MessageButton()
-        .setCustomId('none')
+        .setCustomId(Strings.UNKNOWN)
         .setLabel(
           Number.isFinite(maxPage)
             ? `${currentPage}/${maxPage}`
@@ -329,12 +406,12 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
         .setStyle('SECONDARY')
         .setDisabled(true),
       new MessageButton()
-        .setCustomId('next')
+        .setCustomId(PaginationIDS.next)
         .setEmoji(Symbols.rightArrow)
         .setStyle('SUCCESS')
         .setDisabled(maxPage === 1),
       new MessageButton()
-        .setCustomId('forward')
+        .setCustomId(PaginationIDS.forward)
         .setEmoji(Symbols.skipForward)
         .setStyle('PRIMARY')
         .setDisabled(currentPage === maxPage || maxPage <= 5),
@@ -349,15 +426,86 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
   private static createConfirmationButtons(): MessageButton[] {
     return [
       new MessageButton()
-        .setCustomId('yes')
+        .setCustomId(ConfirmationIDS.yes)
         .setEmoji(Symbols.checkmark)
-        .setLabel('Yes')
+        .setLabel(capitalize(ConfirmationIDS.yes))
         .setStyle('SUCCESS'),
       new MessageButton()
-        .setCustomId('no')
+        .setCustomId(ConfirmationIDS.no)
         .setEmoji(Symbols.cross)
-        .setLabel('No')
+        .setLabel(capitalize(ConfirmationIDS.no))
         .setStyle('DANGER'),
     ];
+  }
+
+  public static createButtonBasedTable<T>(
+    interaction: CommandInteraction,
+    options: InteractionReplyOptions,
+    users: Snowflake[],
+    contents: T[],
+    pageOption: PageOption,
+    duration: number,
+    tableColumns: Column[],
+    fillTable: (item: T) => (string | undefined)[]
+  ) {
+    const internalColumns: Column[] = [{ name: '#', padding: 4 }];
+    tableColumns = [...internalColumns, ...tableColumns];
+    const filledTables: (string | undefined)[][] = [];
+    for (let i = 0; i < contents.length; i++) {
+      const content = contents[i]!;
+      filledTables.push([(i + 1).toString(), ...fillTable(content)]);
+    }
+    return this.createLimitedButtonBasedPaging(
+      interaction,
+      options,
+      users,
+      contents,
+      pageOption.itemsPerPage,
+      pageOption.apply(interaction, contents),
+      duration,
+      async (options, page, _contents) => {
+        let output = Strings.EMPTY;
+
+        const createColumnItem = (i: number, name: string | undefined) => {
+          const column = tableColumns[i];
+          if (!column) {
+            throw 'Column should be indexed for createRow()';
+          }
+          const columnContents = filledTables.map((table) => table[i]);
+          const longest = Math.max(
+            ...columnContents.map((v) =>
+              StringHelper.getUnicodeStringLength(v!)
+            )
+          );
+
+          output += ` | ${(name ?? ' - ').padEnd(
+            Math.max(column.padding ?? 0, longest)
+          )}`;
+        };
+
+        for (let i = 0; i < tableColumns.length; i++) {
+          const column = tableColumns[i]!;
+          createColumnItem(i, column.name);
+        }
+
+        output += '\n';
+
+        for (
+          let i = pageOption.itemsPerPage * (page - 1);
+          i < pageOption.itemsPerPage + pageOption.itemsPerPage * (page - 1);
+          ++i
+        ) {
+          const filledTable = filledTables[i]!;
+
+          for (let j = 0; j < tableColumns.length; j++) {
+            const data = filledTable ? filledTable[j] : undefined;
+            createColumnItem(j, data);
+          }
+
+          output += '\n';
+          options.content = '```c\n' + output + '```';
+        }
+      }
+    );
   }
 }

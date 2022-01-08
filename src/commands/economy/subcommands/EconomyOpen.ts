@@ -21,8 +21,6 @@ export default class EconomyOpen extends EconomySubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const citizen = runner.args!.citizen;
       const operation = citizen.openAccount(runner.args!.localizer);
 

@@ -13,20 +13,19 @@ import FurudeOperations from '../database/FurudeOperations';
 import ReminderManager from './managers/ReminderManager';
 import UserScanner from './managers/UserScanner';
 import OsuServers from '../modules/osu/servers/OsuServers';
+import InteractionUtils from '../modules/framework/interactions/InteractionUtils';
 
 export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
   public readonly reminderManager = new ReminderManager(this);
   public readonly userScanner = new UserScanner(this);
-  public readonly osuServers = new OsuServers({
-    bancho_api_key: process.env.BANCHO_API_KEY,
-  });
 
   private readonly forceDeploy = true;
-  private readonly isDebug = true;
+  private readonly isDebug = false;
 
   public constructor() {
+    FurudeRika.init();
     super(
       {
         intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
@@ -42,6 +41,15 @@ export default class FurudeRika extends BaseBot {
         'wrapper',
       ])
     );
+  }
+
+  /**
+   * Starts things that are necessary before calling super() on the bot.
+   */
+  public static init() {
+    OsuServers.build({
+      bancho_api_key: process.env.BANCHO_API_KEY,
+    });
   }
 
   override async start(): Promise<void> {
@@ -77,7 +85,8 @@ export default class FurudeRika extends BaseBot {
     const localizer = new FurudeLocales({
       language: dependency.dbUser.preferred_locale ?? undefined,
     });
-    await interaction.reply(
+    await InteractionUtils.reply(
+      interaction,
       localizer.get(FurudeTranslationKeys.SUBCOMMAND_ERROR_NOT_FOUND)
     );
   }

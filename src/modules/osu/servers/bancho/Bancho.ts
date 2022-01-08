@@ -13,6 +13,8 @@ export default class Bancho extends OsuServer<
   IBaseOsuAPIUserResponse,
   IBanchoOsuUserParams
 > {
+  public name: string = 'bancho';
+
   public constructor(apiKey: string) {
     super('osu.ppy', Domains.sh, apiKey);
   }

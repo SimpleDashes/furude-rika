@@ -56,5 +56,8 @@ export default interface IFurudeResource extends ILocalizerStructure {
   REMINDER_WILL_FIRE: string;
   REMINDERS_STRING: string;
 
+  OSU_ACCOUNT_NOT_FOUND: string;
+  OSU_USER_ADDED_ACCOUNT: string;
+
   NOTHING_HERE: string;
 }

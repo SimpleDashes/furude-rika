@@ -92,6 +92,12 @@ export default class extends FurudeResource {
       REMINDER_WILL_FIRE: '[$CONTENT] will fire on [$TIME]',
       REMINDERS_STRING: "[$USER]'s reminders",
 
+      // OSU
+      OSU_ACCOUNT_NOT_FOUND:
+        "I couldn't find any user with that username or id.",
+      OSU_USER_ADDED_ACCOUNT:
+        'Added the accounts with the usernames [$USERNAME] to the servers [$SERVER] for you.',
+
       // MISCELLANEOUS
       NOTHING_HERE: 'Nothing to see here.',
     });

@@ -9,6 +9,7 @@ import PingContainer from '../../modules/framework/ping/PingContainer';
 import PingData from '../../modules/framework/ping/PingData';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
+import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 
 interface IPingCallbackArguments {
   interaction: CommandInteraction;
@@ -49,8 +50,6 @@ export default class Ping extends FurudeCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const embed = new BaseEmbed({}, interaction, {
         author: interaction.user,
         defaultsTo: UserType.MEMBER,
@@ -74,7 +73,7 @@ export default class Ping extends FurudeCommand {
         embed.addField(pingData.pingWhat, value);
       });
 
-      await interaction.editReply({
+      await InteractionUtils.reply(interaction, {
         embeds: [embed],
       });
     };

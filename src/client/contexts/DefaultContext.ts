@@ -24,6 +24,19 @@ abstract class DefaultContextCreator<P, T> extends ContextCreator<
   T
 > {}
 
+export abstract class UserBasedContextCreator<
+  C extends DefaultContext,
+  T
+> extends ContextCreator<C, User, T> {
+  protected userDefault(arg: User, defaultValue: T): Promise<T> {
+    return super.baseDefault(
+      arg,
+      this.context.runner.interaction.user,
+      defaultValue
+    );
+  }
+}
+
 export class UsersCreator extends DefaultContextCreator<User, DBUser> {
   public async create(arg: User): Promise<DBUser> {
     return await this.context.db.USER.get(arg);

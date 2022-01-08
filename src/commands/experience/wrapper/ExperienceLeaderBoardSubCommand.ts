@@ -3,9 +3,9 @@ import DefaultContext from '../../../client/contexts/DefaultContext';
 import FurudeRika from '../../../client/FurudeRika';
 import CommandOptions from '../../../containers/CommandOptions';
 import DBUser from '../../../database/entity/DBUser';
-import FurudeButtonCreator from '../../../discord/buttons/FurudeButtonCreator';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
+import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
 import ArrayHelper from '../../../modules/framework/helpers/ArrayHelper';
 import PageOption from '../../../modules/framework/options/custom/PageOption';
 
@@ -22,14 +22,12 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const users = ArrayHelper.greatestToLowest(
         await this.getUsers(runner),
         (item) => this.getAppliedExperienceFromUser(runner, item)
       );
 
-      await FurudeButtonCreator.createButtonBasedTable(
+      await MessageButtonCreator.createButtonBasedTable(
         interaction,
         {},
         [interaction.user.id],

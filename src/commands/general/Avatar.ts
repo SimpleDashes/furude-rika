@@ -7,6 +7,7 @@ import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
 import UserOption from '../../modules/framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
+import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 
 export default class Avatar extends FurudeCommand {
   private readonly userOption: UserOption = this.registerOption(
@@ -28,8 +29,6 @@ export default class Avatar extends FurudeCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const user = this.userOption.apply(interaction)!;
 
       const embed = new BaseEmbed(
@@ -45,7 +44,7 @@ export default class Avatar extends FurudeCommand {
         interaction
       );
 
-      await interaction.editReply({
+      await InteractionUtils.reply(interaction, {
         embeds: [embed],
       });
     };

@@ -11,6 +11,7 @@ import SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBCitizen from './entity/DBCitizen';
 import DBGuild from './entity/DBGuild';
+import DBOsuPlayer from './entity/DBOsuPlayer';
 import DBUser from './entity/DBUser';
 import IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
 
@@ -130,6 +131,8 @@ export default class FurudeDB {
   public GUILD = new GuildGetter(this);
 
   public CHANNEL = new ChannelGetter(this);
+
+  public OSU_USERS = new OsuUserGetter(this);
 }
 
 interface IDatabaseGetterGetOnly<
@@ -235,24 +238,16 @@ class CitizenGetter extends UserBasedDatabaseGetter<DBCitizen> {
   protected typeObject: any = DBCitizen;
 }
 
+class OsuUserGetter extends UserBasedDatabaseGetter<DBOsuPlayer> {
+  protected typeObject: any = DBOsuPlayer;
+}
+
 class GuildGetter extends DatabaseGetterGetOnly<Guild, DBGuild> {
   protected typeObject: any = DBGuild;
-  public override async get(
-    guild: Guild,
-    query?: FindManyOptions<DBGuild>
-  ): Promise<DBGuild> {
-    return await super.get(guild, query);
-  }
 }
 
 class ChannelGetter extends DatabaseGetter<GuildChannel, DBChannel> {
   protected typeObject: any = DBChannel;
-  public override async get(
-    channel: GuildChannel,
-    query?: FindManyOptions<DBChannel>
-  ): Promise<DBChannel> {
-    return await super.get(channel, query);
-  }
 }
 
 export {
@@ -264,6 +259,7 @@ export {
   DatabaseGetter,
   DatabaseGetterGetOnly,
   BaseDatabaseGetter,
+  OsuUserGetter,
   IDatabaseGetter,
   IDatabaseGetterGetAllOnly,
   IDatabaseGetterGetOnly,

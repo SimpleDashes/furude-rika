@@ -8,6 +8,7 @@ import UserOption from '../../../modules/framework/options/classes/UserOption';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand, { EconomyRunner } from '../wrapper/EconomySubCommand';
+import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 
 export default class EconomyOpen extends EconomySubCommand {
   private readonly user = this.registerOption(
@@ -31,19 +32,18 @@ export default class EconomyOpen extends EconomySubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const selectedUser = this.user.apply(interaction)!;
       const citizen = await runner.args!.CITIZENS.default(selectedUser);
 
       if (citizen.justCreated) {
-        await interaction.editReply({
-          content: MessageCreator.error(
+        await InteractionUtils.reply(
+          interaction,
+          MessageCreator.error(
             runner.args!.localizer.get(
               FurudeTranslationKeys.ECONOMY_BALANCE_FAIL
             )
-          ),
-        });
+          )
+        );
         return;
       }
 
@@ -75,7 +75,7 @@ export default class EconomyOpen extends EconomySubCommand {
         interaction
       );
 
-      await interaction.editReply({
+      await InteractionUtils.reply(interaction, {
         embeds: [embed],
       });
     };

@@ -15,6 +15,9 @@ enum CommandOptions {
   weeks = 'weeks',
   reminder = 'reminder',
   index = 'index',
+  server = 'server',
+  username = 'username',
+  type = 'type',
 }
 
 export default CommandOptions;

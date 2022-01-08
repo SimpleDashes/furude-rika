@@ -72,8 +72,6 @@ export default class ReminderReminderMe extends FurudeSubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const remindWhat = this.remindWhatOption.apply(interaction)!;
 
       const seconds = this.secondsOption.apply(interaction);

@@ -8,6 +8,7 @@ import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
 import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
+import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
 
 export default class ReminderRemove extends FurudeSubCommand {
   public indexOption = this.registerOption(
@@ -33,8 +34,6 @@ export default class ReminderRemove extends FurudeSubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const index = this.indexOption.apply(interaction)!;
       const reminder = DBReminder.getAllRemindersForUser(
         client,
@@ -42,7 +41,8 @@ export default class ReminderRemove extends FurudeSubCommand {
       )[index - 1];
 
       if (!reminder) {
-        await interaction.editReply(
+        await InteractionUtils.reply(
+          interaction,
           MessageCreator.error(
             runner.args!.localizer.get(
               FurudeTranslationKeys.REMINDER_REMOVE_FAIL,
@@ -54,7 +54,8 @@ export default class ReminderRemove extends FurudeSubCommand {
       }
 
       await client.reminderManager.removeReminder(reminder);
-      await interaction.editReply(
+      await InteractionUtils.reply(
+        interaction,
         MessageCreator.success(
           runner.args!.localizer.get(
             FurudeTranslationKeys.REMINDER_REMOVE_SUCCESS,

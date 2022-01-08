@@ -10,6 +10,7 @@ import StringUtils from '../../modules/framework/helpers/StringUtils';
 import StringOption from '../../modules/framework/options/classes/StringOption';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
+import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 
 export default class Calc extends FurudeCommand {
   private readonly expression = this.registerOption(
@@ -40,8 +41,6 @@ export default class Calc extends FurudeCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      await interaction.deferReply();
-
       const gotExpression = this.expression
         .apply(interaction)!
         .replace(' ', '');
@@ -62,7 +61,8 @@ export default class Calc extends FurudeCommand {
       const expressionText = MessageCreator.block(gotExpression!.trim());
 
       if (missingVariables.length != 0) {
-        await interaction.editReply(
+        await InteractionUtils.reply(
+          interaction,
           MessageCreator.error(
             runner.args!.localizer.get(
               FurudeTranslationKeys.CALC_MISSING_VARIABLES,
@@ -80,7 +80,8 @@ export default class Calc extends FurudeCommand {
       try {
         parsedExpression = Parser.parse(gotExpression!);
       } catch {
-        await interaction.editReply(
+        await InteractionUtils.reply(
+          interaction,
           MessageCreator.error(
             runner.args!.localizer.get(
               FurudeTranslationKeys.CALC_EVALUATE_ERROR,
@@ -120,9 +121,7 @@ export default class Calc extends FurudeCommand {
         );
       }
 
-      await interaction.editReply({
-        content: displayText,
-      });
+      await InteractionUtils.reply(interaction, displayText);
     };
   }
 

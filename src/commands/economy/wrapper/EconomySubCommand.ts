@@ -7,6 +7,8 @@ import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import Constructor from '../../../modules/framework/interfaces/Constructor';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
+import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
+import IChildCreatedRunnableCommand from '../../../discord/commands/interfaces/IChildCreatedRunnableCommand';
 
 export interface EconomyRunner extends IFurudeRunner<CurrencyContext> {
   getResultMessage: (key: FurudeTranslationKeys) => string;
@@ -20,7 +22,10 @@ export function MustHaveOpenAccount(target: Constructor<EconomySubCommand>) {
   (target.prototype as mayMustHaveAccount).mustHaveAccount = true;
 }
 
-export default abstract class EconomySubCommand extends FurudeSubCommand {
+export default abstract class EconomySubCommand
+  extends FurudeSubCommand
+  implements IChildCreatedRunnableCommand
+{
   public override async createRunner(
     interaction: CommandInteraction<CacheType>
   ): Promise<EconomyRunner> {
@@ -44,13 +49,14 @@ export default abstract class EconomySubCommand extends FurudeSubCommand {
       runner.args!.citizen.justCreated
     ) {
       return async () => {
-        await interaction.reply({
-          content: MessageCreator.error(
+        await InteractionUtils.reply(
+          interaction,
+          MessageCreator.error(
             runner.args!.localizer.get(
               FurudeTranslationKeys.ECONOMY_MUST_HAVE_ACCOUNT
             )
-          ),
-        });
+          )
+        );
       };
     }
     return async () => {
