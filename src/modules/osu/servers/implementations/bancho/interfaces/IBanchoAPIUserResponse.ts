@@ -1,6 +1,6 @@
-import IRawOsuUserEvent from '../interfaces/raw/IRawOsuUserEvent';
+import IRawOsuUserEvent from '../../../../users/interfaces/raw/IRawOsuUserEvent';
 
-export default interface IBaseOsuAPIUserResponse {
+export default interface IBanchoAPIUserResponse {
   user_id: string;
   username: string;
   join_date: string;

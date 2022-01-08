@@ -1,16 +1,16 @@
-import APIRoute from '../../../connection/apis/routes/APIRoute';
-import Domains from '../../../connection/Domains';
-import BanchoUser from '../../users/BanchoUser';
-import IBaseOsuAPIUserResponse from '../../users/response/IBaseOsuAPIUserResponse';
-import OsuServer from '../OsuServer';
+import APIRoute from '../../../../connection/apis/routes/APIRoute';
+import Domains from '../../../../connection/Domains';
+import BanchoUser from './objects/BanchoUser';
+import IBanchoAPIUserResponse from './interfaces/IBanchoAPIUserResponse';
+import OsuServer from '../../OsuServer';
 import BanchoUsers from './BanchoUsers';
 import IBanchoOsuParam from './params/IBanchoOsuParam';
 import IBanchoOsuUserParams from './params/IBanchoOsuUserParams';
 
-export default class Bancho extends OsuServer<
+export default class BanchoServer extends OsuServer<
   IBanchoOsuParam,
   BanchoUser,
-  IBaseOsuAPIUserResponse,
+  IBanchoAPIUserResponse,
   IBanchoOsuUserParams
 > {
   public name: string = 'bancho';

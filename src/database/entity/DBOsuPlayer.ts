@@ -4,7 +4,7 @@ import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import OsuServer from '../../modules/osu/servers/OsuServer';
 import OsuServers from '../../modules/osu/servers/OsuServers';
-import BanchoUser from '../../modules/osu/users/BanchoUser';
+import BanchoUser from '../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
 import IOsuUser from '../../modules/osu/users/IOsuUser';
 import FurudeOperations from '../FurudeOperations';
 import IDatabaseOperation from '../interfaces/IDatabaseOperation';
@@ -43,13 +43,16 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
     accounts: Partial<IArgOsuAccounts>,
     localizer: FurudeLocales
   ): IDatabaseOperation {
-    const dbNewAccounts = {} as Record<string, number> & OsuServerHyperValue;
+    const dbNewAccounts = new OsuServerHyperValue();
     const tToAddAccounts = accounts as Record<string, IOsuUser>;
     for (const o in tToAddAccounts) {
       if (o == OsuServers.bancho.name) {
         dbNewAccounts.global = tToAddAccounts[o]!.user_id;
       } else {
-        dbNewAccounts[o] = tToAddAccounts[o]!.user_id;
+        const server = OsuServers.servers.find((s) => s.name == o);
+        if (server) {
+          dbNewAccounts.setLocal(server, tToAddAccounts[o]!.user_id);
+        }
       }
     }
     Object.assign(this.accounts, dbNewAccounts);

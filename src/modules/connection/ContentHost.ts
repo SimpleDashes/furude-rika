@@ -9,10 +9,15 @@ export default abstract class ContentHost {
 
   public readonly domain: string;
 
-  public constructor(url: string, domain: string) {
+  public protocol: Protocol;
+
+  public constructor(
+    url: string,
+    domain: string,
+    protocol: Protocol = Protocol.https
+  ) {
     this.url = url;
     this.domain = domain;
+    this.protocol = protocol;
   }
-
-  public protocol: Protocol = Protocol.https;
 }

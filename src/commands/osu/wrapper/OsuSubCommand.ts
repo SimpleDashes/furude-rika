@@ -10,8 +10,8 @@ import ICommand from '../../../modules/framework/commands/interfaces/ICommand';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import StringOption from '../../../modules/framework/options/classes/StringOption';
-import Bancho from '../../../modules/osu/servers/bancho/Bancho';
-import IBanchoOsuUserParams from '../../../modules/osu/servers/bancho/params/IBanchoOsuUserParams';
+import IBanchoOsuUserParams from '../../../modules/osu/servers/implementations/bancho/params/IBanchoOsuUserParams';
+import IDroidOsuUserParam from '../../../modules/osu/servers/implementations/droid/params/IDroidOsuUserParam';
 import OsuServer from '../../../modules/osu/servers/OsuServer';
 import OsuServers from '../../../modules/osu/servers/OsuServers';
 import IOsuUser from '../../../modules/osu/users/IOsuUser';
@@ -116,11 +116,19 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
     usernameID: string
   ): any {
     let params = {};
-    if (server instanceof Bancho) {
-      let newParams: Partial<IBanchoOsuUserParams> = {
-        u: usernameID,
-      };
-      params = newParams;
+    switch (server.name) {
+      case OsuServers.bancho.name:
+        let banchoParams: Partial<IBanchoOsuUserParams> = {
+          u: usernameID,
+        };
+        params = banchoParams;
+        break;
+      case OsuServers.droid.name:
+        let droidParams: Partial<IDroidOsuUserParam> = {
+          uid: parseInt(usernameID),
+        };
+        params = droidParams;
+        break;
     }
     return params;
   }

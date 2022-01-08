@@ -1,14 +1,14 @@
 import OsuUserEventsBindable from '../bindables/OsuUserEventsBindable';
+import IBanchoAPIUserResponse from '../servers/implementations/bancho/interfaces/IBanchoAPIUserResponse';
+import TBanchoApiRawResponse from '../servers/implementations/bancho/interfaces/TBanchoApiRawResponse';
 import IOsuUserCounts from './interfaces/IOsuUserCounts';
 import IOsuUserEvent from './interfaces/IOsuUserEvent';
 import IOsuUserPPS from './interfaces/IOsuUserPPS';
 import IOsuUserRanks from './interfaces/IOsuUserRanks';
 import IOsuUserScores from './interfaces/IOsuUserScores';
 import IOsuUser from './IOsuUser';
-import IBaseOsuApiUserResponse from './response/IBaseOsuAPIUserResponse';
-import TOsuApiRawResponse from '../servers/interfaces/TOsuApiRawResponse';
 
-export default abstract class BaseOsuUser<T extends IBaseOsuApiUserResponse>
+export default abstract class BaseOsuUser<T extends IBanchoAPIUserResponse>
   implements IOsuUser
 {
   public readonly user_id: number;
@@ -28,7 +28,7 @@ export default abstract class BaseOsuUser<T extends IBaseOsuApiUserResponse>
    *
    * @param res An api response, the constructor will convert that response into itself.
    */
-  public constructor(raw_res: TOsuApiRawResponse<T>) {
+  public constructor(raw_res: TBanchoApiRawResponse<T>) {
     const res: T = raw_res[0]!;
     this.user_id = parseInt(res.user_id);
     this.username = res.username;
