@@ -41,6 +41,7 @@ export default class FurudeCommandWrapper {
     };
     runner.args = await command.ContextType()(runner).get();
     runner.run = async () => {
+      await runner.interaction.deferReply();
       runner.args!.dbUser!.incrementExperience(
         runner.interaction.user,
         runner.interaction.inGuild()
