@@ -1,19 +1,26 @@
 import APIRoute from '../../../../connection/apis/routes/APIRoute';
 import Domains from '../../../../connection/Domains';
-import BanchoUser from '../bancho/objects/BanchoUser';
 import IBanchoAPIUserResponse from '../bancho/interfaces/IBanchoAPIUserResponse';
 import OsuServer from '../../OsuServer';
 import IDroidOsuParam from './params/IDroidOsuParam';
 import IDroidOsuUserParam from './params/IDroidOsuUserParam';
-import DroidUsers from './DroidUsers';
+import DroidUsersAPI from './DroidUsersAPI';
 import OsuModes from '../../../enums/OsuModes';
 import Protocol from '../../../../connection/Protocol';
+import DroidScore from './objects/DroidScore';
+import IBanchoAPIUserRecentScore from '../bancho/interfaces/scores/IBanchoAPIUserRecentScore';
+import DroidUser from './objects/DroidUser';
+import DroidUserRecentsAPI from './DroidUserRecentsAPI';
+import IDroidOsuUserRecentsParam from './params/IDroidOsuUserRecentsParams';
 
 export default class DroidServer extends OsuServer<
   IDroidOsuParam,
-  BanchoUser,
+  DroidUser,
   IBanchoAPIUserResponse,
-  IDroidOsuUserParam
+  IDroidOsuUserParam,
+  DroidScore,
+  IBanchoAPIUserRecentScore,
+  IDroidOsuUserRecentsParam
 > {
   public name: string = 'droid';
 
@@ -25,8 +32,14 @@ export default class DroidServer extends OsuServer<
     return {};
   }
 
-  protected createUsersRoute(base: APIRoute<IDroidOsuParam>): DroidUsers {
-    return new DroidUsers(base, 'profile.php');
+  protected createUsersRoute(base: APIRoute<IDroidOsuParam>): DroidUsersAPI {
+    return new DroidUsersAPI(base, 'profile.php');
+  }
+
+  protected createUsersRecentRoute(
+    base: APIRoute<IDroidOsuParam>
+  ): DroidUserRecentsAPI {
+    return new DroidUserRecentsAPI(base, '');
   }
 
   public override supportedModes(): OsuModes[] {

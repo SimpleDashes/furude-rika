@@ -1,11 +1,10 @@
-import OsuUserEventsBindable from '../../../../bindables/OsuUserEventsBindable';
 import IBanchoOsuParam from './IBanchoOsuParam';
+import IBanchoOsuUserRecentsLimit from './IBanchoOsuUserRecentsLimit';
 import IBanchoOsuWithModesParam from './IBanchoOsuWithModesParam';
 import IBanchoOsuWithUserParam from './IBanchoOsuWithUserParam';
 
-export default interface IBanchoOsuUserParams
+export default interface IBanchoOsuUserRecentParams
   extends IBanchoOsuWithUserParam,
+    IBanchoOsuWithModesParam,
     IBanchoOsuParam,
-    IBanchoOsuWithModesParam {
-  event_days?: OsuUserEventsBindable;
-}
+    IBanchoOsuUserRecentsLimit {}

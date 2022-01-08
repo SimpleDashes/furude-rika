@@ -2,29 +2,26 @@ import { secondsToHours } from 'date-fns';
 import { CommandInteraction, CacheType } from 'discord.js';
 import OsuContext from '../../../client/contexts/osu/OsuContext';
 import FurudeRika from '../../../client/FurudeRika';
-import CommandOptions from '../../../containers/CommandOptions';
+import ExpandableEmbedHelper from '../../../discord/commands/helpers/ExpandableEmbedHelper';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
-import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
-import MessageButtonFactory from '../../../modules/framework/creators/MessageButtonFactory';
+import IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
-
-import UserOption from '../../../modules/framework/options/classes/UserOption';
 import IOsuUser from '../../../modules/osu/users/IOsuUser';
 import OsuSubCommand from '../wrapper/OsuSubCommand';
 
-export default class OsuProfile extends OsuSubCommand {
+export default class OsuProfile
+  extends OsuSubCommand
+  implements IHasExpandableEmbed
+{
   private serverUserOptions = this.registerServerUserOptions(this, (o) => {
     o.server.setDescription('The server of the account you want to view.');
     o.user.setDescription('The username of the account you want to view.');
   });
 
-  private discordUserOption = this.registerOption(
-    new UserOption(true)
-      .setName(CommandOptions.user)
-      .setDescription('The user who owns the account you want to view.')
-  );
+  private discordUserOption = this.registerDiscordUserOption(
+    this
+  ).setDescription('The user who owns the account you want to view.');
 
   public constructor() {
     super({
@@ -39,11 +36,10 @@ export default class OsuProfile extends OsuSubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
-      const discordUser = this.discordUserOption.apply(interaction);
       const osuUser = await this.getUserFromServerUserOptions(
         this.serverUserOptions,
         runner,
-        discordUser
+        this.discordUserOption.apply(interaction)
       );
 
       if (!osuUser) {
@@ -51,48 +47,21 @@ export default class OsuProfile extends OsuSubCommand {
         return;
       }
 
-      const minimizedEmbed = this.getMinimizedEmbed(osuUser, runner);
-      const expandedEmbed = this.getExpandedEmbed(osuUser, runner);
+      const expandedEmbed = this.createExpandedEmbed(osuUser, runner);
+      const minimizedEmbed = this.createMinimizedEmbed(osuUser, runner);
 
-      const buttonFactory = new MessageButtonFactory();
-
-      await MessageButtonCreator.createBaseButtonCollectors(
-        [
-          {
-            button: buttonFactory
-              .newButton()
-              .setStyle('SUCCESS')
-              .setLabel('Expand'),
-            onPress: async (i) => {
-              await InteractionUtils.safeUpdate(i, {
-                embeds: [expandedEmbed],
-              });
-            },
-          },
-          {
-            button: buttonFactory
-              .newButton()
-              .setStyle('SUCCESS')
-              .setLabel('Minimize'),
-            onPress: async (i) => {
-              await InteractionUtils.safeUpdate(i, {
-                embeds: [minimizedEmbed],
-              });
-            },
-          },
-        ],
-        interaction,
-        { embeds: [minimizedEmbed] },
-        [interaction.user.id],
-        60
+      await ExpandableEmbedHelper.createInteractiveButtons(
+        minimizedEmbed,
+        expandedEmbed,
+        interaction
       );
     };
   }
 
-  private createBaseEmbed(
+  createBaseEmbed(
     osuUser: IOsuUser,
     runner: IFurudeRunner<OsuContext>
-  ) {
+  ): BaseEmbed {
     return new BaseEmbed({}, runner.interaction).setTitle(
       `${osuUser.username}: ${osuUser.pps.raw.toLocaleString(
         runner.args!.localizer.language,
@@ -105,7 +74,7 @@ export default class OsuProfile extends OsuSubCommand {
     );
   }
 
-  private getMinimizedEmbed(
+  createMinimizedEmbed(
     osuUser: IOsuUser,
     runner: IFurudeRunner<OsuContext>
   ): BaseEmbed {
@@ -120,7 +89,7 @@ export default class OsuProfile extends OsuSubCommand {
     );
   }
 
-  private getExpandedEmbed(
+  createExpandedEmbed(
     osuUser: IOsuUser,
     runner: IFurudeRunner<OsuContext>
   ): BaseEmbed {

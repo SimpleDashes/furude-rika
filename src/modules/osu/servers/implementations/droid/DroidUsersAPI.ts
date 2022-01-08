@@ -1,11 +1,11 @@
 import BanchoUser from '../bancho/objects/BanchoUser';
 import IBanchoAPIUserResponse from '../bancho/interfaces/IBanchoAPIUserResponse';
 import IDroidOsuUserParam from './params/IDroidOsuUserParam';
-import OsuGetRoute from '../../routes/OsuGetRoute';
 import DroidUser from './objects/DroidUser';
 import cheerio from 'cheerio';
+import OsuUserRoute from '../../routes/OsuUserRoute';
 
-export default class DroidUsers extends OsuGetRoute<
+export default class DroidUsersAPI extends OsuUserRoute<
   DroidUser,
   IBanchoAPIUserResponse,
   IDroidOsuUserParam
@@ -17,9 +17,14 @@ export default class DroidUsers extends OsuGetRoute<
     const $ = cheerio.load(data);
 
     const stringZero: string = (0).toString();
+    const username = $('div.h3.m-t-xs.m-b-xs').text();
+
+    if (!username) {
+      return undefined;
+    }
 
     let apiUser: IBanchoAPIUserResponse = {
-      username: $('div.h3.m-t-xs.m-b-xs').text(),
+      username,
       country: $('small.text-muted').first().text(),
       count300: stringZero,
       count100: stringZero,
@@ -45,11 +50,7 @@ export default class DroidUsers extends OsuGetRoute<
 
     const pullRight = $('span.pull-right');
 
-    for (let i = 0; i < pullRight.length; i++) {
-      if (i <= 2) {
-        continue;
-      }
-
+    for (let i = 3; i < pullRight.length; i++) {
       const item = pullRight[i];
       if (!item) continue;
 
@@ -70,6 +71,8 @@ export default class DroidUsers extends OsuGetRoute<
       }
     }
 
-    return new DroidUser([apiUser]);
+    return new DroidUser([apiUser], {
+      html: data,
+    });
   }
 }

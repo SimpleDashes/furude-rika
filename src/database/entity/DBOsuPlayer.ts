@@ -18,8 +18,12 @@ interface IOsuAccounts {
 interface IArgOsuAccounts extends IOsuAccounts {
   bancho: BanchoUser;
 }
-class OsuServerHyperValue extends HyperNumber<OsuServer<any, any, any, any>> {
-  public getLocalDecorationKey(key: OsuServer<any, any, any, any>): string {
+class OsuServerHyperValue extends HyperNumber<
+  OsuServer<any, any, any, any, any, any, any>
+> {
+  public getLocalDecorationKey(
+    key: OsuServer<any, any, any, any, any, any, any>
+  ): string {
     return key.name;
   }
 }
@@ -29,7 +33,9 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
   @Column((_type) => OsuServerHyperValue)
   accounts: OsuServerHyperValue = new OsuServerHyperValue();
 
-  public getAccount(server: OsuServer<any, any, any, any>): number {
+  public getAccount(
+    server: OsuServer<any, any, any, any, any, any, any>
+  ): number {
     let account: number | null | undefined;
     if (server == OsuServers.bancho) {
       account = this.accounts.global;
@@ -55,7 +61,15 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
         }
       }
     }
-    Object.assign(this.accounts, dbNewAccounts);
+    if (dbNewAccounts.global) {
+      this.accounts.global = dbNewAccounts.global;
+    }
+    for (const o of dbNewAccounts.locals) {
+      this.accounts.setLocal(
+        OsuServers.servers.find((s) => s.name == o.key)!,
+        o.value
+      );
+    }
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.OSU_USER_ADDED_ACCOUNT, [
         MessageCreator.block(

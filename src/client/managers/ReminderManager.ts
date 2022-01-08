@@ -23,7 +23,7 @@ export default class ReminderManager extends BaseFurudeManager {
     }
   }
 
-  public addReminder(reminder: DBReminder, localizer: FurudeLocales) {
+  public async addReminder(reminder: DBReminder, localizer: FurudeLocales) {
     this.reminders.push(reminder);
     setTimeout(async () => {
       if (!this.reminders.includes(reminder)) return;

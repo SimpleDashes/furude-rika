@@ -1,4 +1,4 @@
-import { CommandInteraction, Intents } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import BaseBot from '../modules/framework/client/BaseBot';
 import consola from 'consola';
 import ICommandRunResponse from '../modules/framework/client/ICommandRunResponse';
@@ -22,13 +22,13 @@ export default class FurudeRika extends BaseBot {
   public readonly userScanner = new UserScanner(this);
 
   private readonly forceDeploy = true;
-  private readonly isDebug = false;
+  private readonly isDebug = true;
 
   public constructor() {
     FurudeRika.init();
     super(
       {
-        intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+        intents: ['GUILDS', 'GUILD_MESSAGES'],
       },
       {
         ENV_TOKEN_VAR: 'BOT_TOKEN',

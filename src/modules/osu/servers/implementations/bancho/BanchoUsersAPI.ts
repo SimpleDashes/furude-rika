@@ -4,7 +4,7 @@ import IBanchoOsuUserParams from './params/IBanchoOsuUserParams';
 import IBanchoAPIUserResponse from './interfaces/IBanchoAPIUserResponse';
 import OsuGetRoute from '../../routes/OsuGetRoute';
 
-export default class BanchoUsers extends OsuGetRoute<
+export default class BanchoUsersAPI extends OsuGetRoute<
   BanchoUser,
   IBanchoAPIUserResponse,
   IBanchoOsuUserParams

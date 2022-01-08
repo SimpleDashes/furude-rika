@@ -8,9 +8,7 @@ import IOsuUserRanks from './interfaces/IOsuUserRanks';
 import IOsuUserScores from './interfaces/IOsuUserScores';
 import IOsuUser from './IOsuUser';
 
-export default abstract class BaseOsuUser<T extends IBanchoAPIUserResponse>
-  implements IOsuUser
-{
+export default abstract class BaseOsuUser implements IOsuUser {
   public readonly user_id: number;
   public readonly username: string;
   public readonly join_date: Date;
@@ -28,8 +26,8 @@ export default abstract class BaseOsuUser<T extends IBanchoAPIUserResponse>
    *
    * @param res An api response, the constructor will convert that response into itself.
    */
-  public constructor(raw_res: TBanchoApiRawResponse<T>) {
-    const res: T = raw_res[0]!;
+  public constructor(raw_res: TBanchoApiRawResponse<IBanchoAPIUserResponse>) {
+    const res: IBanchoAPIUserResponse = raw_res[0]!;
     this.user_id = parseInt(res.user_id);
     this.username = res.username;
     this.join_date = new Date(res.join_date);

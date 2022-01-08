@@ -34,6 +34,7 @@ export default class OsuSetUser extends OsuSubCommand {
 
       const osuUser = await this.getUserFromServer(
         server,
+        runner,
         this.serverUserOptions.user.apply(interaction)!
       );
 

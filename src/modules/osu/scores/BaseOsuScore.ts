@@ -1,0 +1,33 @@
+import IBaseBanchoAPIScore from '../servers/implementations/bancho/interfaces/scores/IBaseBanchoAPIScore';
+import IOsuScoreCounts from './interfaces/IOsuScoreCounts';
+import IOsuScore from './IOsuScore';
+
+export default class BaseOsuScore implements IOsuScore {
+  public readonly beatmapID: number;
+  public readonly score: number;
+  public readonly counts: IOsuScoreCounts;
+  public readonly perfect: boolean;
+  public readonly mods: string;
+  public readonly userID: string;
+  public readonly date: Date;
+  public readonly rank: string;
+
+  public constructor(base: IBaseBanchoAPIScore) {
+    this.beatmapID = parseInt(base.beatmap_id);
+    this.score = parseInt(base.score);
+    this.counts = {
+      300: parseInt(base.count300),
+      100: parseInt(base.count100),
+      50: parseInt(base.count50),
+      misses: parseInt(base.countmiss),
+      katu: parseInt(base.countkatu),
+      geki: parseInt(base.countgeki),
+      combo: parseInt(base.maxcombo),
+    };
+    this.perfect = base.perfect === (0).toString() ? false : true;
+    this.mods = base.enabled_mods;
+    this.userID = base.user_id;
+    this.date = new Date(base.date);
+    this.rank = base.rank;
+  }
+}

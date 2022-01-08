@@ -3,15 +3,23 @@ import Domains from '../../../../connection/Domains';
 import BanchoUser from './objects/BanchoUser';
 import IBanchoAPIUserResponse from './interfaces/IBanchoAPIUserResponse';
 import OsuServer from '../../OsuServer';
-import BanchoUsers from './BanchoUsers';
+import BanchoUsersAPI from './BanchoUsersAPI';
 import IBanchoOsuParam from './params/IBanchoOsuParam';
 import IBanchoOsuUserParams from './params/IBanchoOsuUserParams';
+import IBanchoAPIUserRecentScore from './interfaces/scores/IBanchoAPIUserRecentScore';
+import IBanchoOsuUserRecentParams from './params/IBanchoOsuUserRecentParams';
+import OsuUserRecentRoute from '../../routes/OsuUserRecentRoute';
+import BanchoUserRecentsAPI from './BanchoUserRecentsAPI';
+import BanchoScore from './objects/BanchoScore';
 
 export default class BanchoServer extends OsuServer<
   IBanchoOsuParam,
   BanchoUser,
   IBanchoAPIUserResponse,
-  IBanchoOsuUserParams
+  IBanchoOsuUserParams,
+  BanchoScore,
+  IBanchoAPIUserRecentScore,
+  IBanchoOsuUserRecentParams
 > {
   public name: string = 'bancho';
 
@@ -25,7 +33,17 @@ export default class BanchoServer extends OsuServer<
     };
   }
 
-  protected createUsersRoute(base: APIRoute<IBanchoOsuParam>): BanchoUsers {
-    return new BanchoUsers(base, 'get_user');
+  protected createUsersRoute(base: APIRoute<IBanchoOsuParam>): BanchoUsersAPI {
+    return new BanchoUsersAPI(base, 'get_user');
+  }
+
+  protected createUsersRecentRoute(
+    base: APIRoute<IBanchoOsuParam>
+  ): OsuUserRecentRoute<
+    BanchoScore,
+    IBanchoAPIUserRecentScore,
+    IBanchoOsuUserRecentParams
+  > {
+    return new BanchoUserRecentsAPI(base, 'get_user_recent');
   }
 }

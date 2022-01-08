@@ -40,7 +40,7 @@ enum ConfirmationIDS {
   no = 'no',
 }
 
-interface IListenerButton {
+export interface IListenerButton {
   button: MessageButton;
   onPress: (interaction: ButtonInteraction) => Promise<void>;
 }
@@ -143,10 +143,20 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     options.components ??= [];
     options.components.push(component);
 
-    const message: Message = (await InteractionUtils.reply(interaction, {
-      ...options,
-      ...{ fetchReply: true },
-    })) as Message;
+    const reply = async (): Promise<Message> => {
+      return (await InteractionUtils.reply(interaction, {
+        ...options,
+        ...{ fetchReply: true },
+      })) as Message;
+    };
+
+    const removeButtons = async () => {
+      options.components =
+        options.components?.filter((c) => c != component) ?? [];
+      await reply();
+    };
+
+    const message: Message = await reply();
 
     const collector: InteractionCollector<ButtonInteraction> =
       this.createButtonCollector(message, users, duration);
@@ -161,6 +171,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     collector.on('collect', async (buttonInteraction) => {
       if (runOnce) {
         collector.stop();
+        await removeButtons();
       } else {
         await replyToEvents(buttonInteraction);
       }
@@ -489,12 +500,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
         }
 
         output += '\n';
-
-        for (
-          let i = pageOption.itemsPerPage * (page - 1);
-          i < pageOption.itemsPerPage + pageOption.itemsPerPage * (page - 1);
-          ++i
-        ) {
+        this.loopPages(pageOption.itemsPerPage, page, (i) => {
           const filledTable = filledTables[i]!;
 
           for (let j = 0; j < tableColumns.length; j++) {
@@ -504,8 +510,22 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
 
           output += '\n';
           options.content = '```c\n' + output + '```';
-        }
+        });
       }
     );
+  }
+
+  public static loopPages(
+    itemsPerPage: number,
+    currentPage: number,
+    run: (i: number) => void
+  ) {
+    for (
+      let i = itemsPerPage * (currentPage - 1);
+      i < itemsPerPage + itemsPerPage * (currentPage - 1);
+      ++i
+    ) {
+      run(i);
+    }
   }
 }
