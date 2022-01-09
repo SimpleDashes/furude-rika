@@ -40,6 +40,10 @@ export default abstract class MessageCreator {
     return `<t:${getUnixTime(date)}>`;
   }
 
+  public static breakLine(value: string) {
+    return `${value}\n`;
+  }
+
   public static objectToKeyValueString(
     obj: any,
     options: {
