@@ -10,6 +10,7 @@ import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
 import IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
+import IOsuUser from '../../../../../modules/osu/users/IOsuUser';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
 
 export default class OsuRecentScore
@@ -60,7 +61,7 @@ export default class OsuRecentScore
       const beatmapLoadedScores: IOsuScore[] = [];
 
       const loadScore = async (score: IOsuScore) => {
-        if (!beatmapLoadedScores.find((s) => s == score)) {
+        if (!beatmapLoadedScores.includes(score)) {
           await score.fetchBeatmap();
         }
         beatmapLoadedScores.push(score);
@@ -82,7 +83,11 @@ export default class OsuRecentScore
       await loadScore(recentScore);
 
       let expandedEmbed = new BaseEmbed();
-      const minimizedEmbed = this.createMinimizedEmbed(runner, recentScore);
+      const minimizedEmbed = this.createMinimizedEmbed(
+        runner,
+        osuUser,
+        recentScore
+      );
 
       await ExpandableEmbedHelper.createExpandingInteractiveButton(
         minimizedEmbed,
@@ -112,7 +117,12 @@ export default class OsuRecentScore
                     }
                   }
                 );
-                expandedEmbed = this.createExpandedEmbed(runner, scores);
+                expandedEmbed = this.createExpandedEmbed(
+                  runner,
+                  osuUser,
+                  scores,
+                  page
+                );
                 options.embeds = [expandedEmbed];
               }
             );
@@ -122,29 +132,57 @@ export default class OsuRecentScore
     };
   }
 
-  createBaseEmbed(runner: IFurudeRunner<OsuContext>): BaseEmbed {
-    return new BaseEmbed({}, runner.interaction).setDescription(Strings.EMPTY);
+  createBaseEmbed(
+    runner: IFurudeRunner<OsuContext>,
+    user: IOsuUser<any>
+  ): BaseEmbed {
+    return new BaseEmbed(
+      {
+        author: this.getUserInfoAuthor(user, runner),
+      },
+      runner.interaction
+    );
   }
 
   createMinimizedEmbed(
     runner: IFurudeRunner<OsuContext>,
+    user: IOsuUser<any>,
     score: IOsuScore
   ): BaseEmbed {
-    return this.createBaseEmbed(runner).setDescription(
+    const embed = this.createBaseEmbed(runner, user).setDescription(
       this.createMinimizedDescription(score, runner)
     );
+
+    if (score.apiBeatmap) {
+      embed.setThumbnail(score.apiBeatmap.getCoverThumbnail());
+    }
+
+    return embed;
   }
 
   createExpandedEmbed(
     runner: IFurudeRunner<OsuContext>,
-    scores: IOsuScore[]
+    user: IOsuUser<any>,
+    scores: IOsuScore[],
+    page: number
   ): BaseEmbed {
-    const embed = this.createBaseEmbed(runner);
+    const embed = this.createBaseEmbed(runner, user);
+    embed.description = Strings.EMPTY;
     for (let i = 0; i < scores.length; i++) {
       const score = scores[i]!;
       if (i > 0) {
         embed.description = MessageCreator.breakLine(embed.description!);
       }
+      embed.description +=
+        MessageCreator.bold(
+          `${
+            MessageButtonCreator.getPageContentIndex(
+              i,
+              OsuRecentScore.SCORES_PER_PAGE,
+              page
+            ) + 1
+          }.`
+        ) + ' ';
       embed.description += this.createMinimizedDescription(score, runner);
     }
     return embed;
@@ -157,7 +195,21 @@ export default class OsuRecentScore
     const { apiBeatmap } = score;
     const { language } = runner.args!.localizer;
     let string = Strings.EMPTY;
-    string += `${MessageCreator.bold(apiBeatmap?.title ?? Strings.EMPTY)}`;
+    let canHyperLink: boolean = false;
+    if (apiBeatmap) {
+      string += `${apiBeatmap.title} [${apiBeatmap.version}]`;
+      if (!!apiBeatmap.beatmapID) {
+        canHyperLink = true;
+        string = MessageCreator.hyperLink(string, apiBeatmap.getPageUrl());
+      }
+    } else {
+      string += `NOT FOUND`;
+    }
+    string = canHyperLink
+      ? MessageCreator.bold(
+          MessageCreator.hyperLink(string, apiBeatmap!.getPageUrl())
+        )
+      : MessageCreator.block(string);
     string = MessageCreator.breakLine(string);
     string += `▸ ${score.score.toLocaleString(language)} ▸ x${
       score.counts.combo

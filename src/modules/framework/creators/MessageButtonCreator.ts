@@ -65,7 +65,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
    * @param onPageChangeArgs Arguments for `onPageChange` function.
    * @returns The collector that collects the button-pressing event.
    */
-  static createLimitedButtonBasedPaging<T>(
+  static async createLimitedButtonBasedPaging<T>(
     interaction: CommandInteraction | MessageComponentInteraction,
     options: InteractionReplyOptions,
     users: Snowflake[],
@@ -76,7 +76,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     onPageChange: OnButtonPageChange<T>,
     ...onPageChangeArgs: unknown[]
   ): Promise<Message> {
-    return this.createButtonBasedPaging(
+    return await this.createButtonBasedPaging(
       interaction,
       options,
       users,
@@ -103,7 +103,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
    * @param onPageChangeArgs Arguments for `onPageChange` function.
    * @returns The collector that collects the button-pressing event.
    */
-  static createLimitlessButtonBasedPaging<T>(
+  static async createLimitlessButtonBasedPaging<T>(
     interaction: CommandInteraction | MessageComponentInteraction,
     options: InteractionReplyOptions,
     users: Snowflake[],
@@ -113,7 +113,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     onPageChange: OnButtonPageChange<T>,
     ...onPageChangeArgs: unknown[]
   ): Promise<Message> {
-    return this.createButtonBasedPaging(
+    return await this.createButtonBasedPaging(
       interaction,
       options,
       users,
@@ -449,7 +449,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     ];
   }
 
-  public static createButtonBasedTable<T>(
+  public static async createButtonBasedTable<T>(
     interaction: CommandInteraction,
     options: InteractionReplyOptions,
     users: Snowflake[],
@@ -458,7 +458,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     duration: number,
     tableColumns: Column[],
     fillTable: (item: T) => (string | undefined)[]
-  ) {
+  ): Promise<Message<boolean>> {
     const internalColumns: Column[] = [{ name: '#', padding: 4 }];
     tableColumns = [...internalColumns, ...tableColumns];
     const filledTables: (string | undefined)[][] = [];
@@ -466,7 +466,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
       const content = contents[i]!;
       filledTables.push([(i + 1).toString(), ...fillTable(content)]);
     }
-    return this.createLimitedButtonBasedPaging(
+    return await this.createLimitedButtonBasedPaging(
       interaction,
       options,
       users,
@@ -479,11 +479,14 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
 
         const createColumnItem = (i: number, name: string | undefined) => {
           const column = tableColumns[i];
+
           if (!column) {
             throw 'Column should be indexed for createRow()';
           }
+
           const columnContents = filledTables.map((table) => table[i]);
           const longest = Math.max(
+            StringHelper.getUnicodeStringLength(column.name),
             ...columnContents.map((v) =>
               StringHelper.getUnicodeStringLength(v!)
             )
@@ -500,7 +503,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
         }
 
         output += '\n';
-        this.loopPages(pageOption.itemsPerPage, page, async (i) => {
+        await this.loopPages(pageOption.itemsPerPage, page, async (i) => {
           const filledTable = filledTables[i]!;
 
           for (let j = 0; j < tableColumns.length; j++) {
@@ -513,6 +516,14 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
         });
       }
     );
+  }
+
+  public static getPageContentIndex(
+    index: number,
+    itemsPerPage: number,
+    currentPage: number
+  ) {
+    return (currentPage - 1) * itemsPerPage + index;
   }
 
   public static async loopPages(

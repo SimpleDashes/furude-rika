@@ -1,5 +1,5 @@
 import { intervalToDuration } from 'date-fns';
-import { Guild, User } from 'discord.js';
+import { Guild, GuildChannel, User } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import Globals from '../../containers/Globals';
 import Strings from '../../containers/Strings';
@@ -64,9 +64,10 @@ export default class DBUser
    */
   public incrementExperience(
     user: User,
-    guildInfo?: {
+    runInfo?: {
       rawGuild: Guild;
       dbGuild: DBGuild;
+      channel: GuildChannel;
     }
   ): IDatabaseOperation {
     const dateNow = new Date();
@@ -88,9 +89,9 @@ export default class DBUser
       this.lastTimeGotExperience.global = dateNow;
       success = true;
     }
-    if (guildInfo) {
-      const { rawGuild, dbGuild } = guildInfo;
-      if (!dbGuild.blocked_xp_channels.find((o) => o === rawGuild.id)) {
+    if (runInfo) {
+      const { rawGuild, dbGuild, channel } = runInfo;
+      if (!dbGuild.blocked_xp_channels.includes(channel.id)) {
         const nullableLocalLastTimeGotExperience =
           this.lastTimeGotExperience.currentLocal(rawGuild);
         const currentLocalLastTimeGotExperience =

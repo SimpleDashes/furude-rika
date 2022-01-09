@@ -95,7 +95,7 @@ export default class DBGuild
     localizer: FurudeLocales,
     channel: GuildChannel
   ): IDatabaseOperation {
-    if (this.blocked_xp_channels.find((o) => o === channel.id)) {
+    if (this.blocked_xp_channels.includes(channel.id)) {
       return FurudeOperations.error(
         localizer.get(
           FurudeTranslationKeys.DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL,
@@ -121,7 +121,7 @@ export default class DBGuild
     localizer: FurudeLocales,
     channel: GuildChannel
   ): IDatabaseOperation {
-    if (!this.blocked_xp_channels.find((o) => o === channel.id)) {
+    if (!this.blocked_xp_channels.includes(channel.id)) {
       return FurudeOperations.error(
         localizer.get(
           FurudeTranslationKeys.DATABASE_GUILD_ALREADY_WHITELISTED_XP_CHANNEL,

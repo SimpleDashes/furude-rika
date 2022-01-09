@@ -12,8 +12,8 @@ export default interface IAPIOsuBeatmap {
   approvedDate: Date;
   lastUpdate: Date;
   artist: string;
-  beatmapID: string;
-  beatmapSetID: string;
+  beatmapID: number;
+  beatmapSetID: number;
   bpm: number;
   creator: ICreatorInformation;
   difficultyRating: number;
@@ -40,4 +40,10 @@ export default interface IAPIOsuBeatmap {
   videoAvailable: boolean;
   downloadAvailable: boolean;
   audioAvailable: boolean;
+
+  getPageUrl(): string;
+
+  getCoverImage(): string;
+
+  getCoverThumbnail(): string;
 }

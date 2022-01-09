@@ -62,16 +62,12 @@ export default class OsuProfile
     osuUser: IOsuUser<any>,
     runner: IFurudeRunner<OsuContext>
   ): BaseEmbed {
-    return new BaseEmbed({}, runner.interaction).setTitle(
-      `${osuUser.username}: ${osuUser.pps.raw.toLocaleString(
-        runner.args!.localizer.language,
-        {
-          maximumFractionDigits: 2,
-        }
-      )}pp (#${osuUser.pps.global_rank} ${osuUser.country} #${
-        osuUser.pps.country_rank
-      })`
-    );
+    return new BaseEmbed(
+      {
+        author: this.getUserInfoAuthor(osuUser, runner),
+      },
+      runner.interaction
+    ).setThumbnail(osuUser.getAvatarUrl());
   }
 
   createMinimizedEmbed(

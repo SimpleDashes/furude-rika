@@ -1,4 +1,9 @@
-import { CommandInteraction, CacheType, User } from 'discord.js';
+import {
+  CommandInteraction,
+  CacheType,
+  User,
+  MessageEmbedAuthor,
+} from 'discord.js';
 import OsuContext from '../../../client/contexts/osu/OsuContext';
 import FurudeRika from '../../../client/FurudeRika';
 import CommandOptions from '../../../containers/CommandOptions';
@@ -212,9 +217,29 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
     params = {
       ...params,
       ...{
-        limit: limit ? new OsuUserRecentsLimitBindable(limit) : undefined,
+        limit: new OsuUserRecentsLimitBindable(
+          limit ?? Number.POSITIVE_INFINITY
+        ),
       },
     };
     return params;
+  }
+
+  protected getUserInfoAuthor(
+    osuUser: IOsuUser<any>,
+    runner: IFurudeRunner<OsuContext>
+  ): MessageEmbedAuthor {
+    const author: MessageEmbedAuthor = {
+      name: `${osuUser.username}: ${osuUser.pps.raw.toLocaleString(
+        runner.args!.localizer.language,
+        {
+          maximumFractionDigits: 2,
+        }
+      )}pp (#${osuUser.pps.global_rank} ${osuUser.country} #${
+        osuUser.pps.country_rank
+      })`,
+      url: osuUser.getProfileUrl(),
+    };
+    return author;
   }
 }

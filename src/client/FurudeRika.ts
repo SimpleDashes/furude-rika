@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { BaseGuildTextChannel, CommandInteraction } from 'discord.js';
 import BaseBot from '../modules/framework/client/BaseBot';
 import consola from 'consola';
 import ICommandRunResponse from '../modules/framework/client/ICommandRunResponse';
@@ -61,12 +61,20 @@ export default class FurudeRika extends BaseBot {
     this.userScanner.startScan();
 
     this.on('messageCreate', async (message) => {
-      if (!message.guild || !message.member || message.member.user.bot) return;
+      if (
+        !message.guild ||
+        !message.member ||
+        message.member.user.bot ||
+        !message.inGuild ||
+        !(message.channel instanceof BaseGuildTextChannel)
+      )
+        return;
       const user = await this.db.USER.get(message.member.user);
       user.setUsername(message.member.user.username);
       const operation = user.incrementExperience(message.member.user, {
         rawGuild: message.guild,
         dbGuild: await this.db.GUILD.get(message.guild),
+        channel: message.channel,
       });
       if (operation.successfully) {
         consola.success(operation.response);

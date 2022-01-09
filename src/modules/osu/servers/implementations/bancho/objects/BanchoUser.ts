@@ -1,3 +1,4 @@
+import Protocol from '../../../../../connection/Protocol';
 import IOsuScore from '../../../../scores/IOsuScore';
 import BaseOsuUser from '../../../../users/BaseOsuUser';
 import OsuServers from '../../../OsuServers';
@@ -15,5 +16,13 @@ export default class BanchoUser extends BaseOsuUser<IBanchoOsuUserRecentParams> 
     fetchBeatmaps?: boolean
   ): Promise<IOsuScore[]> {
     return await this.server.userRecents.get(params, fetchBeatmaps);
+  }
+
+  getAvatarUrl(): string {
+    return `${Protocol.https}://a.ppy.sh/${this.user_id}?.jpg`;
+  }
+
+  getProfileUrl(): string {
+    return `${OsuServers.bancho.Url}/users/${this.user_id}`;
   }
 }

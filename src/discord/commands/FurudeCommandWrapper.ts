@@ -1,6 +1,7 @@
 import {
   CacheType,
   CommandInteraction,
+  GuildChannel,
   PermissionResolvable,
 } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
@@ -44,10 +45,12 @@ export default class FurudeCommandWrapper {
       await runner.interaction.deferReply();
       runner.args!.dbUser!.incrementExperience(
         runner.interaction.user,
-        runner.interaction.inGuild()
+        runner.interaction.inGuild() &&
+          runner.interaction.channel instanceof GuildChannel
           ? {
               rawGuild: runner.interaction.guild!,
               dbGuild: runner.args!.dbGuild!,
+              channel: runner.interaction.channel!,
             }
           : undefined
       );

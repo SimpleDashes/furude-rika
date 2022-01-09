@@ -14,8 +14,8 @@ export default class BaseOsuAPIBeatmap implements IAPIOsuBeatmap {
   public readonly approvedDate: Date;
   public readonly lastUpdate: Date;
   public readonly artist: string;
-  public readonly beatmapID: string;
-  public readonly beatmapSetID: string;
+  public readonly beatmapID: number;
+  public readonly beatmapSetID: number;
   public readonly bpm: number;
   public readonly creator: ICreatorInformation;
   public readonly difficultyRating: number;
@@ -51,8 +51,8 @@ export default class BaseOsuAPIBeatmap implements IAPIOsuBeatmap {
     this.approvedDate = new Date(apiResponse.approved_date);
     this.lastUpdate = new Date(apiResponse.last_update);
     this.artist = apiResponse.artist;
-    this.beatmapID = apiResponse.beatmap_id;
-    this.beatmapSetID = apiResponse.beatmapset_id;
+    this.beatmapID = parseInt(apiResponse.beatmap_id);
+    this.beatmapSetID = parseInt(apiResponse.beatmapset_id);
     this.bpm = parseInt(apiResponse.bpm);
     this.creator = {
       id: parseInt(apiResponse.creator_id),
@@ -96,5 +96,17 @@ export default class BaseOsuAPIBeatmap implements IAPIOsuBeatmap {
     this.videoAvailable = !!apiResponse.video;
     this.downloadAvailable = !!!apiResponse.download_unavailable;
     this.audioAvailable = !!!apiResponse.audio_unavailable;
+  }
+
+  getPageUrl(): string {
+    return `https://osu.ppy.sh/beatmapsets/${this.beatmapSetID}#osu/${this.beatmapID}`;
+  }
+
+  getCoverImage(): string {
+    return `https://assets.ppy.sh/beatmaps/${this.beatmapSetID}/covers/cover.jpg`;
+  }
+
+  getCoverThumbnail(): string {
+    return `https://b.ppy.sh/thumb/${this.beatmapSetID}l.jpg`;
   }
 }

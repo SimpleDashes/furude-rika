@@ -80,4 +80,8 @@ export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
     params: P,
     fetchBeatmaps?: boolean
   ): Promise<IOsuScore[]>;
+
+  abstract getAvatarUrl(): string;
+
+  abstract getProfileUrl(): string;
 }

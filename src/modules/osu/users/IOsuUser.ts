@@ -22,4 +22,8 @@ export default interface IOsuUser<P> {
   server: AnyServer;
 
   fetchScores(params: P, fetchBeatmaps?: boolean): Promise<IOsuScore[]>;
+
+  getAvatarUrl(): string;
+
+  getProfileUrl(): string;
 }
