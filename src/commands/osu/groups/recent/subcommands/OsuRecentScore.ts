@@ -57,7 +57,16 @@ export default class OsuRecentScore
         return;
       }
 
-      const recentScores = await this.getUserRecentFromServer(server, osuUser);
+      const beatmapLoadedScores: IOsuScore[] = [];
+
+      const loadScore = async (score: IOsuScore) => {
+        if (!beatmapLoadedScores.find((s) => s == score)) {
+          await score.fetchBeatmap();
+        }
+        beatmapLoadedScores.push(score);
+      };
+
+      const recentScores = await this.getUserRecentFromServer(osuUser, false);
       const recentScore = recentScores[0];
 
       if (!recentScore) {
@@ -70,8 +79,10 @@ export default class OsuRecentScore
         return;
       }
 
+      await loadScore(recentScore);
+
       let expandedEmbed = new BaseEmbed();
-      const minimizedEmbed = this.createMinimizedEmbed(runner);
+      const minimizedEmbed = this.createMinimizedEmbed(runner, recentScore);
 
       await ExpandableEmbedHelper.createExpandingInteractiveButton(
         minimizedEmbed,
@@ -90,12 +101,13 @@ export default class OsuRecentScore
               60,
               async (options, page, _content) => {
                 const scores: IOsuScore[] = [];
-                MessageButtonCreator.loopPages(
+                await MessageButtonCreator.loopPages(
                   OsuRecentScore.SCORES_PER_PAGE,
                   page,
-                  (i) => {
+                  async (i) => {
                     const score = recentScores[i];
                     if (score) {
+                      await loadScore(score);
                       scores.push(score);
                     }
                   }
@@ -114,8 +126,13 @@ export default class OsuRecentScore
     return new BaseEmbed({}, runner.interaction).setDescription(Strings.EMPTY);
   }
 
-  createMinimizedEmbed(runner: IFurudeRunner<OsuContext>): BaseEmbed {
-    return this.createBaseEmbed(runner);
+  createMinimizedEmbed(
+    runner: IFurudeRunner<OsuContext>,
+    score: IOsuScore
+  ): BaseEmbed {
+    return this.createBaseEmbed(runner).setDescription(
+      this.createMinimizedDescription(score, runner)
+    );
   }
 
   createExpandedEmbed(
@@ -128,16 +145,25 @@ export default class OsuRecentScore
       if (i > 0) {
         embed.description = MessageCreator.breakLine(embed.description!);
       }
-      embed.description += this.createMinimizedText(score);
+      embed.description += this.createMinimizedDescription(score, runner);
     }
     return embed;
   }
 
-  private createMinimizedText(score: IOsuScore): string {
+  private createMinimizedDescription(
+    score: IOsuScore,
+    runner: IFurudeRunner<OsuContext>
+  ): string {
+    const { apiBeatmap } = score;
+    const { language } = runner.args!.localizer;
     let string = Strings.EMPTY;
-    string += `${MessageCreator.bold('LOREM IPSUM')}`;
+    string += `${MessageCreator.bold(apiBeatmap?.title ?? Strings.EMPTY)}`;
     string = MessageCreator.breakLine(string);
-    string += `▸ ${score.score} ▸ x${score.counts.combo} ▸ [${score.counts[300]}/${score.counts[100]}/${score.counts[50]}/${score.counts.misses}]`;
+    string += `▸ ${score.score.toLocaleString(language)} ▸ x${
+      score.counts.combo
+    } ▸ [${score.counts[300]}/${score.counts[100]}/${score.counts[50]}/${
+      score.counts.misses
+    }]`;
     string = MessageCreator.breakLine(string);
     string += `▸ Score Set ${MessageCreator.timeStamp(score.date)}`;
     return string;

@@ -1,4 +1,5 @@
 import IBaseBanchoAPIScore from './IBaseBanchoAPIScore';
 
-export default interface IBanchoAPIUserRecentScore
-  extends IBaseBanchoAPIScore {}
+export default interface IBanchoAPIUserRecentScore extends IBaseBanchoAPIScore {
+  fetchBeatmaps?: boolean;
+}

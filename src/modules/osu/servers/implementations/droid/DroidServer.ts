@@ -1,6 +1,6 @@
 import APIRoute from '../../../../connection/apis/routes/APIRoute';
 import Domains from '../../../../connection/Domains';
-import IBanchoAPIUserResponse from '../bancho/interfaces/IBanchoAPIUserResponse';
+import IBanchoAPIUserResponse from '../bancho/interfaces/users/IBanchoAPIUserResponse';
 import OsuServer from '../../OsuServer';
 import IDroidOsuParam from './params/IDroidOsuParam';
 import IDroidOsuUserParam from './params/IDroidOsuUserParam';
@@ -12,6 +12,7 @@ import IBanchoAPIUserRecentScore from '../bancho/interfaces/scores/IBanchoAPIUse
 import DroidUser from './objects/DroidUser';
 import DroidUserRecentsAPI from './DroidUserRecentsAPI';
 import IDroidOsuUserRecentsParam from './params/IDroidOsuUserRecentsParams';
+import OsuBeatmapsRoute from '../../routes/OsuBeatmapsRoute';
 
 export default class DroidServer extends OsuServer<
   IDroidOsuParam,
@@ -20,7 +21,10 @@ export default class DroidServer extends OsuServer<
   IDroidOsuUserParam,
   DroidScore,
   IBanchoAPIUserRecentScore,
-  IDroidOsuUserRecentsParam
+  IDroidOsuUserRecentsParam,
+  any,
+  any,
+  any
 > {
   public name: string = 'droid';
 
@@ -34,6 +38,12 @@ export default class DroidServer extends OsuServer<
 
   protected createUsersRoute(base: APIRoute<IDroidOsuParam>): DroidUsersAPI {
     return new DroidUsersAPI(base, 'profile.php');
+  }
+
+  protected createBeatmapsRoute(
+    _base: APIRoute<IDroidOsuParam>
+  ): OsuBeatmapsRoute<any, any, any> {
+    return undefined as unknown as OsuBeatmapsRoute<any, any, any>;
   }
 
   protected createUsersRecentRoute(

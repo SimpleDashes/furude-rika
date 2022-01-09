@@ -18,15 +18,11 @@ import IBanchoOsuUserRecentParams from '../../../modules/osu/servers/implementat
 import DroidServer from '../../../modules/osu/servers/implementations/droid/DroidServer';
 import IDroidOsuUserParam from '../../../modules/osu/servers/implementations/droid/params/IDroidOsuUserParam';
 import IDroidOsuUserRecentsParam from '../../../modules/osu/servers/implementations/droid/params/IDroidOsuUserRecentsParams';
-import OsuServer from '../../../modules/osu/servers/OsuServer';
-import OsuServers from '../../../modules/osu/servers/OsuServers';
+import OsuServers, { AnyServer } from '../../../modules/osu/servers/OsuServers';
 import IOsuUser from '../../../modules/osu/users/IOsuUser';
 
 type OsuServerOption = Omit<StringOption, 'setAutocomplete'>;
-type OsuServerSwitcher<
-  S extends OsuServer<any, any, any, any, any, any, any>,
-  T
-> = { (server: S): T };
+type OsuServerSwitcher<S extends AnyServer, T> = { (server: S): T };
 
 interface IServerSwitchListeners<T> {
   onBancho: OsuServerSwitcher<BanchoServer, T>;
@@ -80,15 +76,11 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
   protected applyToServerOption(
     option: OsuServerOption,
     interaction: CommandInteraction
-  ): OsuServer<any, any, any, any, any, any, any> {
+  ): AnyServer {
     const name = option.apply(interaction);
     return name
-      ? (
-          OsuServers as unknown as Record<
-            string,
-            OsuServer<any, any, any, any, any, any, any>
-          >
-        )[name] ?? OsuServers.bancho
+      ? (OsuServers as unknown as Record<string, AnyServer>)[name] ??
+          OsuServers.bancho
       : OsuServers.bancho;
   }
 
@@ -96,7 +88,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
     options: OsuServerUserOptions,
     runner: IFurudeRunner<OsuContext>,
     user?: User | null
-  ): Promise<IOsuUser | undefined> {
+  ): Promise<IOsuUser<any> | undefined> {
     const server = this.applyToServerOption(options.server, runner.interaction);
 
     user ??= runner.interaction.user;
@@ -115,11 +107,11 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
   }
 
   protected async getUserFromServer(
-    server: OsuServer<any, any, any, any, any, any, any>,
+    server: AnyServer,
     runner: IFurudeRunner<OsuContext>,
     username?: string | null,
     user: User = runner.interaction.user
-  ): Promise<IOsuUser | undefined> {
+  ): Promise<IOsuUser<any> | undefined> {
     if (!username) {
       const dbOsuPlayer = await runner.args!.OSU_PLAYER.default(user);
       const dbUsername = dbOsuPlayer.getAccount(server);
@@ -138,20 +130,20 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
   }
 
   protected async getUserRecentFromServer(
-    server: OsuServer<any, any, any, any, IOsuScore, any, any>,
-    user: IOsuUser,
+    user: IOsuUser<any>,
+    fetchBeatmaps?: boolean,
     limit?: number
   ): Promise<IOsuScore[]> {
-    return (
-      (await server.userRecents.get(
-        this.getParamsForOsuUserRecentRequest(server, user, limit)
-      )) ?? []
+    return await user.fetchScores(
+      this.getParamsForOsuUserRecentRequest(user, limit),
+      fetchBeatmaps
     );
   }
 
-  protected switchServer<
-    S extends OsuServer<any, any, any, any, any, any, any>
-  >(server: S, listeners: IServerSwitchListeners<void>): void {
+  protected switchServer<S extends AnyServer>(
+    server: S,
+    listeners: IServerSwitchListeners<void>
+  ): void {
     switch (server.name) {
       case OsuServers.bancho.name:
         listeners.onBancho(server as any as BanchoServer);
@@ -162,10 +154,11 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
     }
   }
 
-  protected switchForParams<
-    S extends OsuServer<any, any, any, any, any, any, any>,
-    T
-  >(params: T, server: S, listeners: IServerSwitchListeners<T>): T {
+  protected switchForParams<S extends AnyServer, T>(
+    params: T,
+    server: S,
+    listeners: IServerSwitchListeners<T>
+  ): T {
     this.switchServer(server, {
       onBancho: (s) => {
         params = listeners.onBancho(s);
@@ -178,7 +171,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
   }
 
   protected getParamsForOsuUserRequest(
-    server: OsuServer<any, any, any, any, any, any, any>,
+    server: AnyServer,
     usernameID: string
   ): Partial<IBanchoOsuUserParams | IDroidOsuUserParam> {
     let params: Partial<IBanchoOsuUserParams | IDroidOsuUserParam> = {};
@@ -198,14 +191,13 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
   }
 
   protected getParamsForOsuUserRecentRequest(
-    server: OsuServer<any, any, any, any, any, any, any>,
-    user: IOsuUser,
+    user: IOsuUser<any>,
     limit?: number
   ) {
     let params: Partial<
       IBanchoOsuUserRecentParams | IDroidOsuUserRecentsParam
     > = {};
-    params = this.switchForParams(params, server, {
+    params = this.switchForParams(params, user.server, {
       onBancho: (): Partial<IBanchoOsuUserRecentParams> => {
         return {
           u: user.user_id,

@@ -6,4 +6,9 @@ export default abstract class OsuUserRecentRoute<
   T extends IOsuScore,
   B extends IBanchoAPIUserRecentScore,
   P
-> extends OsuGetRoute<T[], B, P> {}
+> extends OsuGetRoute<T[], B, P> {
+  abstract override get(
+    params?: P | Partial<P>,
+    fetchBeatmaps?: boolean
+  ): Promise<T[]>;
+}

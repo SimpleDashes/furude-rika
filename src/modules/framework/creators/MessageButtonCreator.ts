@@ -500,7 +500,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
         }
 
         output += '\n';
-        this.loopPages(pageOption.itemsPerPage, page, (i) => {
+        this.loopPages(pageOption.itemsPerPage, page, async (i) => {
           const filledTable = filledTables[i]!;
 
           for (let j = 0; j < tableColumns.length; j++) {
@@ -515,17 +515,17 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     );
   }
 
-  public static loopPages(
+  public static async loopPages(
     itemsPerPage: number,
     currentPage: number,
-    run: (i: number) => void
+    run: (i: number) => Promise<void>
   ) {
     for (
       let i = itemsPerPage * (currentPage - 1);
       i < itemsPerPage + itemsPerPage * (currentPage - 1);
       ++i
     ) {
-      run(i);
+      await run(i);
     }
   }
 }

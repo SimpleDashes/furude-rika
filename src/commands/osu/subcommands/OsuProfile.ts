@@ -59,7 +59,7 @@ export default class OsuProfile
   }
 
   createBaseEmbed(
-    osuUser: IOsuUser,
+    osuUser: IOsuUser<any>,
     runner: IFurudeRunner<OsuContext>
   ): BaseEmbed {
     return new BaseEmbed({}, runner.interaction).setTitle(
@@ -75,7 +75,7 @@ export default class OsuProfile
   }
 
   createMinimizedEmbed(
-    osuUser: IOsuUser,
+    osuUser: IOsuUser<any>,
     runner: IFurudeRunner<OsuContext>
   ): BaseEmbed {
     return this.createBaseEmbed(osuUser, runner).setDescription(
@@ -90,7 +90,7 @@ export default class OsuProfile
   }
 
   createExpandedEmbed(
-    osuUser: IOsuUser,
+    osuUser: IOsuUser<any>,
     runner: IFurudeRunner<OsuContext>
   ): BaseEmbed {
     return this.createBaseEmbed(osuUser, runner)

@@ -1,7 +1,7 @@
 import APIRoute from '../../../../connection/apis/routes/APIRoute';
 import Domains from '../../../../connection/Domains';
 import BanchoUser from './objects/BanchoUser';
-import IBanchoAPIUserResponse from './interfaces/IBanchoAPIUserResponse';
+import IBanchoAPIUserResponse from './interfaces/users/IBanchoAPIUserResponse';
 import OsuServer from '../../OsuServer';
 import BanchoUsersAPI from './BanchoUsersAPI';
 import IBanchoOsuParam from './params/IBanchoOsuParam';
@@ -11,6 +11,11 @@ import IBanchoOsuUserRecentParams from './params/IBanchoOsuUserRecentParams';
 import OsuUserRecentRoute from '../../routes/OsuUserRecentRoute';
 import BanchoUserRecentsAPI from './BanchoUserRecentsAPI';
 import BanchoScore from './objects/BanchoScore';
+import IAPIOsuBeatmap from '../../beatmaps/IAPIOsuBeatmap';
+import IBanchoAPIBeatmapResponse from './interfaces/beatmaps/IBanchoAPIBeatmapResponse';
+import IBanchoBeatmapParam from './params/IBanchoOsuBeatmapParam';
+import OsuBeatmapsRoute from '../../routes/OsuBeatmapsRoute';
+import BanchoBeatmapsAPI from './BanchoBeatmapsAPI';
 
 export default class BanchoServer extends OsuServer<
   IBanchoOsuParam,
@@ -19,7 +24,10 @@ export default class BanchoServer extends OsuServer<
   IBanchoOsuUserParams,
   BanchoScore,
   IBanchoAPIUserRecentScore,
-  IBanchoOsuUserRecentParams
+  IBanchoOsuUserRecentParams,
+  IAPIOsuBeatmap,
+  IBanchoAPIBeatmapResponse,
+  IBanchoBeatmapParam & IBanchoOsuParam
 > {
   public name: string = 'bancho';
 
@@ -45,5 +53,15 @@ export default class BanchoServer extends OsuServer<
     IBanchoOsuUserRecentParams
   > {
     return new BanchoUserRecentsAPI(base, 'get_user_recent');
+  }
+
+  protected createBeatmapsRoute(
+    base: APIRoute<IBanchoOsuParam>
+  ): OsuBeatmapsRoute<
+    IAPIOsuBeatmap,
+    IBanchoAPIBeatmapResponse,
+    IBanchoBeatmapParam & IBanchoOsuParam
+  > {
+    return new BanchoBeatmapsAPI(base, 'get_beatmaps');
   }
 }

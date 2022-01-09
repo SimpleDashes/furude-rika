@@ -1,5 +1,5 @@
 import OsuUserEventsBindable from '../bindables/OsuUserEventsBindable';
-import IBanchoAPIUserResponse from '../servers/implementations/bancho/interfaces/IBanchoAPIUserResponse';
+import IBanchoAPIUserResponse from '../servers/implementations/bancho/interfaces/users/IBanchoAPIUserResponse';
 import TBanchoApiRawResponse from '../servers/implementations/bancho/interfaces/TBanchoApiRawResponse';
 import IOsuUserCounts from './interfaces/IOsuUserCounts';
 import IOsuUserEvent from './interfaces/IOsuUserEvent';
@@ -7,8 +7,10 @@ import IOsuUserPPS from './interfaces/IOsuUserPPS';
 import IOsuUserRanks from './interfaces/IOsuUserRanks';
 import IOsuUserScores from './interfaces/IOsuUserScores';
 import IOsuUser from './IOsuUser';
+import IOsuScore from '../scores/IOsuScore';
+import { AnyServer } from '../servers/OsuServers';
 
-export default abstract class BaseOsuUser implements IOsuUser {
+export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
   public readonly user_id: number;
   public readonly username: string;
   public readonly join_date: Date;
@@ -21,13 +23,18 @@ export default abstract class BaseOsuUser implements IOsuUser {
   public readonly total_seconds_played: number;
   public readonly country: string;
   public readonly events: IOsuUserEvent[];
+  public readonly server: AnyServer;
 
   /**
    *
    * @param res An api response, the constructor will convert that response into itself.
    */
-  public constructor(raw_res: TBanchoApiRawResponse<IBanchoAPIUserResponse>) {
+  public constructor(
+    raw_res: TBanchoApiRawResponse<IBanchoAPIUserResponse>,
+    server: AnyServer
+  ) {
     const res: IBanchoAPIUserResponse = raw_res[0]!;
+    this.server = server;
     this.user_id = parseInt(res.user_id);
     this.username = res.username;
     this.join_date = new Date(res.join_date);
@@ -68,4 +75,9 @@ export default abstract class BaseOsuUser implements IOsuUser {
       });
     }
   }
+
+  abstract fetchScores(
+    params: P,
+    fetchBeatmaps?: boolean
+  ): Promise<IOsuScore[]>;
 }

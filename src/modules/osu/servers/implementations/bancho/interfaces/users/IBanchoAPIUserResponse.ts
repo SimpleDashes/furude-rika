@@ -1,4 +1,4 @@
-import IRawOsuUserEvent from '../../../../users/interfaces/raw/IRawOsuUserEvent';
+import IRawOsuUserEvent from '../../../../../users/interfaces/raw/IRawOsuUserEvent';
 
 export default interface IBanchoAPIUserResponse {
   user_id: string;

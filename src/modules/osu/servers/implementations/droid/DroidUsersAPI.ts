@@ -1,5 +1,4 @@
-import BanchoUser from '../bancho/objects/BanchoUser';
-import IBanchoAPIUserResponse from '../bancho/interfaces/IBanchoAPIUserResponse';
+import IBanchoAPIUserResponse from '../bancho/interfaces/users/IBanchoAPIUserResponse';
 import IDroidOsuUserParam from './params/IDroidOsuUserParam';
 import DroidUser from './objects/DroidUser';
 import cheerio from 'cheerio';
@@ -10,9 +9,7 @@ export default class DroidUsersAPI extends OsuUserRoute<
   IBanchoAPIUserResponse,
   IDroidOsuUserParam
 > {
-  async get(
-    params?: IDroidOsuUserParam | any
-  ): Promise<BanchoUser | undefined> {
+  async get(params?: IDroidOsuUserParam | any): Promise<DroidUser | undefined> {
     const data = await this.getResponse(params);
     const $ = cheerio.load(data);
 

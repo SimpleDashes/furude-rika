@@ -10,10 +10,21 @@ export default class BanchoUserRecentsAPI extends OsuUserRecentRoute<
   IBanchoOsuUserRecentParams
 > {
   async get(
-    params?: IBanchoOsuUserRecentParams | any
-  ): Promise<IOsuScore[] | undefined> {
-    return (
-      (await this.getResponse(params)) as IBanchoAPIUserRecentScore[]
-    ).map((r) => new BanchoScore(r));
+    params?: IBanchoOsuUserRecentParams | any,
+    fetchBeatmaps?: boolean
+  ): Promise<IOsuScore[]> {
+    const apiScores = (await this.getResponse(
+      params
+    )) as IBanchoAPIUserRecentScore[];
+    const scores: IOsuScore[] = [];
+    for (const apiScore of apiScores) {
+      scores.push(new BanchoScore(apiScore));
+    }
+    if (fetchBeatmaps) {
+      for await (const score of scores) {
+        await score.fetchBeatmap();
+      }
+    }
+    return scores;
   }
 }

@@ -22,7 +22,7 @@ export default class FurudeRika extends BaseBot {
   public readonly userScanner = new UserScanner(this);
 
   private readonly forceDeploy = true;
-  private readonly isDebug = true;
+  private readonly isDebug = false;
 
   public constructor() {
     FurudeRika.init();

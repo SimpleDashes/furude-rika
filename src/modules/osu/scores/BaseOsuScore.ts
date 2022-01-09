@@ -1,4 +1,6 @@
+import IAPIOsuBeatmap from '../servers/beatmaps/IAPIOsuBeatmap';
 import IBaseBanchoAPIScore from '../servers/implementations/bancho/interfaces/scores/IBaseBanchoAPIScore';
+import OsuServers from '../servers/OsuServers';
 import IOsuScoreCounts from './interfaces/IOsuScoreCounts';
 import IOsuScore from './IOsuScore';
 
@@ -11,6 +13,7 @@ export default class BaseOsuScore implements IOsuScore {
   public readonly userID: string;
   public readonly date: Date;
   public readonly rank: string;
+  public apiBeatmap?: IAPIOsuBeatmap | undefined;
 
   public constructor(base: IBaseBanchoAPIScore) {
     this.beatmapID = parseInt(base.beatmap_id);
@@ -24,10 +27,21 @@ export default class BaseOsuScore implements IOsuScore {
       geki: parseInt(base.countgeki),
       combo: parseInt(base.maxcombo),
     };
-    this.perfect = base.perfect === (0).toString() ? false : true;
+    this.perfect = !!base.perfect;
     this.mods = base.enabled_mods;
     this.userID = base.user_id;
     this.date = new Date(base.date);
     this.rank = base.rank;
+  }
+
+  async fetchBeatmap(): Promise<IAPIOsuBeatmap | undefined> {
+    const beatmap =
+      (
+        await OsuServers.bancho.beatmaps.get({
+          b: this.beatmapID,
+        })
+      )[0] ?? undefined;
+    this.apiBeatmap = beatmap;
+    return beatmap;
   }
 }
