@@ -9,7 +9,7 @@ export default class BanchoBeatmapsAPI extends OsuBeatmapsRoute<
   IBanchoAPIBeatmapResponse,
   IBanchoBeatmapParam
 > {
-  async get(params?: IBanchoBeatmapParam | any): Promise<IAPIOsuBeatmap[]> {
+  async get(params?: IBanchoBeatmapParam): Promise<IAPIOsuBeatmap[]> {
     return (
       (await this.getResponse(params)) as IBanchoAPIBeatmapResponse[]
     ).map((b) => new BanchoBeatmap(b));

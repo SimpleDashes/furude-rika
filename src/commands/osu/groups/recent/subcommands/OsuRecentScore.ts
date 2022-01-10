@@ -124,7 +124,7 @@ export default class OsuRecentScore
 
   createBaseEmbed(
     runner: IFurudeRunner<OsuContext>,
-    user: IOsuUser<any>
+    user: IOsuUser<unknown>
   ): BaseEmbed {
     return new BaseEmbed(
       {
@@ -136,7 +136,7 @@ export default class OsuRecentScore
 
   createMinimizedEmbed(
     runner: IFurudeRunner<OsuContext>,
-    user: IOsuUser<any>,
+    user: IOsuUser<unknown>,
     score: IOsuScore
   ): BaseEmbed {
     const embed = this.createBaseEmbed(runner, user).setDescription(
@@ -152,7 +152,7 @@ export default class OsuRecentScore
 
   createExpandedEmbed(
     runner: IFurudeRunner<OsuContext>,
-    user: IOsuUser<any>,
+    user: IOsuUser<unknown>,
     scores: IOsuScore[],
     page: number
   ): BaseEmbed {

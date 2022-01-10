@@ -39,7 +39,9 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void>;
 
-  public override ContextType(): (runner: IFurudeRunner<any>) => OsuContext {
+  public override ContextType(): (
+    runner: IFurudeRunner<OsuContext>
+  ) => OsuContext {
     return (runner) => new OsuContext(runner);
   }
 
@@ -109,7 +111,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
     runner: IFurudeRunner<OsuContext>,
     username?: string | null,
     user: User = runner.interaction.user
-  ): Promise<IOsuUser<any> | undefined> {
+  ): Promise<IOsuUser<unknown> | undefined> {
     if (!username) {
       const dbOsuPlayer = await runner.args!.OSU_PLAYER.default(user);
       const dbUsername = dbOsuPlayer.getAccount(server);

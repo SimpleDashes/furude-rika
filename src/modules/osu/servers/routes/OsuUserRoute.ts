@@ -3,7 +3,7 @@ import IBanchoAPIUserResponse from '../implementations/bancho/interfaces/users/I
 import OsuGetRoute from './OsuGetRoute';
 
 export default abstract class OsuUserRoute<
-  T extends IOsuUser<any>,
+  T extends IOsuUser<unknown>,
   B extends IBanchoAPIUserResponse,
   P
 > extends OsuGetRoute<T, B, P> {}

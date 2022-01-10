@@ -200,8 +200,8 @@ export default abstract class BaseBot extends Client implements IBot {
 
       if (!command) return;
 
-      const preconditionedCommand =
-        command as unknown as Partial<IHasPreconditions>;
+      const preconditionedCommand = command as unknown as IHasPreconditions &
+        BaseCommand<BaseBot>;
 
       const subCommandOption = interaction.options.getSubcommand(
         Boolean(
@@ -250,11 +250,11 @@ export default abstract class BaseBot extends Client implements IBot {
 
       if (runner) {
         const canRun = async (
-          can: ICommand<any, any> | Partial<IHasPreconditions>
+          can: ICommand<any, any> | (ICommand<any, any> & IHasPreconditions)
         ) => {
           return await this.verifyPermissionsToRunCommand(
             runner!,
-            can as unknown as Partial<IHasPreconditions>
+            can as unknown as IHasPreconditions
           );
         };
 

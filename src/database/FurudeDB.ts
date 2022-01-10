@@ -6,7 +6,6 @@ import {
   FindManyOptions,
   FindOneOptions,
 } from 'typeorm';
-import Constructor from '../modules/framework/interfaces/Constructor';
 import SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBCitizen from './entity/DBCitizen';
@@ -14,6 +13,7 @@ import DBGuild from './entity/DBGuild';
 import DBOsuPlayer from './entity/DBOsuPlayer';
 import DBUser from './entity/DBUser';
 import IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
+import TClassRepository from './types/TClassRepository';
 
 export default class FurudeDB {
   public readonly uri: string;
@@ -40,10 +40,10 @@ export default class FurudeDB {
   }
 
   private assignNewEntityToEntity<T extends BaseEntity>(
-    constructor: Constructor<T>,
+    constructor: TClassRepository<T>,
     findEntity: T | null,
     onNotFound?: (o: T) => void
-  ) {
+  ): T {
     const entity = new constructor();
     if (findEntity) {
       Object.assign(entity, findEntity);
@@ -53,13 +53,16 @@ export default class FurudeDB {
   }
 
   private async createEntityWhenNotFound<T extends BaseEntity>(
-    constructor: Constructor<T>,
-    findEntity: () => Promise<T>,
+    constructor: TClassRepository<T>,
+    findEntity: () => Promise<T | undefined>,
     onNotFound?: (o: T) => void
-  ) {
+  ): Promise<T> {
     let find: T | null = null;
     try {
-      find = await findEntity();
+      const found = await findEntity();
+      if (found) {
+        find = found;
+      }
     } catch {}
     return this.assignNewEntityToEntity(constructor, find, onNotFound);
   }
@@ -86,7 +89,7 @@ export default class FurudeDB {
 
   public async getSnowflake<T extends SnowFlakeIDEntity>(
     snowflake: IHasSnowFlakeID,
-    type: any,
+    type: TClassRepository<T>,
     query?: FindOneOptions<T>
   ): Promise<T> {
     const identifyJustCreated = (o: any, justCreated: boolean) => {
@@ -152,9 +155,9 @@ interface IDatabaseGetter<
 > extends IDatabaseGetterGetOnly<K, T>,
     IDatabaseGetterGetAllOnly<T> {}
 
-abstract class BaseDatabaseGetter {
+abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
   protected db: FurudeDB;
-  protected abstract typeObject: any;
+  protected abstract typeObject: TClassRepository<T>;
 
   public constructor(db: FurudeDB) {
     this.db = db;
@@ -163,12 +166,16 @@ abstract class BaseDatabaseGetter {
   protected static async get<
     K extends IHasSnowFlakeID,
     T extends SnowFlakeIDEntity
-  >(that: BaseDatabaseGetter, key: K, query?: FindOneOptions<T>): Promise<T> {
+  >(
+    that: BaseDatabaseGetter<T>,
+    key: K,
+    query?: FindOneOptions<T>
+  ): Promise<T> {
     return await that.db.getSnowflake(key, that.typeObject, query);
   }
 
   protected static async getAllOn<T extends SnowFlakeIDEntity>(
-    that: BaseDatabaseGetter,
+    that: BaseDatabaseGetter<T>,
     query?: FindManyOptions<T>
   ): Promise<T[]> {
     return await that.db.getSnowflakes(that.typeObject, query);
@@ -179,7 +186,7 @@ abstract class DatabaseGetterGetOnly<
     K extends IHasSnowFlakeID,
     T extends SnowFlakeIDEntity
   >
-  extends BaseDatabaseGetter
+  extends BaseDatabaseGetter<T>
   implements IDatabaseGetterGetOnly<K, T>
 {
   public async get(key: K, query?: FindManyOptions<T>): Promise<T> {
@@ -205,7 +212,7 @@ abstract class DatabaseGetter<
     K extends IHasSnowFlakeID,
     T extends SnowFlakeIDEntity
   >
-  extends BaseDatabaseGetter
+  extends BaseDatabaseGetter<T>
   implements IDatabaseGetter<K, T>
 {
   public async get(key: K, query?: FindManyOptions<T>): Promise<T> {
@@ -231,23 +238,23 @@ abstract class UserBasedDatabaseGetter<
 }
 
 class UserGetter extends UserBasedDatabaseGetter<DBUser> {
-  protected typeObject: any = DBUser;
+  protected typeObject: TClassRepository<DBUser> = DBUser;
 }
 
 class CitizenGetter extends UserBasedDatabaseGetter<DBCitizen> {
-  protected typeObject: any = DBCitizen;
+  protected typeObject: TClassRepository<DBCitizen> = DBCitizen;
 }
 
 class OsuUserGetter extends UserBasedDatabaseGetter<DBOsuPlayer> {
-  protected typeObject: any = DBOsuPlayer;
+  protected typeObject: TClassRepository<DBOsuPlayer> = DBOsuPlayer;
 }
 
 class GuildGetter extends DatabaseGetterGetOnly<Guild, DBGuild> {
-  protected typeObject: any = DBGuild;
+  protected typeObject: TClassRepository<DBGuild> = DBGuild;
 }
 
 class ChannelGetter extends DatabaseGetter<GuildChannel, DBChannel> {
-  protected typeObject: any = DBChannel;
+  protected typeObject: TClassRepository<DBChannel> = DBChannel;
 }
 
 export {

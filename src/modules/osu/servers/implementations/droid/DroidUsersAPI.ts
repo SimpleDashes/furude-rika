@@ -9,7 +9,7 @@ export default class DroidUsersAPI extends OsuUserRoute<
   IBanchoAPIUserResponse,
   IDroidOsuUserParam
 > {
-  async get(params?: IDroidOsuUserParam | any): Promise<DroidUser | undefined> {
+  async get(params?: IDroidOsuUserParam): Promise<DroidUser | undefined> {
     const data = await this.getResponse(params);
     const $ = cheerio.load(data);
 

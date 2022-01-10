@@ -10,7 +10,10 @@ import RequiresSubCommandsPrecondition from '../preconditions/RequiresSubCommand
 import RequiresSubCommandsGroupsPrecondition from '../preconditions/RequiresSubCommandsGroupsPrecondition';
 
 export class PreconditionConstructors {
-  public static WithPermission: Constructor<GuildPermissionsPreconditions>;
+  public static WithPermission: Constructor<
+    [PermissionResolvable],
+    GuildPermissionsPreconditions
+  >;
 }
 export class SetupPrecondition {
   public static setup(owner: OwnerPrecondition) {
@@ -44,7 +47,10 @@ export class SetupPrecondition {
   }
 
   public static setupGuildPermissionsPrecondition(
-    permissions: Constructor<GuildPermissionsPreconditions> = GuildPermissionsPreconditions
+    permissions: Constructor<
+      [PermissionResolvable],
+      GuildPermissionsPreconditions
+    > = GuildPermissionsPreconditions
   ) {
     PreconditionConstructors.WithPermission = permissions;
   }
@@ -63,12 +69,32 @@ export class Preconditions {
 }
 
 function SetPreconditions(...preconditions: CommandPrecondition[]) {
-  return (target: Constructor<ICommand<any, any>>) => {
+  return (target: Constructor<[...any], ICommand<any, any>>) => {
     const prototype = target.prototype as Partial<IHasPreconditions>;
     prototype.preconditions ??= [];
-    if (preconditions.find((c) => c instanceof GuildPermissionsPreconditions)) {
-      preconditions = [Preconditions.GuildOnly, ...preconditions];
+
+    const maybeGuildPrecondition = preconditions.find(
+      (c) => c instanceof RequiresGuildPrecondition
+    );
+
+    const guildPrecondition = maybeGuildPrecondition ?? Preconditions.GuildOnly;
+
+    if (
+      preconditions.find((c) => c instanceof GuildPermissionsPreconditions) &&
+      !preconditions.includes(guildPrecondition)
+    ) {
+      preconditions.push(guildPrecondition);
     }
+
+    if (preconditions.find((c) => c instanceof RequiresGuildPrecondition)) {
+      preconditions = [
+        guildPrecondition,
+        ...preconditions.filter(
+          (c) => !(c instanceof RequiresGuildPrecondition)
+        ),
+      ];
+    }
+
     prototype.preconditions = [...prototype.preconditions, ...preconditions];
   };
 }
