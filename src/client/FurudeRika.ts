@@ -53,7 +53,7 @@ export default class FurudeRika extends BaseBot {
           process.memoryUsage().heapUsed
         ).toFixed()}MB`
       );
-    }, secondsToMilliseconds(10));
+    }, secondsToMilliseconds(60));
   }
 
   /**
