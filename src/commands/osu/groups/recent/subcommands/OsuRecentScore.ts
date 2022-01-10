@@ -37,7 +37,7 @@ export default class OsuRecentScore
 
   public createRunnerRunnable(
     runner: IFurudeRunner<OsuContext>,
-    _client: FurudeRika,
+    client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
     return async () => {
@@ -57,16 +57,6 @@ export default class OsuRecentScore
         await this.sendOsuUserNotFound(runner);
         return;
       }
-
-      const beatmapLoadedScores: IOsuScore[] = [];
-
-      const loadScore = async (score: IOsuScore) => {
-        if (!beatmapLoadedScores.includes(score)) {
-          await score.fetchBeatmap();
-        }
-        beatmapLoadedScores.push(score);
-      };
-
       const recentScores = await this.getUserRecentFromServer(osuUser, false);
       const recentScore = recentScores[0];
 
@@ -80,7 +70,7 @@ export default class OsuRecentScore
         return;
       }
 
-      await loadScore(recentScore);
+      await client.beatmapCache.fetchFromScore(recentScore);
 
       let expandedEmbed = new BaseEmbed();
       const minimizedEmbed = this.createMinimizedEmbed(
@@ -112,7 +102,7 @@ export default class OsuRecentScore
                   async (i) => {
                     const score = recentScores[i];
                     if (score) {
-                      await loadScore(score);
+                      await client.beatmapCache.fetchFromScore(score);
                       scores.push(score);
                     }
                   }
@@ -200,7 +190,6 @@ export default class OsuRecentScore
       string += `${apiBeatmap.title} [${apiBeatmap.version}]`;
       if (!!apiBeatmap.beatmapID) {
         canHyperLink = true;
-        string = MessageCreator.hyperLink(string, apiBeatmap.getPageUrl());
       }
     } else {
       string += `NOT FOUND`;

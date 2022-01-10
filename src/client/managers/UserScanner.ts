@@ -1,6 +1,6 @@
 import DBUser from '../../database/entity/DBUser';
 import consola from 'consola';
-import BaseFurudeScanner from './BaseFurudeScanner';
+import BaseFurudeScanner from './abstracts/BaseFurudeScanner';
 
 export default class UserScanner extends BaseFurudeScanner {
   protected scanningWhat: string = 'USER';

@@ -14,15 +14,18 @@ import ReminderManager from './managers/ReminderManager';
 import UserScanner from './managers/UserScanner';
 import OsuServers from '../modules/osu/servers/OsuServers';
 import InteractionUtils from '../modules/framework/interactions/InteractionUtils';
+import { secondsToMilliseconds } from 'date-fns';
+import BeatmapCacheManager from './managers/BeatmapCacheManager';
 
 export default class FurudeRika extends BaseBot {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
   public readonly reminderManager = new ReminderManager(this);
   public readonly userScanner = new UserScanner(this);
+  public readonly beatmapCache = new BeatmapCacheManager(this);
 
   private readonly forceDeploy = true;
-  private readonly isDebug = false;
+  private readonly isDebug = true;
 
   public constructor() {
     FurudeRika.init();
@@ -41,6 +44,16 @@ export default class FurudeRika extends BaseBot {
         'wrapper',
       ])
     );
+    setInterval(() => {
+      const bytesToMegabytes = (bytes: number): number => {
+        return bytes / 1024 / 1024;
+      };
+      consola.success(
+        `Memory usage: ${bytesToMegabytes(
+          process.memoryUsage().heapUsed
+        ).toFixed()}MB`
+      );
+    }, secondsToMilliseconds(10));
   }
 
   /**

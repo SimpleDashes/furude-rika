@@ -5,7 +5,7 @@ import DBUser from '../../database/entity/DBUser';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import BaseFurudeManager from './BaseFurudeManager';
+import BaseFurudeManager from './abstracts/BaseFurudeManager';
 
 export default class ReminderManager extends BaseFurudeManager {
   public reminders: DBReminder[] = [];

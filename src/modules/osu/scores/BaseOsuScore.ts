@@ -1,6 +1,6 @@
 import IAPIOsuBeatmap from '../servers/beatmaps/IAPIOsuBeatmap';
 import IBaseBanchoAPIScore from '../servers/implementations/bancho/interfaces/scores/IBaseBanchoAPIScore';
-import OsuServers from '../servers/OsuServers';
+import OsuServers, { AnyServer } from '../servers/OsuServers';
 import IOsuScoreCounts from './interfaces/IOsuScoreCounts';
 import IOsuScore from './IOsuScore';
 
@@ -13,9 +13,11 @@ export default class BaseOsuScore implements IOsuScore {
   public readonly userID: string;
   public readonly date: Date;
   public readonly rank: string;
+  public server: AnyServer;
   public apiBeatmap?: IAPIOsuBeatmap | undefined;
 
-  public constructor(base: IBaseBanchoAPIScore) {
+  public constructor(base: IBaseBanchoAPIScore, server: AnyServer) {
+    this.server = server;
     this.beatmapID = parseInt(base.beatmap_id);
     this.score = parseInt(base.score);
     this.counts = {

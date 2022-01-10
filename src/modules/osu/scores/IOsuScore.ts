@@ -1,4 +1,5 @@
 import IAPIOsuBeatmap from '../servers/beatmaps/IAPIOsuBeatmap';
+import { AnyServer } from '../servers/OsuServers';
 import IOsuScoreCounts from './interfaces/IOsuScoreCounts';
 
 export default interface IOsuScore {
@@ -10,6 +11,7 @@ export default interface IOsuScore {
   userID: string;
   date: Date;
   rank: string; // TODO: RANK ENUM OR CLASSES WHATEVER.
+  server: AnyServer;
   apiBeatmap?: IAPIOsuBeatmap;
 
   fetchBeatmap(): Promise<IAPIOsuBeatmap | undefined>;

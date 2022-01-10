@@ -45,7 +45,7 @@ export default class BaseOsuAPIBeatmap implements IAPIOsuBeatmap {
 
   public constructor(apiResponse: IBanchoAPIBeatmapResponse) {
     this.approved = Object.values(BeatmapApprovalState).find(
-      (v) => v == parseInt(apiResponse.approved)
+      (v) => v === parseInt(apiResponse.approved)
     ) as BeatmapApprovalState;
     this.submitDate = new Date(apiResponse.submit_date);
     this.approvedDate = new Date(apiResponse.approved_date);
@@ -72,17 +72,17 @@ export default class BaseOsuAPIBeatmap implements IAPIOsuBeatmap {
     this.hitLength = parseInt(apiResponse.hit_length);
     this.source = apiResponse.source;
     this.genre = Object.values(BeatmapGenres).find(
-      (v) => v == parseInt(apiResponse.genre_id)
+      (v) => v === parseInt(apiResponse.genre_id)
     ) as BeatmapGenres;
     this.language = Object.values(BeatmapLanguages).find(
-      (v) => v == parseInt(apiResponse.language_id)
+      (v) => v === parseInt(apiResponse.language_id)
     ) as BeatmapLanguages;
     this.title = apiResponse.title;
     this.totalLength = parseInt(apiResponse.total_length);
     this.version = apiResponse.version;
     this.md5 = apiResponse.file_md5;
     this.mode = Object.values(OsuModes).find(
-      (v) => v == parseInt(apiResponse.mode)
+      (v) => v === parseInt(apiResponse.mode)
     ) as OsuModes;
     this.tags = apiResponse.tags.split(' ');
     this.favorites = parseInt(apiResponse.favourite_count);

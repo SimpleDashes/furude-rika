@@ -30,7 +30,7 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
 
   public getAccount(server: AnyServer): number {
     let account: number | null | undefined;
-    if (server == OsuServers.bancho) {
+    if (server === OsuServers.bancho) {
       account = this.accounts.global;
     } else {
       account = this.accounts.currentLocal(server);
@@ -45,10 +45,10 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
     const dbNewAccounts = new OsuServerHyperValue();
     const tToAddAccounts = accounts as Record<string, IOsuUser<any>>;
     for (const o in tToAddAccounts) {
-      if (o == OsuServers.bancho.name) {
+      if (o === OsuServers.bancho.name) {
         dbNewAccounts.global = tToAddAccounts[o]!.user_id;
       } else {
-        const server = OsuServers.servers.find((s) => s.name == o);
+        const server = OsuServers.servers.find((s) => s.name === o);
         if (server) {
           dbNewAccounts.setLocal(server, tToAddAccounts[o]!.user_id);
         }
@@ -59,7 +59,7 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
     }
     for (const o of dbNewAccounts.locals) {
       this.accounts.setLocal(
-        OsuServers.servers.find((s) => s.name == o.key)!,
+        OsuServers.servers.find((s) => s.name === o.key)!,
         o.value
       );
     }

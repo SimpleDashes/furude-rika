@@ -17,22 +17,15 @@ import StringOption from '../../../modules/framework/options/classes/StringOptio
 import UserOption from '../../../modules/framework/options/classes/UserOption';
 import OsuUserRecentsLimitBindable from '../../../modules/osu/bindables/OsuUserRecentsLimitBindable';
 import IOsuScore from '../../../modules/osu/scores/IOsuScore';
-import BanchoServer from '../../../modules/osu/servers/implementations/bancho/BanchoServer';
 import IBanchoOsuUserParams from '../../../modules/osu/servers/implementations/bancho/params/IBanchoOsuUserParams';
 import IBanchoOsuUserRecentParams from '../../../modules/osu/servers/implementations/bancho/params/IBanchoOsuUserRecentParams';
-import DroidServer from '../../../modules/osu/servers/implementations/droid/DroidServer';
 import IDroidOsuUserParam from '../../../modules/osu/servers/implementations/droid/params/IDroidOsuUserParam';
 import IDroidOsuUserRecentsParam from '../../../modules/osu/servers/implementations/droid/params/IDroidOsuUserRecentsParams';
 import OsuServers, { AnyServer } from '../../../modules/osu/servers/OsuServers';
 import IOsuUser from '../../../modules/osu/users/IOsuUser';
+import OsuServerUtils from '../../../utils/OsuServerUtils';
 
 type OsuServerOption = Omit<StringOption, 'setAutocomplete'>;
-type OsuServerSwitcher<S extends AnyServer, T> = { (server: S): T };
-
-interface IServerSwitchListeners<T> {
-  onBancho: OsuServerSwitcher<BanchoServer, T>;
-  onDroid: OsuServerSwitcher<DroidServer, T>;
-}
 
 export interface OsuServerUserOptions {
   user: StringOption;
@@ -145,42 +138,12 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
     );
   }
 
-  protected switchServer<S extends AnyServer>(
-    server: S,
-    listeners: IServerSwitchListeners<void>
-  ): void {
-    switch (server.name) {
-      case OsuServers.bancho.name:
-        listeners.onBancho(server as any as BanchoServer);
-        break;
-      case OsuServers.droid.name:
-        listeners.onDroid(server as any as DroidServer);
-        break;
-    }
-  }
-
-  protected switchForParams<S extends AnyServer, T>(
-    params: T,
-    server: S,
-    listeners: IServerSwitchListeners<T>
-  ): T {
-    this.switchServer(server, {
-      onBancho: (s) => {
-        params = listeners.onBancho(s);
-      },
-      onDroid: (s) => {
-        params = listeners.onDroid(s);
-      },
-    });
-    return params;
-  }
-
   protected getParamsForOsuUserRequest(
     server: AnyServer,
     usernameID: string
   ): Partial<IBanchoOsuUserParams | IDroidOsuUserParam> {
     let params: Partial<IBanchoOsuUserParams | IDroidOsuUserParam> = {};
-    params = this.switchForParams(params, server, {
+    params = OsuServerUtils.switchForParams(params, server, {
       onBancho: (): Partial<IBanchoOsuUserParams> => {
         return {
           u: usernameID,
@@ -202,7 +165,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
     let params: Partial<
       IBanchoOsuUserRecentParams | IDroidOsuUserRecentsParam
     > = {};
-    params = this.switchForParams(params, user.server, {
+    params = OsuServerUtils.switchForParams(params, user.server, {
       onBancho: (): Partial<IBanchoOsuUserRecentParams> => {
         return {
           u: user.user_id,

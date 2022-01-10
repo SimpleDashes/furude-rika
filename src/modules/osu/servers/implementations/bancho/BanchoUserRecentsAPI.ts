@@ -3,6 +3,7 @@ import IOsuScore from '../../../scores/IOsuScore';
 import IBanchoAPIUserRecentScore from './interfaces/scores/IBanchoAPIUserRecentScore';
 import IBanchoOsuUserRecentParams from './params/IBanchoOsuUserRecentParams';
 import BanchoScore from './objects/BanchoScore';
+import OsuServers from '../../OsuServers';
 
 export default class BanchoUserRecentsAPI extends OsuUserRecentRoute<
   IOsuScore,
@@ -18,7 +19,7 @@ export default class BanchoUserRecentsAPI extends OsuUserRecentRoute<
     )) as IBanchoAPIUserRecentScore[];
     const scores: IOsuScore[] = [];
     for (const apiScore of apiScores) {
-      scores.push(new BanchoScore(apiScore));
+      scores.push(new BanchoScore(apiScore, OsuServers.bancho));
     }
     if (fetchBeatmaps) {
       for await (const score of scores) {

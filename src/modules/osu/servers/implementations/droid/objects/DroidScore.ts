@@ -17,7 +17,7 @@ export default class DroidScore
     base: IBaseBanchoAPIScore,
     extension?: IDroidScoreExtension
   ) {
-    super(base);
+    super(base, OsuServers.droid);
     if (extension) {
       if (extension.beatmapHash) {
         this.beatmapHash = extension.beatmapHash;

@@ -1,4 +1,4 @@
-import FurudeRika from '../FurudeRika';
+import FurudeRika from '../../FurudeRika';
 
 export default abstract class BaseFurudeManager {
   protected readonly rika: FurudeRika;
