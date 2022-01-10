@@ -1,19 +1,14 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../../../client/FurudeRika';
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
-import EconomySubCommand, {
-  EconomyRunner,
-  MustHaveOpenAccount,
-} from '../../wrapper/EconomySubCommand';
-import DailyHelper from '../../wrapper/DailyHelper';
 import {
   Preconditions,
   SetPreconditions,
 } from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
+import DailySubCommand from '../../wrapper/DailySubCommand';
+import { MustHaveOpenAccount } from '../../wrapper/EconomySubCommand';
 
 @SetPreconditions(Preconditions.GuildOnly, MustHaveOpenAccount)
-export default class DailyLocal extends EconomySubCommand {
+export default class DailyLocal extends DailySubCommand {
   public constructor() {
     super({
       name: 'local',
@@ -21,15 +16,7 @@ export default class DailyLocal extends EconomySubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: EconomyRunner,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return DailyHelper.createRunnerRunnable(
-      runner,
-      interaction,
-      HyperTypes.local
-    );
+  public dailyScope(): HyperTypes {
+    return HyperTypes.local;
   }
 }
