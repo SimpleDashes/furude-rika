@@ -45,6 +45,7 @@ export default class BeatmapCacheManager extends BaseFurudeCacheManager<
         this.collection.set(beatmapIDOrHash, beatmap);
       }
     }
+
     return beatmap;
   }
 
