@@ -1,10 +1,10 @@
-import { CommandInteraction, CacheType } from 'discord.js';
+import IRunsCommand from '../interfaces/IRunsCommand';
 import CommandPrecondition from './abstracts/CommandPrecondition';
 
 export default class RequiresGuildPrecondition extends CommandPrecondition {
-  protected validateInternally(
-    interaction: CommandInteraction<CacheType>
-  ): boolean {
-    return interaction.inGuild();
+  protected async validateInternally(
+    runner: IRunsCommand<any>
+  ): Promise<boolean> {
+    return runner.interaction.inGuild();
   }
 }

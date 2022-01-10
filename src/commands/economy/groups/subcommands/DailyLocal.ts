@@ -12,8 +12,7 @@ import {
   SetPreconditions,
 } from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
 
-@MustHaveOpenAccount
-@SetPreconditions(Preconditions.GuildOnly)
+@SetPreconditions(Preconditions.GuildOnly, MustHaveOpenAccount)
 export default class DailyLocal extends EconomySubCommand {
   public constructor() {
     super({
@@ -22,12 +21,12 @@ export default class DailyLocal extends EconomySubCommand {
     });
   }
 
-  public createRunnerRunnableInternally(
+  public createRunnerRunnable(
     runner: EconomyRunner,
     _client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
-    return DailyHelper.createRunnerRunnableInternally(
+    return DailyHelper.createRunnerRunnable(
       runner,
       interaction,
       HyperTypes.local

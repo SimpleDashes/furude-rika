@@ -1,5 +1,4 @@
 import { CommandInteraction, CacheType } from 'discord.js';
-
 import FurudeRika from '../../../client/FurudeRika';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import FurudeOperations from '../../../database/FurudeOperations';
@@ -15,7 +14,7 @@ export default class EconomyOpen extends EconomySubCommand {
     });
   }
 
-  public createRunnerRunnableInternally(
+  public createRunnerRunnable(
     runner: EconomyRunner,
     _client: FurudeRika,
     interaction: CommandInteraction<CacheType>

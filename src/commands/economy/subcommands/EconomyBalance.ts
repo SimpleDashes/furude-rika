@@ -26,7 +26,7 @@ export default class EconomyOpen extends EconomySubCommand {
     });
   }
 
-  public createRunnerRunnableInternally(
+  public createRunnerRunnable(
     runner: EconomyRunner,
     _client: FurudeRika,
     interaction: CommandInteraction<CacheType>

@@ -4,28 +4,35 @@ import FurudeRika from '../../../client/FurudeRika';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
-import Constructor from '../../../modules/framework/interfaces/Constructor';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
-import IChildCreatedRunnableCommand from '../../../discord/commands/interfaces/IChildCreatedRunnableCommand';
+import CommandPrecondition from '../../../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
 
 export interface EconomyRunner extends IFurudeRunner<CurrencyContext> {
   getResultMessage: (key: FurudeTranslationKeys) => string;
 }
 
-type mayMustHaveAccount = {
-  mustHaveAccount: boolean;
-};
-
-export function MustHaveOpenAccount(target: Constructor<EconomySubCommand>) {
-  (target.prototype as mayMustHaveAccount).mustHaveAccount = true;
+class MustHaveOpenAccountPrecondition extends CommandPrecondition {
+  protected async validateInternally(runner: EconomyRunner): Promise<boolean> {
+    if (runner.args!.citizen.justCreated) {
+      await InteractionUtils.reply(
+        runner.interaction,
+        MessageCreator.error(
+          runner.args!.localizer.get(
+            FurudeTranslationKeys.ECONOMY_MUST_HAVE_ACCOUNT
+          )
+        )
+      );
+      return false;
+    }
+    return true;
+  }
 }
 
-export default abstract class EconomySubCommand
-  extends FurudeSubCommand
-  implements IChildCreatedRunnableCommand
-{
+export const MustHaveOpenAccount = new MustHaveOpenAccountPrecondition();
+
+export default abstract class EconomySubCommand extends FurudeSubCommand {
   public override async createRunner(
     interaction: CommandInteraction<CacheType>
   ): Promise<EconomyRunner> {
@@ -38,33 +45,7 @@ export default abstract class EconomySubCommand
     return runner as EconomyRunner;
   }
 
-  public override createRunnerRunnable(
-    runner: EconomyRunner,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    const thisWhichMayRequiresAccount = this as unknown as mayMustHaveAccount;
-    if (
-      thisWhichMayRequiresAccount.mustHaveAccount &&
-      runner.args!.citizen.justCreated
-    ) {
-      return async () => {
-        await InteractionUtils.reply(
-          interaction,
-          MessageCreator.error(
-            runner.args!.localizer.get(
-              FurudeTranslationKeys.ECONOMY_MUST_HAVE_ACCOUNT
-            )
-          )
-        );
-      };
-    }
-    return async () => {
-      await this.createRunnerRunnableInternally(runner, client, interaction)();
-    };
-  }
-
-  public abstract createRunnerRunnableInternally(
+  public abstract override createRunnerRunnable(
     runner: EconomyRunner,
     client: FurudeRika,
     interaction: CommandInteraction<CacheType>

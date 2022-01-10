@@ -1,9 +1,5 @@
-import {
-  CommandInteraction,
-  CacheType,
-  PermissionResolvable,
-  GuildMember,
-} from 'discord.js';
+import { PermissionResolvable, GuildMember } from 'discord.js';
+import IRunsCommand from '../interfaces/IRunsCommand';
 import PermissionPrecondition from './abstracts/PermissionPrecondition';
 
 export default class GuildPermissionsPrecondition extends PermissionPrecondition {
@@ -14,12 +10,12 @@ export default class GuildPermissionsPrecondition extends PermissionPrecondition
     this.requiredPermissions = requiredPermissions;
   }
 
-  protected validateInternally(
-    interaction: CommandInteraction<CacheType>
-  ): boolean {
+  protected async validateInternally(
+    runner: IRunsCommand<any>
+  ): Promise<boolean> {
     return (
-      interaction.inGuild() &&
-      (interaction.member as GuildMember).permissions.has(
+      runner.interaction.inGuild() &&
+      (runner.interaction.member as GuildMember).permissions.has(
         this.requiredPermissions
       )
     );

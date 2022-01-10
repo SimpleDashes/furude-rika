@@ -290,10 +290,9 @@ export default abstract class BaseBot extends Client implements IBot {
     runner: IRunsCommand<BaseBot>,
     preconditioned: Partial<IHasPreconditions>
   ): Promise<boolean> {
-    const { interaction } = runner;
     if (preconditioned?.preconditions) {
       for (const precondition of preconditioned.preconditions) {
-        if (!precondition.validate(interaction)) {
+        if (!(await precondition.validate(runner))) {
           const isOwnerPrecondition = precondition instanceof OwnerPrecondition;
           const isGuildPermissions =
             precondition instanceof GuildPermissionsPreconditions;

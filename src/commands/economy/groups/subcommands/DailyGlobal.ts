@@ -7,8 +7,9 @@ import EconomySubCommand, {
   MustHaveOpenAccount,
 } from '../../wrapper/EconomySubCommand';
 import DailyHelper from '../../wrapper/DailyHelper';
+import { SetPreconditions } from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
 
-@MustHaveOpenAccount
+@SetPreconditions(MustHaveOpenAccount)
 export default class DailyGlobal extends EconomySubCommand {
   public constructor() {
     super({
@@ -17,12 +18,12 @@ export default class DailyGlobal extends EconomySubCommand {
     });
   }
 
-  public createRunnerRunnableInternally(
+  public createRunnerRunnable(
     runner: EconomyRunner,
     _client: FurudeRika,
     interaction: CommandInteraction<CacheType>
   ): () => Promise<void> {
-    return DailyHelper.createRunnerRunnableInternally(
+    return DailyHelper.createRunnerRunnable(
       runner,
       interaction,
       HyperTypes.global

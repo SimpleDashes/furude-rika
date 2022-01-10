@@ -5,7 +5,7 @@ import { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
 import { EconomyRunner } from './EconomySubCommand';
 
 export default class DailyHelper {
-  public static createRunnerRunnableInternally(
+  public static createRunnerRunnable(
     runner: EconomyRunner,
     interaction: CommandInteraction<CacheType>,
     type: HyperTypes

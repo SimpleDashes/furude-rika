@@ -1,4 +1,5 @@
-import { CommandInteraction, CacheType, Snowflake } from 'discord.js';
+import { Snowflake } from 'discord.js';
+import IRunsCommand from '../interfaces/IRunsCommand';
 import PermissionPrecondition from './abstracts/PermissionPrecondition';
 
 export default class OwnerPrecondition extends PermissionPrecondition {
@@ -9,9 +10,9 @@ export default class OwnerPrecondition extends PermissionPrecondition {
     this.ownerIDS = ownerIDS;
   }
 
-  protected validateInternally(
-    interaction: CommandInteraction<CacheType>
-  ): boolean {
-    return this.ownerIDS.includes(interaction.user.id);
+  protected async validateInternally(
+    runner: IRunsCommand<any>
+  ): Promise<boolean> {
+    return this.ownerIDS.includes(runner.interaction.user.id);
   }
 }

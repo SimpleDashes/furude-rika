@@ -1,10 +1,11 @@
-import { CommandInteraction } from 'discord.js';
+import IRunsCommand from '../../interfaces/IRunsCommand';
 
 export default abstract class CommandPrecondition {
-  public validate(interaction: CommandInteraction) {
-    return this.validateInternally(interaction);
+  public async validate(runner: IRunsCommand<any>): Promise<boolean> {
+    return this.validateInternally(runner);
   }
+
   protected abstract validateInternally(
-    interaction: CommandInteraction
-  ): boolean;
+    runner: IRunsCommand<any>
+  ): Promise<boolean>;
 }
