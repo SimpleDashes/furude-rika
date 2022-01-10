@@ -5,9 +5,12 @@ import CurrencyContainer from '../../../containers/CurrencyContainer';
 import DBCitizen from '../../../database/entity/DBCitizen';
 import FurudeCommandGroup from '../../../discord/commands/FurudeCommandGroup';
 import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
-import { RequiresSubCommands } from '../../../modules/framework/commands/decorators/PreconditionDecorators';
+import {
+  Preconditions,
+  SetPreconditions,
+} from '../../../modules/framework/commands/decorators/PreconditionDecorators';
 
-@RequiresSubCommands
+@SetPreconditions(Preconditions.RequiresSubCommand)
 export default class EconomyDaily extends FurudeCommandGroup {
   public constructor() {
     super({

@@ -2,9 +2,11 @@ import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../../../client/FurudeRika';
 import FurudeCommandGroup from '../../../../discord/commands/FurudeCommandGroup';
 import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
-import { RequiresSubCommands } from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
-
-@RequiresSubCommands
+import {
+  Preconditions,
+  SetPreconditions,
+} from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
+@SetPreconditions(Preconditions.RequiresSubCommand)
 export default class CustomizeChannel extends FurudeCommandGroup {
   public constructor() {
     super({

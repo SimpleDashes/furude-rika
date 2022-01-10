@@ -6,48 +6,71 @@ import GuildPermissionsPreconditions from '../preconditions/GuildPermissionsPrec
 import IHasPreconditions from '../preconditions/interfaces/IHasPreconditions';
 import OwnerPrecondition from '../preconditions/OwnerPrecondition';
 import RequiresGuildPrecondition from '../preconditions/RequiresGuildPrecondition';
+import RequiresSubCommandsPrecondition from '../preconditions/RequiresSubCommandsPrecondition';
+import RequiresSubCommandsGroupsPrecondition from '../preconditions/RequiresSubCommandsGroupsPrecondition';
 
+export class PreconditionConstructors {
+  public static WithPermission: Constructor<GuildPermissionsPreconditions>;
+}
 export class SetupPrecondition {
-  public static setup(options: { owner: OwnerPrecondition }) {
-    Preconditions.OwnerOnly = options.owner;
-    Preconditions.GuildOnly = new RequiresGuildPrecondition();
+  public static setup(owner: OwnerPrecondition) {
+    this.setupOwnerPrecondition(owner);
+    this.setupGuildPrecondition();
+    this.setupSubCommandPrecondition();
+    this.setupSubCommandGroupsPrecondition();
+    this.setupGuildPermissionsPrecondition();
+  }
+
+  public static setupOwnerPrecondition(owner: OwnerPrecondition) {
+    Preconditions.OwnerOnly = owner;
+  }
+
+  public static setupGuildPrecondition(
+    guild = new RequiresGuildPrecondition()
+  ) {
+    Preconditions.GuildOnly = guild;
+  }
+
+  public static setupSubCommandPrecondition(
+    subcommands = new RequiresSubCommandsPrecondition()
+  ) {
+    Preconditions.RequiresSubCommand = subcommands;
+  }
+
+  public static setupSubCommandGroupsPrecondition(
+    subCommandGroups = new RequiresSubCommandsGroupsPrecondition()
+  ) {
+    Preconditions.RequiresSubCommandGroup = subCommandGroups;
+  }
+
+  public static setupGuildPermissionsPrecondition(
+    permissions: Constructor<GuildPermissionsPreconditions> = GuildPermissionsPreconditions
+  ) {
+    PreconditionConstructors.WithPermission = permissions;
   }
 }
 
 export class Preconditions {
-  static OwnerOnly: OwnerPrecondition;
-  static GuildOnly: RequiresGuildPrecondition;
-  static WithPermission = (
+  public static OwnerOnly: OwnerPrecondition;
+  public static GuildOnly: RequiresGuildPrecondition;
+  public static RequiresSubCommand: RequiresSubCommandsPrecondition;
+  public static RequiresSubCommandGroup: RequiresSubCommandsGroupsPrecondition;
+  public static WithPermission = (
     permissions: PermissionResolvable
   ): GuildPermissionsPreconditions => {
-    return new GuildPermissionsPreconditions(permissions);
+    return new PreconditionConstructors.WithPermission(permissions);
   };
-}
-
-function addPreconditions(
-  target: Constructor<ICommand<any, any>>,
-  ...preconditions: CommandPrecondition[]
-) {
-  const prototype = target.prototype as Partial<IHasPreconditions>;
-  prototype.preconditions ??= [];
-  if (preconditions.find((c) => c instanceof GuildPermissionsPreconditions)) {
-    preconditions = [Preconditions.GuildOnly, ...preconditions];
-  }
-  prototype.preconditions = [...prototype.preconditions, ...preconditions];
 }
 
 function SetPreconditions(...preconditions: CommandPrecondition[]) {
   return (target: Constructor<ICommand<any, any>>) => {
-    addPreconditions(target, ...preconditions);
+    const prototype = target.prototype as Partial<IHasPreconditions>;
+    prototype.preconditions ??= [];
+    if (preconditions.find((c) => c instanceof GuildPermissionsPreconditions)) {
+      preconditions = [Preconditions.GuildOnly, ...preconditions];
+    }
+    prototype.preconditions = [...prototype.preconditions, ...preconditions];
   };
 }
 
-function RequiresSubCommands(target: Constructor<ICommand<any, any>>) {
-  (target.prototype as unknown as IHasPreconditions).requiresSubCommands = true;
-}
-
-function RequiresSubGroups(target: Constructor<ICommand<any, any>>) {
-  (target.prototype as unknown as IHasPreconditions).requiresSubGroups = true;
-}
-
-export { RequiresSubCommands, RequiresSubGroups, SetPreconditions };
+export { SetPreconditions };

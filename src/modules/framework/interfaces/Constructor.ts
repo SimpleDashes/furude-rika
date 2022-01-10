@@ -1,3 +1,3 @@
 export default interface Constructor<T> {
-  new (...args: []): T;
+  new (...args: any): T;
 }

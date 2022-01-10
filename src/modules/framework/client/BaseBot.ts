@@ -28,6 +28,8 @@ import SubCommandGroupResolver from '../io/object_resolvers/command_resolvers/Su
 import fs from 'fs/promises';
 import RequiresGuildPrecondition from '../commands/preconditions/RequiresGuildPrecondition';
 import { SetupPrecondition } from '../commands/decorators/PreconditionDecorators';
+import RequiresSubCommandsPrecondition from '../commands/preconditions/RequiresSubCommandsPrecondition';
+import RequiresSubCommandsGroupsPrecondition from '../commands/preconditions/RequiresSubCommandsGroupsPrecondition';
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
     new Collection();
@@ -67,9 +69,7 @@ export default abstract class BaseBot extends Client implements IBot {
       ownerIds: this.devOptions.OWNER_IDS,
       token: process.env[this.devOptions.ENV_TOKEN_VAR],
     };
-    SetupPrecondition.setup({
-      owner: new OwnerPrecondition(this.devInfo.ownerIds),
-    });
+    SetupPrecondition.setup(new OwnerPrecondition(this.devInfo.ownerIds));
   }
 
   private async loadCommands() {
@@ -204,11 +204,19 @@ export default abstract class BaseBot extends Client implements IBot {
         command as unknown as Partial<IHasPreconditions>;
 
       const subCommandOption = interaction.options.getSubcommand(
-        Boolean(preconditionedCommand.requiresSubCommands)
+        Boolean(
+          preconditionedCommand.preconditions?.find(
+            (p) => p instanceof RequiresSubCommandsPrecondition
+          )
+        )
       );
 
       const subGroupOption = interaction.options.getSubcommandGroup(
-        Boolean(preconditionedCommand.requiresSubGroups)
+        Boolean(
+          preconditionedCommand.preconditions?.find(
+            (p) => p instanceof RequiresSubCommandsGroupsPrecondition
+          )
+        )
       );
 
       let runner: IRunsCommand<BaseBot> | null = null;

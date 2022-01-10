@@ -3,9 +3,12 @@ import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeRika from '../../client/FurudeRika';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
-import { RequiresSubGroups } from '../../modules/framework/commands/decorators/PreconditionDecorators';
+import {
+  Preconditions,
+  SetPreconditions,
+} from '../../modules/framework/commands/decorators/PreconditionDecorators';
 
-@RequiresSubGroups
+@SetPreconditions(Preconditions.RequiresSubCommand)
 export default class Experience extends FurudeCommand {
   public constructor() {
     super({
