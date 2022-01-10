@@ -21,13 +21,13 @@ import SubCommand from '../commands/SubCommand';
 import OwnerPrecondition from '../commands/preconditions/OwnerPrecondition';
 import IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
 import GuildPermissionsPreconditions from '../commands/preconditions/GuildPermissionsPreconditions';
-import { initOwnerPrecondition } from '../commands/decorators/PreconditionDecorators';
 import IRunsCommand from '../commands/interfaces/IRunsCommand';
 import ICommand from '../commands/interfaces/ICommand';
 import CommandGroup from '../commands/CommandGroup';
 import SubCommandGroupResolver from '../io/object_resolvers/command_resolvers/SubCommandGroupResolver';
 import fs from 'fs/promises';
 import RequiresGuildPrecondition from '../commands/preconditions/RequiresGuildPrecondition';
+import { SetupPrecondition } from '../commands/decorators/PreconditionDecorators';
 export default abstract class BaseBot extends Client implements IBot {
   public readonly commands: Collection<string, BaseCommand<BaseBot>> =
     new Collection();
@@ -67,7 +67,9 @@ export default abstract class BaseBot extends Client implements IBot {
       ownerIds: this.devOptions.OWNER_IDS,
       token: process.env[this.devOptions.ENV_TOKEN_VAR],
     };
-    initOwnerPrecondition(new OwnerPrecondition(this.devInfo.ownerIds));
+    SetupPrecondition.setup({
+      owner: new OwnerPrecondition(this.devInfo.ownerIds),
+    });
   }
 
   private async loadCommands() {

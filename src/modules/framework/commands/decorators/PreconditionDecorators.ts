@@ -1,5 +1,4 @@
 import { PermissionResolvable } from 'discord.js';
-import ArrayHelper from '../../helpers/ArrayHelper';
 import Constructor from '../../interfaces/Constructor';
 import ICommand from '../interfaces/ICommand';
 import CommandPrecondition from '../preconditions/abstracts/CommandPrecondition';
@@ -8,35 +7,38 @@ import IHasPreconditions from '../preconditions/interfaces/IHasPreconditions';
 import OwnerPrecondition from '../preconditions/OwnerPrecondition';
 import RequiresGuildPrecondition from '../preconditions/RequiresGuildPrecondition';
 
-let ownerPrecondition: OwnerPrecondition;
-const guildPrecondition = new RequiresGuildPrecondition();
-
-function initOwnerPrecondition(ownerCondition: OwnerPrecondition) {
-  ownerPrecondition = ownerCondition;
+export class SetupPrecondition {
+  public static setup(options: { owner: OwnerPrecondition }) {
+    Preconditions.OwnerOnly = options.owner;
+    Preconditions.GuildOnly = new RequiresGuildPrecondition();
+  }
 }
 
-function pushIfPreconditionsExistsElseCreate(
+export class Preconditions {
+  static OwnerOnly: OwnerPrecondition;
+  static GuildOnly: RequiresGuildPrecondition;
+  static WithPermission = (
+    permissions: PermissionResolvable
+  ): GuildPermissionsPreconditions => {
+    return new GuildPermissionsPreconditions(permissions);
+  };
+}
+
+function addPreconditions(
   target: Constructor<ICommand<any, any>>,
-  precondition: CommandPrecondition
+  ...preconditions: CommandPrecondition[]
 ) {
   const prototype = target.prototype as Partial<IHasPreconditions>;
-  prototype.preconditions = ArrayHelper.pushToArrayIfItExistsElseCreateArray(
-    prototype.preconditions,
-    precondition
-  );
+  prototype.preconditions ??= [];
+  if (preconditions.find((c) => c instanceof GuildPermissionsPreconditions)) {
+    preconditions = [Preconditions.GuildOnly, ...preconditions];
+  }
+  prototype.preconditions = [...prototype.preconditions, ...preconditions];
 }
 
-function OwnerOnly(target: Constructor<ICommand<any, any>>) {
-  pushIfPreconditionsExistsElseCreate(target, ownerPrecondition);
-}
-
-function RequirePermissions(requiredPermissions: PermissionResolvable) {
+function SetPreconditions(...preconditions: CommandPrecondition[]) {
   return (target: Constructor<ICommand<any, any>>) => {
-    RequiresGuild(target);
-    pushIfPreconditionsExistsElseCreate(
-      target,
-      new GuildPermissionsPreconditions(requiredPermissions)
-    );
+    addPreconditions(target, ...preconditions);
   };
 }
 
@@ -48,15 +50,4 @@ function RequiresSubGroups(target: Constructor<ICommand<any, any>>) {
   (target.prototype as unknown as IHasPreconditions).requiresSubGroups = true;
 }
 
-function RequiresGuild(target: Constructor<ICommand<any, any>>) {
-  pushIfPreconditionsExistsElseCreate(target, guildPrecondition);
-}
-
-export {
-  initOwnerPrecondition,
-  OwnerOnly,
-  RequirePermissions,
-  RequiresSubCommands,
-  RequiresSubGroups,
-  RequiresGuild,
-};
+export { RequiresSubCommands, RequiresSubGroups, SetPreconditions };

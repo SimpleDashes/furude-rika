@@ -2,10 +2,13 @@ import DefaultContext from '../../../../../client/contexts/DefaultContext';
 import GenericNames from '../../../../../containers/GenericNames';
 import DBUser from '../../../../../database/entity/DBUser';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
-import { RequiresGuild } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+import {
+  Preconditions,
+  SetPreconditions,
+} from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 
-@RequiresGuild
+@SetPreconditions(Preconditions.GuildOnly)
 export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSubCommand {
   public constructor() {
     super({

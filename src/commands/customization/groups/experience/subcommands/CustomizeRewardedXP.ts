@@ -7,8 +7,8 @@ import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import {
-  RequirePermissions,
-  RequiresGuild,
+  Preconditions,
+  SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
@@ -24,8 +24,10 @@ class XPChangeOption extends IntegerOption {
   }
 }
 
-@RequiresGuild
-@RequirePermissions(['ADMINISTRATOR'])
+@SetPreconditions(
+  Preconditions.GuildOnly,
+  Preconditions.WithPermission('ADMINISTRATOR')
+)
 export default class CustomizeMinXP extends FurudeSubCommand {
   private minOption = this.registerOption(
     new XPChangeOption()

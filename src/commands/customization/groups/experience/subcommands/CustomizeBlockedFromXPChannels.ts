@@ -9,16 +9,18 @@ import IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOper
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import {
-  RequirePermissions,
-  RequiresGuild,
+  Preconditions,
+  SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 import BooleanOption from '../../../../../modules/framework/options/classes/BooleanOption';
 import ChannelOption from '../../../../../modules/framework/options/classes/ChannelOption';
 
-@RequiresGuild
-@RequirePermissions(['ADMINISTRATOR'])
+@SetPreconditions(
+  Preconditions.GuildOnly,
+  Preconditions.WithPermission('ADMINISTRATOR')
+)
 export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand {
   private channelToManipulate = this.registerOption(
     new ChannelOption()

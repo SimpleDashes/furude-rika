@@ -2,15 +2,18 @@ import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../../../client/FurudeRika';
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
-import { RequiresGuild } from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import EconomySubCommand, {
   EconomyRunner,
   MustHaveOpenAccount,
 } from '../../wrapper/EconomySubCommand';
 import DailyHelper from '../../wrapper/DailyHelper';
+import {
+  Preconditions,
+  SetPreconditions,
+} from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
 
 @MustHaveOpenAccount
-@RequiresGuild
+@SetPreconditions(Preconditions.GuildOnly)
 export default class DailyLocal extends EconomySubCommand {
   public constructor() {
     super({

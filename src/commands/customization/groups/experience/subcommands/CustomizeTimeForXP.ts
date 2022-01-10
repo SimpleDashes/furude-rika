@@ -7,13 +7,12 @@ import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import {
-  RequirePermissions,
-  RequiresGuild,
+  Preconditions,
+  SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
 
-@RequiresGuild
-@RequirePermissions(['ADMINISTRATOR'])
+@SetPreconditions(Preconditions.WithPermission('ADMINISTRATOR'))
 export default class CustomizeTimeForXP extends FurudeSubCommand {
   private secondsOption = this.registerOption(
     new IntegerOption()
