@@ -32,10 +32,8 @@ export default class BeatmapCacheManager extends BaseFurudeCacheManager<
     let beatmap: IAPIOsuBeatmap | undefined;
 
     const key = this.collection.findKey(
-      (v, k) =>
-        v.md5 == beatmapIDOrHash ||
-        v.beatmapID.toString() == beatmapIDOrHash ||
-        k == beatmapIDOrHash
+      (v) =>
+        v.md5 === beatmapIDOrHash || v.beatmapID.toString() === beatmapIDOrHash
     );
 
     if (key && this.collection.has(key)) {
