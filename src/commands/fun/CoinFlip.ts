@@ -1,8 +1,5 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
@@ -23,23 +20,17 @@ export default class CoinFlip extends FurudeCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const selectedCoin = ArrayHelper.getRandomArrayElement(this.coinsArray);
-      await InteractionUtils.reply(
-        interaction,
-        MessageCreator.success(
-          runner.args!.localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, [
-            runner.args!.localizer.get(
-              selectedCoin as unknown as FurudeTranslationKeys
-            ),
-          ])
-        )
-      );
-    };
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, localizer } = context;
+
+    const selectedCoin = ArrayHelper.getRandomArrayElement(this.coinsArray);
+    await InteractionUtils.reply(
+      interaction,
+      MessageCreator.success(
+        localizer.get(FurudeTranslationKeys.COIN_FLIP_RESULT, [
+          localizer.get(selectedCoin as unknown as FurudeTranslationKeys),
+        ])
+      )
+    );
   }
 }

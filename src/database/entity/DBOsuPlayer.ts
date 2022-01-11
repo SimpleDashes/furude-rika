@@ -11,7 +11,7 @@ import HyperNumber from '../objects/hypervalues/HyperNumber';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 
 interface IOsuAccounts {
-  bancho: any;
+  bancho: unknown;
 }
 
 interface IArgOsuAccounts extends IOsuAccounts {
@@ -43,7 +43,7 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
     localizer: FurudeLocales
   ): IDatabaseOperation {
     const dbNewAccounts = new OsuServerHyperValue();
-    const tToAddAccounts = accounts as Record<string, IOsuUser<any>>;
+    const tToAddAccounts = accounts as Record<string, IOsuUser<unknown>>;
     for (const o in tToAddAccounts) {
       if (o === OsuServers.bancho.name) {
         dbNewAccounts.global = tToAddAccounts[o]!.user_id;

@@ -1,4 +1,4 @@
-import { BaseGuildTextChannel, CommandInteraction } from 'discord.js';
+import { BaseGuildTextChannel } from 'discord.js';
 import BaseBot from '../modules/framework/client/BaseBot';
 import consola from 'consola';
 import ICommandRunResponse from '../modules/framework/client/ICommandRunResponse';
@@ -6,18 +6,21 @@ import DeployHandler from '../modules/framework/rest/DeployHandler';
 import DirectoryMapperFactory from '../modules/framework/io/DirectoryMapperFactory';
 import path from 'path';
 import FurudeLocales from '../localization/FurudeLocales';
-import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import FurudeDB from '../database/FurudeDB';
 import DefaultContext from './contexts/DefaultContext';
 import FurudeOperations from '../database/FurudeOperations';
 import ReminderManager from './managers/ReminderManager';
 import UserScanner from './managers/UserScanner';
 import OsuServers from '../modules/osu/servers/OsuServers';
-import InteractionUtils from '../modules/framework/interactions/InteractionUtils';
 import { secondsToMilliseconds } from 'date-fns';
 import BeatmapCacheManager from './managers/BeatmapCacheManager';
+import { Preconditions } from '../modules/framework/commands/decorators/PreconditionDecorators';
+import CommandPrecondition from '../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
+import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
+import GuildPermissionsPrecondition from '../modules/framework/commands/preconditions/GuildPermissionsPreconditions';
+import MessageCreator from '../modules/framework/helpers/MessageCreator';
 
-export default class FurudeRika extends BaseBot {
+export default class FurudeRika extends BaseBot<DefaultContext> {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
   public readonly reminderManager = new ReminderManager(this);
@@ -44,6 +47,56 @@ export default class FurudeRika extends BaseBot {
         'wrapper',
       ])
     );
+
+    this.setupMemoryLogger();
+    this.setupPreconditions();
+  }
+
+  /**
+   * Starts things that are necessary before calling super() on the bot.
+   */
+  public static init(): void {
+    OsuServers.build({
+      bancho_api_key: process.env.BANCHO_API_KEY,
+    });
+  }
+
+  private setupPreconditions(): void {
+    const setupCondition = (
+      condition: CommandPrecondition,
+      key: FurudeTranslationKeys
+    ) => {
+      (condition as CommandPrecondition<DefaultContext>).onFailMessage = (
+        ctx
+      ) => MessageCreator.error(ctx.localizer.get(key));
+    };
+
+    setupCondition(
+      Preconditions.OwnerOnly,
+      FurudeTranslationKeys.ERRO_OWNER_ONLY_COMMAND
+    );
+
+    setupCondition(
+      Preconditions.GuildOnly,
+      FurudeTranslationKeys.ERROR_REQUIRES_GUILD
+    );
+
+    setupCondition(
+      Preconditions.RequiresSubCommand,
+      FurudeTranslationKeys.SUBCOMMAND_MISSING_REQUIRED
+    );
+
+    Preconditions.WithPermission = (permissions) => {
+      const condition = new GuildPermissionsPrecondition(permissions);
+      setupCondition(
+        condition,
+        FurudeTranslationKeys.ERROR_MISSING_PERMISSIONS
+      );
+      return condition;
+    };
+  }
+
+  private setupMemoryLogger(): void {
     setInterval(() => {
       const bytesToMegabytes = (bytes: number): number => {
         return bytes / 1024 / 1024;
@@ -54,15 +107,6 @@ export default class FurudeRika extends BaseBot {
         ).toFixed()}MB`
       );
     }, secondsToMilliseconds(60));
-  }
-
-  /**
-   * Starts things that are necessary before calling super() on the bot.
-   */
-  public static init() {
-    OsuServers.build({
-      bancho_api_key: process.env.BANCHO_API_KEY,
-    });
   }
 
   override async start(): Promise<void> {
@@ -94,22 +138,6 @@ export default class FurudeRika extends BaseBot {
       }
       FurudeOperations.saveWhenSuccess(user, operation);
     });
-  }
-
-  public override async onSubCommandNotFound(
-    interaction: CommandInteraction
-  ): Promise<void> {
-    const dependency = new DefaultContext({
-      interaction: interaction,
-      client: this,
-    });
-    const localizer = new FurudeLocales({
-      language: dependency.dbUser.preferred_locale ?? undefined,
-    });
-    await InteractionUtils.reply(
-      interaction,
-      localizer.get(FurudeTranslationKeys.SUBCOMMAND_ERROR_NOT_FOUND)
-    );
   }
 
   public override onCommandRun(response: ICommandRunResponse): void {

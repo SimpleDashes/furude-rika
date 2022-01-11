@@ -18,7 +18,7 @@ export default abstract class ClassResolver<T> {
 
   public async getAllObjects(): Promise<resolvedClass<T>[]> {
     const objects: resolvedClass<T>[] = [];
-    for await (const commandMapper of this.directoryMaps) {
+    for (const commandMapper of this.directoryMaps) {
       const mapCommands = await this.getObjectForMapperLoop(commandMapper);
       objects.push(...mapCommands);
     }
@@ -38,7 +38,7 @@ export default abstract class ClassResolver<T> {
         withFileTypes: true,
       })
     ).filter((file) => file.isFile() && file.name.endsWith(extension));
-    for await (const file of files) {
+    for (const file of files) {
       const importPath = path.join(dir, file.name);
       const relativePath = path.relative(__dirname, importPath);
       const possibleClass = await import(relativePath);
@@ -69,7 +69,7 @@ export default abstract class ClassResolver<T> {
       return objects;
     }
     if (!directoryMapper.subDirectories) return objects;
-    for await (const subDirectory of directoryMapper.subDirectories) {
+    for (const subDirectory of directoryMapper.subDirectories) {
       objects.push(...(await this.getObjectsForMapper(subDirectory)));
     }
     return objects;

@@ -1,12 +1,9 @@
-import { CommandInteraction, CacheType } from 'discord.js';
 import DefaultContext from '../../../../client/contexts/DefaultContext';
-import FurudeRika from '../../../../client/FurudeRika';
 import CommandOptions from '../../../../containers/CommandOptions';
 import TimeFrames from '../../../../containers/TimeFrames';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeOperations from '../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
-import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
 import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
 import StringOption from '../../../../modules/framework/options/classes/StringOption';
 
@@ -66,36 +63,28 @@ export default class ReminderReminderMe extends FurudeSubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const remindWhat = this.remindWhatOption.apply(interaction)!;
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, client, localizer } = context;
 
-      const seconds = this.secondsOption.apply(interaction);
-      const minutes = this.minutesOption.apply(interaction);
-      const hours = this.hoursOption.apply(interaction);
-      const days = this.daysOption.apply(interaction);
-      const weeks = this.weeksOption.apply(interaction);
+    const remindWhat = this.remindWhatOption.apply(interaction)!;
 
-      const reminder = DBReminder.create().build(interaction.user, remindWhat);
+    const seconds = this.secondsOption.apply(interaction);
+    const minutes = this.minutesOption.apply(interaction);
+    const hours = this.hoursOption.apply(interaction);
+    const days = this.daysOption.apply(interaction);
+    const weeks = this.weeksOption.apply(interaction);
 
-      const operation = reminder.fireReminderWhen(
-        client,
-        runner.args!.localizer,
-        {
-          seconds,
-          minutes,
-          hours,
-          days,
-          weeks,
-        }
-      );
+    const reminder = DBReminder.create().build(interaction.user, remindWhat);
 
-      await FurudeOperations.saveWhenSuccess(reminder, operation);
-      await FurudeOperations.answerInteraction(interaction, operation);
-    };
+    const operation = reminder.fireReminderWhen(client, localizer, {
+      seconds,
+      minutes,
+      hours,
+      days,
+      weeks,
+    });
+
+    await FurudeOperations.saveWhenSuccess(reminder, operation);
+    await FurudeOperations.answerInteraction(interaction, operation);
   }
 }

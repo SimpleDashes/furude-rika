@@ -5,17 +5,36 @@ import consola from 'consola';
 
 export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
   private name: string;
-  private previousMaxValue: number = 0;
+  private previousLogSize: number = 0;
+  private logPercentIncrease;
 
-  public constructor(capacity: number, lifetime: number, name: string) {
+  /**
+   *
+   * @param capacity The capacity of the cache collection.
+   * @param lifetime How long the items will be cached. In seconds.
+   * @param name The name of the cache. used for logging.
+   * @param logPercentIncrease The percent used to log when the size of the cache
+   *  increases by said percent related to the max cache capacity.
+   */
+  public constructor(
+    capacity: number,
+    lifetime: number,
+    name: string,
+    logPercentIncrease: number = 10
+  ) {
     super(capacity, lifetime);
     this.name = name;
+    this.logPercentIncrease = logPercentIncrease;
   }
 
   override set(key: K, value: V): this {
     super.set(key, value);
 
-    if (this.size == this.previousMaxValue + this.capacity / 10) {
+    if (
+      this.size ==
+      this.previousLogSize + this.capacity / this.logPercentIncrease
+    ) {
+      this.previousLogSize = this.size;
       consola.log(
         `[${this.name.toUpperCase()} CACHE]: reached ${this.size} items.`
       );

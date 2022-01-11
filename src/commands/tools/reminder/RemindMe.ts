@@ -1,8 +1,5 @@
-import { CommandInteraction, CacheType } from 'discord.js';
 import DefaultContext from '../../../client/contexts/DefaultContext';
-import FurudeRika from '../../../client/FurudeRika';
 import FurudeCommand from '../../../discord/commands/FurudeCommand';
-import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import {
   Preconditions,
   SetPreconditions,
@@ -18,11 +15,7 @@ export default class RemindMe extends FurudeCommand {
     });
   }
 
-  public createRunnerRunnable(
-    _runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
-    _interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
+  public trigger(_context: DefaultContext): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

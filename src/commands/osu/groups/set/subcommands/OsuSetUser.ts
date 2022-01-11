@@ -1,8 +1,5 @@
-import { CommandInteraction, CacheType } from 'discord.js';
 import OsuContext from '../../../../../client/contexts/osu/OsuContext';
-import FurudeRika from '../../../../../client/FurudeRika';
 import FurudeOperations from '../../../../../database/FurudeOperations';
-import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
 
 export default class OsuSetUser extends OsuSubCommand {
@@ -21,37 +18,33 @@ export default class OsuSetUser extends OsuSubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<OsuContext>,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const server = this.applyToServerOption(
-        this.serverUserOptions.server,
-        interaction
-      );
+  public async trigger(context: OsuContext): Promise<void> {
+    const { interaction, osuPlayer, localizer } = context;
 
-      const osuUser = await this.getUserFromServer(
-        server,
-        runner,
-        this.serverUserOptions.user.apply(interaction)!
-      );
+    const server = this.applyToServerOption(
+      this.serverUserOptions.server,
+      interaction
+    );
 
-      if (!osuUser) {
-        await this.sendOsuUserNotFound(runner);
-        return;
-      }
+    const osuUser = await this.getUserFromServer(
+      server,
+      context,
+      this.serverUserOptions.user.apply(interaction)!
+    );
 
-      const operation = runner.args!.osuPlayer.addAccounts(
-        {
-          [server.name]: osuUser,
-        },
-        runner.args!.localizer
-      );
+    if (!osuUser) {
+      await this.sendOsuUserNotFound(context);
+      return;
+    }
 
-      await FurudeOperations.saveWhenSuccess(runner.args!.osuPlayer, operation);
-      await FurudeOperations.answerInteraction(interaction, operation);
-    };
+    const operation = osuPlayer.addAccounts(
+      {
+        [server.name]: osuUser,
+      },
+      localizer
+    );
+
+    await FurudeOperations.saveWhenSuccess(osuPlayer, operation);
+    await FurudeOperations.answerInteraction(interaction, operation);
   }
 }

@@ -17,7 +17,7 @@ export default class DirectoryMapperFactory {
       (file) => !this.excludes.includes(file.name)
     );
     const mappers: DirectoryMapper[] = [];
-    for await (const file of files) {
+    for (const file of files) {
       if (file.isDirectory()) {
         const directoryPath = path.join(root, file.name);
         const mapper = new DirectoryMapper(directoryPath);

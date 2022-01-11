@@ -1,16 +1,11 @@
-import {
-  CommandInteraction,
-  CacheType,
-  User,
-  MessageEmbedAuthor,
-} from 'discord.js';
+import { CommandInteraction, User, MessageEmbedAuthor } from 'discord.js';
 import OsuContext from '../../../client/contexts/osu/OsuContext';
 import FurudeRika from '../../../client/FurudeRika';
 import CommandOptions from '../../../containers/CommandOptions';
 import Strings from '../../../containers/Strings';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
+import ICommandContext from '../../../modules/framework/commands/interfaces/ICommandContext';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import StringOption from '../../../modules/framework/options/classes/StringOption';
@@ -32,19 +27,7 @@ export interface OsuServerUserOptions {
   server: OsuServerOption;
 }
 
-export default abstract class OsuSubCommand extends FurudeSubCommand {
-  public abstract override createRunnerRunnable(
-    runner: IFurudeRunner<OsuContext>,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void>;
-
-  public override ContextType(): (
-    runner: IFurudeRunner<OsuContext>
-  ) => OsuContext {
-    return (runner) => new OsuContext(runner);
-  }
-
+export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext> {
   protected getServerOptions(): OsuServerOption {
     return new StringOption()
       .setName(CommandOptions.server)
@@ -86,34 +69,37 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
 
   protected async getUserFromServerUserOptions(
     options: OsuServerUserOptions,
-    runner: IFurudeRunner<OsuContext>,
+    context: OsuContext,
     user?: User | null
-  ): Promise<IOsuUser<any> | undefined> {
-    const server = this.applyToServerOption(options.server, runner.interaction);
+  ): Promise<IOsuUser<unknown> | undefined> {
+    const { interaction } = context;
 
-    user ??= runner.interaction.user;
-    let username = options.user.apply(runner.interaction);
+    const server = this.applyToServerOption(options.server, interaction);
 
-    return await this.getUserFromServer(server, runner, username, user);
+    user ??= interaction.user;
+    let username = options.user.apply(interaction);
+
+    return await this.getUserFromServer(server, context, username, user);
   }
 
-  protected async sendOsuUserNotFound(runner: IFurudeRunner<OsuContext>) {
+  protected async sendOsuUserNotFound(context: OsuContext) {
+    const { interaction, localizer } = context;
     await InteractionUtils.reply(
-      runner.interaction,
+      interaction,
       MessageCreator.error(
-        runner.args!.localizer.get(FurudeTranslationKeys.OSU_ACCOUNT_NOT_FOUND)
+        localizer.get(FurudeTranslationKeys.OSU_ACCOUNT_NOT_FOUND)
       )
     );
   }
 
   protected async getUserFromServer(
     server: AnyServer,
-    runner: IFurudeRunner<OsuContext>,
+    context: OsuContext,
     username?: string | null,
-    user: User = runner.interaction.user
+    user: User = context.interaction.user
   ): Promise<IOsuUser<unknown> | undefined> {
     if (!username) {
-      const dbOsuPlayer = await runner.args!.OSU_PLAYER.default(user);
+      const dbOsuPlayer = await context.OSU_PLAYER.default(user);
       const dbUsername = dbOsuPlayer.getAccount(server);
       if (dbUsername) {
         username = dbUsername.toString();
@@ -130,7 +116,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
   }
 
   protected async getUserRecentFromServer(
-    user: IOsuUser<any>,
+    user: IOsuUser<unknown>,
     fetchBeatmaps?: boolean,
     limit?: number
   ): Promise<IOsuScore[]> {
@@ -161,7 +147,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
   }
 
   protected getParamsForOsuUserRecentRequest(
-    user: IOsuUser<any>,
+    user: IOsuUser<unknown>,
     limit?: number
   ) {
     let params: Partial<
@@ -191,12 +177,13 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
   }
 
   protected getUserInfoAuthor(
-    osuUser: IOsuUser<any>,
-    runner: IFurudeRunner<OsuContext>
+    osuUser: IOsuUser<unknown>,
+    context: OsuContext
   ): MessageEmbedAuthor {
+    const { localizer } = context;
     const author: MessageEmbedAuthor = {
       name: `${osuUser.username}: ${osuUser.pps.raw.toLocaleString(
-        runner.args!.localizer.language,
+        localizer.language,
         {
           maximumFractionDigits: 2,
         }
@@ -206,5 +193,11 @@ export default abstract class OsuSubCommand extends FurudeSubCommand {
       url: osuUser.getProfileUrl(),
     };
     return author;
+  }
+
+  public override createContext(
+    baseContext: ICommandContext<FurudeRika>
+  ): OsuContext {
+    return new OsuContext(baseContext);
   }
 }

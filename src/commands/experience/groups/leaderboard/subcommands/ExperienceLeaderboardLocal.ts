@@ -1,7 +1,6 @@
 import DefaultContext from '../../../../../client/contexts/DefaultContext';
 import GenericNames from '../../../../../containers/GenericNames';
 import DBUser from '../../../../../database/entity/DBUser';
-import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import {
   Preconditions,
   SetPreconditions,
@@ -19,19 +18,17 @@ export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSub
   }
 
   public getAppliedExperienceFromUser(
-    runner: IFurudeRunner<DefaultContext>,
+    context: DefaultContext,
     user: DBUser
   ): number | null {
-    return user.experience.currentLocal(runner.interaction.guild!);
+    return user.experience.currentLocal(context.interaction.guild!);
   }
 
-  public async getUsers(
-    runner: IFurudeRunner<DefaultContext>
-  ): Promise<DBUser[]> {
-    return await runner.args!.db.USER.getAllOn({
+  public async getUsers(context: DefaultContext): Promise<DBUser[]> {
+    return await context.db.USER.getAllOn({
       where: {
         'experience.locals': {
-          $elemMatch: { key: runner.interaction.guildId! },
+          $elemMatch: { key: context.interaction.guildId! },
         },
       },
     });

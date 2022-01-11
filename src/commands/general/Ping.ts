@@ -1,8 +1,6 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../client/FurudeRika';
+import { CommandInteraction } from 'discord.js';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
 import UserType from '../../modules/framework/enums/UserType';
 import PingContainer from '../../modules/framework/ping/PingContainer';
@@ -28,7 +26,7 @@ class PingContainerType extends PingContainer<PingDataType> {
     super();
     this.discord = this.pushGet(
       new PingDataType('Discord websocket').setPingCallback(
-        (args) => args.interaction.client.ws.ping
+        async (args) => args.interaction.client.ws.ping
       )
     );
   }
@@ -44,38 +42,31 @@ export default class Ping extends FurudeCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const embed = new BaseEmbed({}, interaction, {
-        author: interaction.user,
-        defaultsTo: UserType.MEMBER,
-      });
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, localizer } = context;
 
-      const pingArgs: IPingCallbackArguments = {
-        interaction,
-      };
+    const embed = new BaseEmbed({}, interaction, {
+      author: interaction.user,
+      defaultsTo: UserType.MEMBER,
+    });
 
-      this.pingContainer.InternalArray.forEach((pingData) => {
-        const ping = pingData.ping?.call(pingData, pingArgs);
-
-        const text = ping
-          ? runner.args!.localizer.get(FurudeTranslationKeys.PING_TO_PING, [
-              ping?.toString(),
-            ])
-          : runner.args!.localizer.get(
-              FurudeTranslationKeys.PING_NOT_REACHABLE
-            );
-        const value = MessageCreator.bold(MessageCreator.blockQuote(text));
-        embed.addField(pingData.pingWhat, value);
-      });
-
-      await InteractionUtils.reply(interaction, {
-        embeds: [embed],
-      });
+    const pingArgs: IPingCallbackArguments = {
+      interaction,
     };
+
+    for (const pingData of this.pingContainer.InternalArray) {
+      const ping = await pingData.ping?.call(pingData, pingArgs);
+
+      const text = ping
+        ? localizer.get(FurudeTranslationKeys.PING_TO_PING, [ping?.toString()])
+        : localizer.get(FurudeTranslationKeys.PING_NOT_REACHABLE);
+
+      const value = MessageCreator.bold(MessageCreator.blockQuote(text));
+      embed.addField(pingData.pingWhat, value);
+    }
+
+    await InteractionUtils.reply(interaction, {
+      embeds: [embed],
+    });
   }
 }

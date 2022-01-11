@@ -1,9 +1,6 @@
 import { secondsToHours } from 'date-fns';
-import { CommandInteraction, CacheType } from 'discord.js';
 import OsuContext from '../../../client/contexts/osu/OsuContext';
-import FurudeRika from '../../../client/FurudeRika';
 import ExpandableEmbedHelper from '../../../discord/commands/helpers/ExpandableEmbedHelper';
-import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
@@ -30,73 +27,66 @@ export default class OsuProfile
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<OsuContext>,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const osuUser = await this.getUserFromServerUserOptions(
-        this.serverUserOptions,
-        runner,
-        this.discordUserOption.apply(interaction)
-      );
+  public async trigger(context: OsuContext): Promise<void> {
+    const { interaction } = context;
 
-      if (!osuUser) {
-        await this.sendOsuUserNotFound(runner);
-        return;
-      }
+    const osuUser = await this.getUserFromServerUserOptions(
+      this.serverUserOptions,
+      context,
+      this.discordUserOption.apply(interaction)
+    );
 
-      const expandedEmbed = this.createExpandedEmbed(osuUser, runner);
-      const minimizedEmbed = this.createMinimizedEmbed(osuUser, runner);
+    if (!osuUser) {
+      await this.sendOsuUserNotFound(context);
+      return;
+    }
 
-      await ExpandableEmbedHelper.createInteractiveButtons(
-        minimizedEmbed,
-        expandedEmbed,
-        interaction
-      );
-    };
+    const expandedEmbed = this.createExpandedEmbed(osuUser, context);
+    const minimizedEmbed = this.createMinimizedEmbed(osuUser, context);
+
+    await ExpandableEmbedHelper.createInteractiveButtons(
+      minimizedEmbed,
+      expandedEmbed,
+      interaction
+    );
   }
 
-  createBaseEmbed(
-    osuUser: IOsuUser<unknown>,
-    runner: IFurudeRunner<OsuContext>
-  ): BaseEmbed {
+  createBaseEmbed(osuUser: IOsuUser<unknown>, context: OsuContext): BaseEmbed {
     return new BaseEmbed(
       {
-        author: this.getUserInfoAuthor(osuUser, runner),
+        author: this.getUserInfoAuthor(osuUser, context),
       },
-      runner.interaction
+      context.interaction
     ).setThumbnail(osuUser.getAvatarUrl());
   }
 
   createMinimizedEmbed(
     osuUser: IOsuUser<unknown>,
-    runner: IFurudeRunner<OsuContext>
+    context: OsuContext
   ): BaseEmbed {
-    return this.createBaseEmbed(osuUser, runner).setDescription(
+    const { localizer } = context;
+    return this.createBaseEmbed(osuUser, context).setDescription(
       `Accuracy: ${`${MessageCreator.block(
         osuUser.accuracy.toFixed(2)
       )}%`} • Level: ${MessageCreator.block(
         osuUser.level.toFixed(2)
       )}\nPlaycount: ${MessageCreator.block(
-        osuUser.counts.plays.toLocaleString(runner.args!.localizer.language)
+        osuUser.counts.plays.toLocaleString(localizer.language)
       )} (${secondsToHours(osuUser.total_seconds_played)} hrs)`
     );
   }
 
   createExpandedEmbed(
     osuUser: IOsuUser<unknown>,
-    runner: IFurudeRunner<OsuContext>
+    context: OsuContext
   ): BaseEmbed {
-    return this.createBaseEmbed(osuUser, runner)
+    const { localizer } = context;
+    return this.createBaseEmbed(osuUser, context)
       .setDescription(MessageCreator.bold('osu! statistics:'))
       .addFields([
         {
           name: 'Ranked score',
-          value: osuUser.scores.ranked.toLocaleString(
-            runner.args!.localizer.language
-          ),
+          value: osuUser.scores.ranked.toLocaleString(localizer.language),
         },
         {
           name: 'Accuracy',
@@ -104,15 +94,13 @@ export default class OsuProfile
         },
         {
           name: 'Total score',
-          value: osuUser.scores.total.toLocaleString(
-            runner.args!.localizer.language
-          ),
+          value: osuUser.scores.total.toLocaleString(localizer.language),
         },
         { name: 'Level', value: osuUser.level.toFixed(2) },
         {
           name: 'Play count / Time',
           value: `${osuUser.counts.plays.toLocaleString(
-            runner.args!.localizer.language
+            localizer.language
           )} / ${secondsToHours(osuUser.total_seconds_played)}`,
         },
       ]);

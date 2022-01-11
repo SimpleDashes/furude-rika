@@ -1,7 +1,5 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../../../client/FurudeRika';
+import DefaultContext from '../../../../client/contexts/DefaultContext';
 import FurudeCommandGroup from '../../../../discord/commands/FurudeCommandGroup';
-import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
 import {
   Preconditions,
   SetPreconditions,
@@ -16,11 +14,8 @@ export default class CustomizeExperience extends FurudeCommandGroup {
         'Customizes things related to experience. (TL;DR GIMME DATA!!!!)',
     });
   }
-  public createRunnerRunnable(
-    _runner: IFurudeRunner<any>,
-    _client: FurudeRika,
-    _interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
+
+  public async trigger(_context: DefaultContext): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

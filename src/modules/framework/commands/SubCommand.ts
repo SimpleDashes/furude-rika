@@ -1,14 +1,16 @@
 import { SlashCommandSubcommandBuilder } from '@discordjs/builders';
-import { CommandInteraction, CacheType } from 'discord.js';
 import BaseBot from '../client/BaseBot';
 import CommandHelper from './CommandHelper';
 import ICommand from './interfaces/ICommand';
+import ICommandContext from './interfaces/ICommandContext';
 import ICommandInformation from './interfaces/ICommandInformation';
-import IRunsCommand from './interfaces/IRunsCommand';
 
-export default abstract class SubCommand<T extends BaseBot>
+export default abstract class SubCommand<
+    T extends BaseBot,
+    CTX extends ICommandContext<T>
+  >
   extends SlashCommandSubcommandBuilder
-  implements ICommand<T, SubCommand<T>>
+  implements ICommand<T, CTX>
 {
   public readonly information: ICommandInformation;
 
@@ -18,9 +20,9 @@ export default abstract class SubCommand<T extends BaseBot>
     CommandHelper.setInformation(this, this.information);
   }
 
-  public abstract createRunner(
-    interaction: CommandInteraction<CacheType>
-  ): Promise<IRunsCommand<T>>;
+  public abstract trigger(context: CTX): Promise<void>;
+
+  public abstract createContext(baseContext: ICommandContext<T>): CTX;
 
   public registerOption<C>(option: C): C {
     return CommandHelper.registerOption(this, option);

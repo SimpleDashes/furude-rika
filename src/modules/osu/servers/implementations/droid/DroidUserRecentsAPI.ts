@@ -131,7 +131,7 @@ export default class DroidUserRecentsAPI extends OsuUserRecentRoute<
     }
 
     if (fetchBeatmaps) {
-      for await (const score of scores) {
+      for (const score of scores) {
         await score.fetchBeatmap();
       }
     }

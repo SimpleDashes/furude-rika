@@ -20,28 +20,31 @@ import SubCommandResolver from '../io/object_resolvers/command_resolvers/SubComm
 import SubCommand from '../commands/SubCommand';
 import OwnerPrecondition from '../commands/preconditions/OwnerPrecondition';
 import IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
-import GuildPermissionsPreconditions from '../commands/preconditions/GuildPermissionsPreconditions';
-import IRunsCommand from '../commands/interfaces/IRunsCommand';
 import ICommand from '../commands/interfaces/ICommand';
-import CommandGroup from '../commands/CommandGroup';
+import SubCommandGroup from '../commands/SubCommandGroup';
 import SubCommandGroupResolver from '../io/object_resolvers/command_resolvers/SubCommandGroupResolver';
 import fs from 'fs/promises';
-import RequiresGuildPrecondition from '../commands/preconditions/RequiresGuildPrecondition';
 import { SetupPrecondition } from '../commands/decorators/PreconditionDecorators';
 import RequiresSubCommandsPrecondition from '../commands/preconditions/RequiresSubCommandsPrecondition';
 import RequiresSubCommandsGroupsPrecondition from '../commands/preconditions/RequiresSubCommandsGroupsPrecondition';
-export default abstract class BaseBot extends Client implements IBot {
-  public readonly commands: Collection<string, BaseCommand<BaseBot>> =
+import ICommandContext from '../commands/interfaces/ICommandContext';
+export default abstract class BaseBot<
+    CTX extends ICommandContext<BaseBot<CTX>> = ICommandContext<BaseBot<any>>
+  >
+  extends Client
+  implements IBot
+{
+  public readonly commands: Collection<string, BaseCommand<BaseBot, CTX>> =
     new Collection();
 
   public readonly subCommands: Collection<
-    ICommand<BaseBot, any>,
-    SubCommand<BaseBot>[]
+    ICommand<BaseBot, CTX>,
+    SubCommand<BaseBot, CTX>[]
   > = new Collection();
 
-  public readonly subGroups: Collection<
-    BaseCommand<BaseBot>,
-    CommandGroup<BaseBot>[]
+  public readonly subCommandGroups: Collection<
+    BaseCommand<BaseBot, CTX>,
+    SubCommandGroup<BaseBot, CTX>[]
   > = new Collection();
 
   public readonly commandMappers: DirectoryMapper[] = [];
@@ -79,7 +82,7 @@ export default abstract class BaseBot extends Client implements IBot {
     }
     const commandResolver = new CommandResolver(...this.commandMappers);
     const resolvedCommands = await commandResolver.getAllObjects();
-    for await (const commandRes of resolvedCommands) {
+    for (const commandRes of resolvedCommands) {
       this.commands.set(commandRes.object.name, commandRes.object);
 
       await this.registerSubOrGroup(
@@ -95,7 +98,7 @@ export default abstract class BaseBot extends Client implements IBot {
       await this.registerSubOrGroup(
         commandRes,
         this.subCommandGroupsDirectory,
-        this.subGroups,
+        this.subCommandGroups,
         (mapper: DirectoryMapper) => new SubCommandGroupResolver(mapper),
         async (res, command, group) => {
           command.addSubcommandGroup(group);
@@ -115,12 +118,12 @@ export default abstract class BaseBot extends Client implements IBot {
   }
 
   private async registerSubOrGroup<
-    C extends ICommand<BaseBot, any>,
-    S extends ICommand<BaseBot, any>
+    C extends ICommand<BaseBot, CTX>,
+    S extends ICommand<BaseBot, CTX>
   >(
     commandRes: resolvedClass<C>,
     pathName: string,
-    collection: Collection<ICommand<BaseBot, any>, S[]>,
+    collection: Collection<ICommand<BaseBot, CTX>, S[]>,
     resolver: (mapper: DirectoryMapper) => ClassResolver<any>,
     manipulator?: (
       res: resolvedClass<S>,
@@ -135,8 +138,7 @@ export default abstract class BaseBot extends Client implements IBot {
       const dir = await fs.readdir(subOrGroupPath, {
         withFileTypes: true,
       });
-
-      for await (const file of dir) {
+      for (const file of dir) {
         if (file.isDirectory()) {
           const dirPathName = path.join(pathName, file.name);
           if (
@@ -162,13 +164,13 @@ export default abstract class BaseBot extends Client implements IBot {
         await subOrGroupsResolverCommandResolver.getAllObjects();
       const subOrGroups = resolvedSubOrGroups.map((res) => res.object);
 
-      for await (const res of resolvedSubOrGroups) {
+      for (const res of resolvedSubOrGroups) {
         if (manipulator) await manipulator(res, commandRes.object, res.object);
       }
 
-      const got = collection.get(commandRes.object);
-      if (got) {
-        got.push(...subOrGroups);
+      const command = collection.get(commandRes.object);
+      if (command) {
+        command.push(...subOrGroups);
       } else {
         collection.set(commandRes.object, subOrGroups);
       }
@@ -192,43 +194,43 @@ export default abstract class BaseBot extends Client implements IBot {
     });
 
     this.on('interactionCreate', async (interaction) => {
-      if (!interaction.isCommand) return;
+      if (
+        !interaction.isCommand ||
+        !(interaction instanceof CommandInteraction) ||
+        !this.commands.has(interaction.commandName)
+      )
+        return;
 
-      if (!(interaction instanceof CommandInteraction)) return;
-
-      const command = this.commands.get(interaction.commandName);
-
-      if (!command) return;
-
-      const preconditionedCommand = command as unknown as IHasPreconditions &
-        BaseCommand<BaseBot>;
+      const command = this.commands.get(interaction.commandName)!;
+      const commandWithPreconditions = command as unknown as IHasPreconditions &
+        BaseCommand<BaseBot, CTX>;
 
       const subCommandOption = interaction.options.getSubcommand(
         Boolean(
-          preconditionedCommand.preconditions?.find(
+          commandWithPreconditions.preconditions?.find(
             (p) => p instanceof RequiresSubCommandsPrecondition
           )
         )
       );
 
-      const subGroupOption = interaction.options.getSubcommandGroup(
+      const subCommandGroupOption = interaction.options.getSubcommandGroup(
         Boolean(
-          preconditionedCommand.preconditions?.find(
+          commandWithPreconditions.preconditions?.find(
             (p) => p instanceof RequiresSubCommandsGroupsPrecondition
           )
         )
       );
 
-      let runner: IRunsCommand<BaseBot> | null = null;
-      let groupToRunSubcommand: ICommand<any, any> = command;
-      let runnerCommand: ICommand<any, any> = command;
+      let groupToRunSubcommand: ICommand<BaseBot, CTX> = command;
 
-      if (subGroupOption) {
-        const gotGroup = this.subGroups
+      let runnerCommand: ICommand<BaseBot, ICommandContext<BaseBot>> = command;
+
+      if (subCommandGroupOption) {
+        const subCommandGroup = this.subCommandGroups
           .get(command)
-          ?.find((group) => group.name === subGroupOption);
-        if (gotGroup) {
-          groupToRunSubcommand = gotGroup;
+          ?.find((group) => group.name === subCommandGroupOption);
+        if (subCommandGroup) {
+          groupToRunSubcommand = subCommandGroup;
         }
       }
 
@@ -238,82 +240,65 @@ export default abstract class BaseBot extends Client implements IBot {
           ?.find((sub) => sub.name === subCommandOption);
         if (runnableSubCommand) {
           runnerCommand = runnableSubCommand;
-          runner = await runnableSubCommand.createRunner(interaction);
         } else {
           await this.onSubCommandNotFound(interaction);
           return;
         }
       } else {
         runnerCommand = runnerCommand;
-        runner = await command.createRunner(interaction);
       }
 
-      if (runner) {
-        const canRun = async (
-          can: ICommand<any, any> | (ICommand<any, any> & IHasPreconditions)
-        ) => {
-          return await this.verifyPermissionsToRunCommand(
-            runner!,
-            can as unknown as IHasPreconditions
-          );
-        };
+      const context = runnerCommand.createContext({
+        interaction,
+        client: this,
+      });
 
-        const canRunInner = async (inner: ICommand<any, any>) => {
-          return inner === preconditionedCommand ? true : await canRun(inner);
-        };
+      await context.build();
 
-        const canRunCommandBase = await canRun(preconditionedCommand);
+      const canRunCommand = async (
+        command:
+          | ICommand<BaseBot, any>
+          | (ICommand<BaseBot, any> & IHasPreconditions)
+      ) => {
+        return await this.verifyPreconditions(
+          command as unknown as IHasPreconditions,
+          context
+        );
+      };
 
-        const canRunCommandGroup = await canRunInner(groupToRunSubcommand);
+      const canRunSubCommandOrGroup = async (inner: ICommand<BaseBot, any>) => {
+        return inner === commandWithPreconditions
+          ? true
+          : await canRunCommand(inner);
+      };
 
-        const canRunSubCommand = await canRunInner(runnerCommand);
+      if (!(await canRunCommand(commandWithPreconditions))) return;
 
-        if (!(canRunCommandBase && canRunCommandGroup && canRunSubCommand)) {
-          return;
-        }
+      if (!(await canRunSubCommandOrGroup(groupToRunSubcommand))) return;
 
-        if (runner.run) {
-          await runner.run();
-          this.onCommandRun({
-            interaction,
-            command: runnerCommand,
-          });
-        }
-      }
+      if (!(await canRunSubCommandOrGroup(runnerCommand))) return;
+
+      await runnerCommand.trigger(context);
+
+      this.onCommandRun({
+        interaction,
+        command: runnerCommand,
+      });
     });
   }
 
-  /**
-   * @returns wether the user has enough permissions to execute said command
-   */
-  private async verifyPermissionsToRunCommand(
-    runner: IRunsCommand<BaseBot>,
-    preconditioned: Partial<IHasPreconditions>
+  private async verifyPreconditions(
+    preconditioned: Partial<IHasPreconditions>,
+    context: ICommandContext<any>
   ): Promise<boolean> {
-    if (preconditioned?.preconditions) {
-      for (const precondition of preconditioned.preconditions) {
-        if (!(await precondition.validate(runner))) {
-          const isOwnerPrecondition = precondition instanceof OwnerPrecondition;
-          const isGuildPermissions =
-            precondition instanceof GuildPermissionsPreconditions;
-          if (
-            runner.onInsufficientPermissions &&
-            (isOwnerPrecondition || isGuildPermissions)
-          ) {
-            await runner.onInsufficientPermissions(
-              precondition,
-              isGuildPermissions ? precondition.requiredPermissions : undefined
-            );
-          } else if (
-            runner.onMissingRequiredGuild &&
-            precondition instanceof RequiresGuildPrecondition
-          ) {
-            await runner.onMissingRequiredGuild();
-          }
-          return false;
-        }
+    if (!preconditioned.preconditions) return true;
+
+    for (const precondition of preconditioned.preconditions) {
+      if (!(await precondition.validate(context))) {
+        return false;
       }
     }
+
     return true;
   }
 

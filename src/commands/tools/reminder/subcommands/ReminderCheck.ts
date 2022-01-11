@@ -1,11 +1,8 @@
-import { CommandInteraction, CacheType } from 'discord.js';
 import DefaultContext from '../../../../client/contexts/DefaultContext';
-import FurudeRika from '../../../../client/FurudeRika';
 import CommandOptions from '../../../../containers/CommandOptions';
 import Strings from '../../../../containers/Strings';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
-import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
 import BaseEmbed from '../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
 import UserOption from '../../../../modules/framework/options/classes/UserOption';
@@ -28,58 +25,50 @@ export default class ReminderCheck extends FurudeSubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const user = this.userOption.apply(interaction)!;
-      const reminders = DBReminder.getAllRemindersForUser(client, user);
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, localizer, client } = context;
 
-      let allReminders = Strings.EMPTY;
-      if (reminders.length > 0) {
-        for (let i = 0; i < reminders.length; i++) {
-          const reminder = reminders[i]!;
-          allReminders += `${i + 1} - `;
-          let displayContent = reminder.reminder
-            .trim()
-            .substring(0, ReminderCheck.MAX_REMINDER_LENGTH);
-          if (displayContent.length >= ReminderCheck.MAX_REMINDER_LENGTH) {
-            displayContent += '...';
-          }
-          allReminders += runner.args!.localizer.get(
-            FurudeTranslationKeys.REMINDER_WILL_FIRE,
-            [
-              MessageCreator.block(displayContent),
-              MessageCreator.timeStamp(reminder.remind_end_date),
-            ]
-          );
-          allReminders += '\n';
+    const user = this.userOption.apply(interaction)!;
+    const reminders = DBReminder.getAllRemindersForUser(client, user);
+
+    let allReminders = Strings.EMPTY;
+    if (reminders.length > 0) {
+      for (let i = 0; i < reminders.length; i++) {
+        const reminder = reminders[i]!;
+        allReminders += `${i + 1} - `;
+        let displayContent = reminder.reminder
+          .trim()
+          .substring(0, ReminderCheck.MAX_REMINDER_LENGTH);
+        if (displayContent.length >= ReminderCheck.MAX_REMINDER_LENGTH) {
+          displayContent += '...';
         }
-      } else {
-        allReminders = runner.args!.localizer.get(
-          FurudeTranslationKeys.NOTHING_HERE
+        allReminders += localizer.get(
+          FurudeTranslationKeys.REMINDER_WILL_FIRE,
+          [
+            MessageCreator.block(displayContent),
+            MessageCreator.timeStamp(reminder.remind_end_date),
+          ]
         );
+        allReminders += '\n';
       }
+    } else {
+      allReminders = localizer.get(FurudeTranslationKeys.NOTHING_HERE);
+    }
 
-      allReminders = MessageCreator.bold(allReminders);
+    allReminders = MessageCreator.bold(allReminders);
 
-      const embed = new BaseEmbed(
-        {
-          title: MessageCreator.bold(
-            runner.args!.localizer.get(FurudeTranslationKeys.REMINDERS_STRING, [
-              user.username,
-            ])
-          ),
-          description: allReminders,
-        },
-        interaction
-      );
+    const embed = new BaseEmbed(
+      {
+        title: MessageCreator.bold(
+          localizer.get(FurudeTranslationKeys.REMINDERS_STRING, [user.username])
+        ),
+        description: allReminders,
+      },
+      interaction
+    );
 
-      await InteractionUtils.reply(interaction, {
-        embeds: [embed],
-      });
-    };
+    await InteractionUtils.reply(interaction, {
+      embeds: [embed],
+    });
   }
 }

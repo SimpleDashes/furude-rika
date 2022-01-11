@@ -117,7 +117,7 @@ export default class FurudeDB {
   }
 
   public async getSnowflakes<T extends SnowFlakeIDEntity>(
-    type: any,
+    type: TClassRepository<T>,
     query?: FindManyOptions<T>
   ): Promise<T[]> {
     const snowFlakes: T[] = await type.find(query);

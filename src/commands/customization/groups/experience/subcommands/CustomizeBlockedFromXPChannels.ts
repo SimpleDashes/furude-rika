@@ -1,13 +1,12 @@
+import assert from 'assert';
 import { ChannelType } from 'discord-api-types';
-import { CommandInteraction, CacheType, GuildChannel } from 'discord.js';
+import { GuildChannel } from 'discord.js';
 import DefaultContext from '../../../../../client/contexts/DefaultContext';
-import FurudeRika from '../../../../../client/FurudeRika';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import Strings from '../../../../../containers/Strings';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
-import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import {
   Preconditions,
   SetPreconditions,
@@ -46,51 +45,49 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const whitelist = this.isWhitelist.apply(interaction) ?? false;
-      const selectedChannel = this.channelToManipulate.apply(
-        interaction
-      ) as GuildChannel;
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, dbGuild, client, localizer } = context;
 
-      let operation: IDatabaseOperation;
-      if (whitelist) {
-        operation = runner.args!.dbGuild!.whitelistChannelToRewardXP(
-          runner.args!.localizer,
-          selectedChannel
-        );
-      } else {
-        operation = runner.args!.dbGuild!.blacklistChannelFromRewardingXP(
-          runner.args!.localizer,
-          selectedChannel
-        );
-      }
+    assert(dbGuild);
 
-      let blockedChannelsString = Strings.EMPTY;
-      for (const channel of runner.args!.dbGuild!.blocked_xp_channels) {
-        let cacheChannel = client.channels.cache.get(channel);
-        if (cacheChannel) {
-          blockedChannelsString += cacheChannel.toString();
-          blockedChannelsString += '\n';
-        }
-      }
+    const whitelist = this.isWhitelist.apply(interaction) ?? false;
+    const selectedChannel = this.channelToManipulate.apply(
+      interaction
+    ) as GuildChannel;
 
-      const embed = new BaseEmbed(
-        {
-          title: 'XP Blacklist',
-          description: MessageCreator.bold(blockedChannelsString),
-        },
-        interaction
+    let operation: IDatabaseOperation;
+    if (whitelist) {
+      operation = dbGuild.whitelistChannelToRewardXP(
+        localizer,
+        selectedChannel
       );
+    } else {
+      operation = dbGuild.blacklistChannelFromRewardingXP(
+        localizer,
+        selectedChannel
+      );
+    }
 
-      await FurudeOperations.saveWhenSuccess(runner.args!.dbGuild!, operation);
-      await FurudeOperations.answerInteraction(interaction, operation, {
-        embeds: [embed],
-      });
-    };
+    let blockedChannelsString = Strings.EMPTY;
+    for (const channel of dbGuild.blocked_xp_channels) {
+      let cacheChannel = client.channels.cache.get(channel);
+      if (cacheChannel) {
+        blockedChannelsString += cacheChannel.toString();
+        blockedChannelsString += '\n';
+      }
+    }
+
+    const embed = new BaseEmbed(
+      {
+        title: 'XP Blacklist',
+        description: MessageCreator.bold(blockedChannelsString),
+      },
+      interaction
+    );
+
+    await FurudeOperations.saveWhenSuccess(dbGuild, operation);
+    await FurudeOperations.answerInteraction(interaction, operation, {
+      embeds: [embed],
+    });
   }
 }

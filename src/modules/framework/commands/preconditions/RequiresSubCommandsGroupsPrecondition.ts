@@ -1,4 +1,4 @@
-import IRunsCommand from '../interfaces/IRunsCommand';
+import ICommandContext from '../interfaces/ICommandContext';
 import CommandPrecondition from './abstracts/CommandPrecondition';
 import ICommandValidatorPrecondition from './interfaces/ICommandValidatorPrecondition';
 
@@ -7,8 +7,8 @@ export default class RequiresSubCommandsGroupsPrecondition
   implements ICommandValidatorPrecondition
 {
   protected async validateInternally(
-    runner: IRunsCommand<any>
+    context: ICommandContext<any>
   ): Promise<boolean> {
-    return !!runner.interaction.options.getSubcommandGroup(false);
+    return !!context.interaction.options.getSubcommandGroup(false);
   }
 }

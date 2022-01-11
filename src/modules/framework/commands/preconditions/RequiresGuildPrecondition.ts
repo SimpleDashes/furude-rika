@@ -1,10 +1,10 @@
-import IRunsCommand from '../interfaces/IRunsCommand';
+import ICommandContext from '../interfaces/ICommandContext';
 import CommandPrecondition from './abstracts/CommandPrecondition';
 
 export default class RequiresGuildPrecondition extends CommandPrecondition {
   protected async validateInternally(
-    runner: IRunsCommand<any>
+    context: ICommandContext<any>
   ): Promise<boolean> {
-    return runner.interaction.inGuild();
+    return context.interaction.inGuild();
   }
 }

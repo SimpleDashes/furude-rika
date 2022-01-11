@@ -1,14 +1,12 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../client/FurudeRika';
+import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import {
   Preconditions,
   SetPreconditions,
 } from '../../modules/framework/commands/decorators/PreconditionDecorators';
-import IRunsCommand from '../../modules/framework/commands/interfaces/IRunsCommand';
 
 @SetPreconditions(Preconditions.RequiresSubCommand)
-export default class extends FurudeCommand {
+export default class Customize extends FurudeCommand {
   public constructor() {
     super({
       name: 'customize',
@@ -16,11 +14,7 @@ export default class extends FurudeCommand {
     });
   }
 
-  public createRunnerRunnable(
-    _runner: IRunsCommand<FurudeRika>,
-    _client: FurudeRika,
-    _interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
+  public trigger(_context: DefaultContext): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

@@ -1,5 +1,6 @@
+import assert from 'assert';
 import { PermissionResolvable, GuildMember } from 'discord.js';
-import IRunsCommand from '../interfaces/IRunsCommand';
+import ICommandContext from '../interfaces/ICommandContext';
 import PermissionPrecondition from './abstracts/PermissionPrecondition';
 
 export default class GuildPermissionsPrecondition extends PermissionPrecondition {
@@ -11,13 +12,11 @@ export default class GuildPermissionsPrecondition extends PermissionPrecondition
   }
 
   protected async validateInternally(
-    runner: IRunsCommand<any>
+    context: ICommandContext<any>
   ): Promise<boolean> {
-    return (
-      runner.interaction.inGuild() &&
-      (runner.interaction.member as GuildMember).permissions.has(
-        this.requiredPermissions
-      )
+    assert(context.interaction.inGuild());
+    return (context.interaction.member as GuildMember).permissions.has(
+      this.requiredPermissions
     );
   }
 }

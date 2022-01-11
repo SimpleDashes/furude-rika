@@ -1,9 +1,6 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import BooleanOption from '../../modules/framework/options/classes/BooleanOption';
 import StringOption from '../../modules/framework/options/classes/StringOption';
 import DeployHandler from '../../modules/framework/rest/DeployHandler';
@@ -37,63 +34,51 @@ export default class Deploy extends FurudeCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const isDebug = this.debug.apply(interaction);
-      const commandName = this.commandName.apply(interaction) as string;
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, client, localizer } = context;
 
-      await DeployHandler.deployCommand({
-        client,
-        commandName,
-        isDebug,
-        interaction,
-        resFunctions: {
-          onCommandNotFound: async () => {
-            await InteractionUtils.reply(
-              interaction,
-              MessageCreator.error(
-                runner.args!.localizer.get(
-                  FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND
-                )
-              )
-            );
-          },
-          onInvalidCommand: async () => {
-            await InteractionUtils.reply(
-              interaction,
-              MessageCreator.error(
-                runner.args!.localizer.get(
-                  FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED
-                )
-              )
-            );
-          },
-          onError: async () => {
-            await InteractionUtils.reply(
-              interaction,
-              MessageCreator.error(
-                runner.args!.localizer.get(
-                  FurudeTranslationKeys.DEPLOY_COMMAND_ERROR
-                )
-              )
-            );
-          },
-          onSuccess: async () => {
-            await InteractionUtils.reply(
-              interaction,
-              MessageCreator.success(
-                runner.args!.localizer.get(
-                  FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS
-                )
-              )
-            );
-          },
+    const isDebug = this.debug.apply(interaction);
+    const commandName = this.commandName.apply(interaction) as string;
+
+    await DeployHandler.deployCommand({
+      client,
+      commandName,
+      isDebug,
+      interaction,
+      resFunctions: {
+        onCommandNotFound: async () => {
+          await InteractionUtils.reply(
+            interaction,
+            MessageCreator.error(
+              localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND)
+            )
+          );
         },
-      });
-    };
+        onInvalidCommand: async () => {
+          await InteractionUtils.reply(
+            interaction,
+            MessageCreator.error(
+              localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED)
+            )
+          );
+        },
+        onError: async () => {
+          await InteractionUtils.reply(
+            interaction,
+            MessageCreator.error(
+              localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_ERROR)
+            )
+          );
+        },
+        onSuccess: async () => {
+          await InteractionUtils.reply(
+            interaction,
+            MessageCreator.success(
+              localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS)
+            )
+          );
+        },
+      },
+    });
   }
 }

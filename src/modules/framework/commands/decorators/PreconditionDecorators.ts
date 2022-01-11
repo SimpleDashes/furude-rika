@@ -9,12 +9,6 @@ import RequiresGuildPrecondition from '../preconditions/RequiresGuildPreconditio
 import RequiresSubCommandsPrecondition from '../preconditions/RequiresSubCommandsPrecondition';
 import RequiresSubCommandsGroupsPrecondition from '../preconditions/RequiresSubCommandsGroupsPrecondition';
 
-export class PreconditionConstructors {
-  public static WithPermission: Constructor<
-    [PermissionResolvable],
-    GuildPermissionsPreconditions
-  >;
-}
 export class SetupPrecondition {
   public static setup(owner: OwnerPrecondition) {
     this.setupOwnerPrecondition(owner);
@@ -24,35 +18,35 @@ export class SetupPrecondition {
     this.setupGuildPermissionsPrecondition();
   }
 
-  public static setupOwnerPrecondition(owner: OwnerPrecondition) {
-    Preconditions.OwnerOnly = owner;
+  public static setupOwnerPrecondition(condition: OwnerPrecondition) {
+    Preconditions.OwnerOnly = condition;
   }
 
   public static setupGuildPrecondition(
-    guild = new RequiresGuildPrecondition()
+    condition = new RequiresGuildPrecondition()
   ) {
-    Preconditions.GuildOnly = guild;
+    Preconditions.GuildOnly = condition;
   }
 
   public static setupSubCommandPrecondition(
-    subcommands = new RequiresSubCommandsPrecondition()
+    condition = new RequiresSubCommandsPrecondition()
   ) {
-    Preconditions.RequiresSubCommand = subcommands;
+    Preconditions.RequiresSubCommand = condition;
   }
 
   public static setupSubCommandGroupsPrecondition(
-    subCommandGroups = new RequiresSubCommandsGroupsPrecondition()
+    condition = new RequiresSubCommandsGroupsPrecondition()
   ) {
-    Preconditions.RequiresSubCommandGroup = subCommandGroups;
+    Preconditions.RequiresSubCommandGroup = condition;
   }
 
   public static setupGuildPermissionsPrecondition(
-    permissions: Constructor<
-      [PermissionResolvable],
-      GuildPermissionsPreconditions
-    > = GuildPermissionsPreconditions
+    creator: (
+      permissions: PermissionResolvable
+    ) => GuildPermissionsPreconditions = (permissions) =>
+      new GuildPermissionsPreconditions(permissions)
   ) {
-    PreconditionConstructors.WithPermission = permissions;
+    Preconditions.WithPermission = creator;
   }
 }
 
@@ -64,11 +58,11 @@ export class Preconditions {
   public static WithPermission = (
     permissions: PermissionResolvable
   ): GuildPermissionsPreconditions => {
-    return new PreconditionConstructors.WithPermission(permissions);
+    return new GuildPermissionsPreconditions(permissions);
   };
 }
 
-function SetPreconditions(...preconditions: CommandPrecondition[]) {
+function SetPreconditions(...preconditions: CommandPrecondition<any>[]) {
   return (target: Constructor<[...any], ICommand<any, any>>) => {
     const prototype = target.prototype as Partial<IHasPreconditions>;
     prototype.preconditions ??= [];

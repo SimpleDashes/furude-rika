@@ -1,28 +1,20 @@
-import { CommandInteraction, CacheType } from 'discord.js';
 import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import BaseCommand from '../../modules/framework/commands/BaseCommand';
-import FurudeCommandWrapper from './FurudeCommandWrapper';
 import IFurudeCommand from './interfaces/IFurudeCommand';
-import IFurudeRunner from './interfaces/IFurudeRunner';
+import ICommandContext from '../../modules/framework/commands/interfaces/ICommandContext';
+import FurudeCommandWrapper from './FurudeCommandWrapper';
 
-export default abstract class FurudeCommand
-  extends BaseCommand<FurudeRika>
-  implements IFurudeCommand
+export default abstract class FurudeCommand<
+    CTX extends DefaultContext = DefaultContext
+  >
+  extends BaseCommand<FurudeRika, DefaultContext>
+  implements IFurudeCommand<DefaultContext>
 {
-  public override async createRunner(
-    interaction: CommandInteraction<CacheType>
-  ): Promise<IFurudeRunner<any>> {
-    return await FurudeCommandWrapper.createRunner(this, interaction);
-  }
+  public abstract override trigger(context: DefaultContext): Promise<void>;
 
-  public abstract createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void>;
-
-  public ContextType(): (runner: IFurudeRunner<any>) => DefaultContext {
-    return FurudeCommandWrapper.defaultDependencyType();
+  public createContext(baseContext: ICommandContext<FurudeRika>): CTX {
+    // TODO THAT CASTING IS A WORKAROUND, PROPER TYPING IS NEEDED ON FUTURE.
+    return FurudeCommandWrapper.defaultContext(baseContext) as CTX;
   }
 }

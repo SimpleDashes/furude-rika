@@ -22,7 +22,7 @@ export default class BanchoUserRecentsAPI extends OsuUserRecentRoute<
       scores.push(new BanchoScore(apiScore, OsuServers.bancho));
     }
     if (fetchBeatmaps) {
-      for await (const score of scores) {
+      for (const score of scores) {
         await score.fetchBeatmap();
       }
     }

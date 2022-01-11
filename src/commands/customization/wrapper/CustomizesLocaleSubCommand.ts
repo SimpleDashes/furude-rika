@@ -1,8 +1,5 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../../client/FurudeRika';
 import DefaultContext from '../../../client/contexts/DefaultContext';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import IFurudeRunner from '../../../discord/commands/interfaces/IFurudeRunner';
 import StringOption from '../../../modules/framework/options/classes/StringOption';
 import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
 import IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
@@ -10,7 +7,7 @@ import SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEnt
 import FurudeOperations from '../../../database/FurudeOperations';
 
 export default abstract class CustomizesLocaleSubCommand extends FurudeSubCommand {
-  protected abstract readonly locale: StringOption;
+  protected abstract readonly localeOption: StringOption;
 
   protected static readonly LOCALE_NAME = 'language';
 
@@ -32,32 +29,26 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
     });
   }
 
-  public override createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      await runner.interaction.deferReply();
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, localizer } = context;
 
-      const preferredLocale =
-        SupportedFurudeLocales[
-          this.locale.apply(runner.interaction)! as SupportedFurudeLocales
-        ] ?? null;
+    const preferredLocale =
+      SupportedFurudeLocales[
+        this.localeOption.apply(interaction)! as SupportedFurudeLocales
+      ] ?? null;
 
-      const entityToLocalize = this.entityToLocalize(runner);
+    const entityToLocalize = this.entityToLocalize(context);
 
-      const operation = entityToLocalize.setPreferredLocale(
-        runner.args!.localizer,
-        preferredLocale
-      );
+    const operation = entityToLocalize.setPreferredLocale(
+      localizer,
+      preferredLocale
+    );
 
-      await entityToLocalize.save();
-      await FurudeOperations.answerInteraction(interaction, operation);
-    };
+    await entityToLocalize.save();
+    await FurudeOperations.answerInteraction(interaction, operation);
   }
 
   public abstract entityToLocalize(
-    runner: IFurudeRunner<DefaultContext>
+    context: DefaultContext
   ): IHasPreferredLocale & SnowFlakeIDEntity;
 }

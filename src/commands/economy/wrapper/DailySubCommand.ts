@@ -1,14 +1,10 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../../client/FurudeRika';
+import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import FurudeOperations from '../../../database/FurudeOperations';
 import IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
 import { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
 import ICommandInformation from '../../../modules/framework/commands/interfaces/ICommandInformation';
 import IHasPreconditions from '../../../modules/framework/commands/preconditions/interfaces/IHasPreconditions';
-import EconomySubCommand, {
-  EconomyRunner,
-  MustHaveOpenAccount,
-} from './EconomySubCommand';
+import EconomySubCommand, { MustHaveOpenAccount } from './EconomySubCommand';
 
 export default abstract class DailySubCommand extends EconomySubCommand {
   public constructor(information: ICommandInformation) {
@@ -22,31 +18,22 @@ export default abstract class DailySubCommand extends EconomySubCommand {
     }
   }
 
-  public createRunnerRunnable(
-    runner: EconomyRunner,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const scope = this.dailyScope();
-      const citizen = runner.args!.citizen;
+  public async trigger(context: CurrencyContext): Promise<void> {
+    const { citizen, interaction, localizer } = context;
 
-      const baseOperation = citizen.claimDaily(
-        interaction,
-        runner.args!.localizer,
-        scope
-      );
+    const scope = this.dailyScope();
 
-      const operation: IDatabaseOperation = {
-        ...baseOperation,
-        ...{
-          response: `${scope.toUpperCase()}: ${baseOperation.response}`,
-        },
-      };
+    const baseOperation = citizen.claimDaily(interaction, localizer, scope);
 
-      await FurudeOperations.saveWhenSuccess(citizen, operation);
-      await FurudeOperations.answerInteraction(interaction, operation);
+    const operation: IDatabaseOperation = {
+      ...baseOperation,
+      ...{
+        response: `${scope.toUpperCase()}: ${baseOperation.response}`,
+      },
     };
+
+    await FurudeOperations.saveWhenSuccess(citizen, operation);
+    await FurudeOperations.answerInteraction(interaction, operation);
   }
 
   public abstract dailyScope(): HyperTypes;

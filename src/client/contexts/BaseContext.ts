@@ -1,16 +1,24 @@
-import IRunsCommand from '../../modules/framework/commands/interfaces/IRunsCommand';
+import { CommandInteraction, CacheType } from 'discord.js';
+import ICommandContext from '../../modules/framework/commands/interfaces/ICommandContext';
 import FurudeRika from '../FurudeRika';
 
-export default abstract class BaseContext {
-  public readonly runner;
+export default abstract class BaseContext
+  implements ICommandContext<FurudeRika>
+{
+  public readonly client: FurudeRika;
+  public readonly interaction: CommandInteraction<CacheType>;
   public readonly db;
-  public constructor(runner: IRunsCommand<FurudeRika>) {
-    this.runner = runner;
-    this.db = runner.client.db;
+
+  public constructor(baseContext: ICommandContext<FurudeRika>) {
+    this.client = baseContext.client;
+    this.interaction = baseContext.interaction;
+    this.db = baseContext.client.db;
   }
+
   public async get(): Promise<this> {
     await this.build();
     return this;
   }
-  protected abstract build(): Promise<void>;
+
+  public abstract build(): Promise<void>;
 }

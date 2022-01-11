@@ -1,10 +1,7 @@
-import { CommandInteraction, CacheType } from 'discord.js';
 import DefaultContext from '../../../../client/contexts/DefaultContext';
-import FurudeRika from '../../../../client/FurudeRika';
 import CommandOptions from '../../../../containers/CommandOptions';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
-import IFurudeRunner from '../../../../discord/commands/interfaces/IFurudeRunner';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
 import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
@@ -28,41 +25,35 @@ export default class ReminderRemove extends FurudeSubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const index = this.indexOption.apply(interaction)!;
-      const reminder = DBReminder.getAllRemindersForUser(
-        client,
-        interaction.user
-      )[index - 1];
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { client, interaction, localizer } = context;
 
-      if (!reminder) {
-        await InteractionUtils.reply(
-          interaction,
-          MessageCreator.error(
-            runner.args!.localizer.get(
-              FurudeTranslationKeys.REMINDER_REMOVE_FAIL,
-              [MessageCreator.block(index.toString())]
-            )
-          )
-        );
-        return;
-      }
+    const index = this.indexOption.apply(context.interaction)!;
+    const reminder = DBReminder.getAllRemindersForUser(
+      client,
+      interaction.user
+    )[index - 1];
 
-      await client.reminderManager.removeReminder(reminder);
+    if (!reminder) {
       await InteractionUtils.reply(
         interaction,
-        MessageCreator.success(
-          runner.args!.localizer.get(
-            FurudeTranslationKeys.REMINDER_REMOVE_SUCCESS,
-            [MessageCreator.block(index.toString())]
-          )
+        MessageCreator.error(
+          localizer.get(FurudeTranslationKeys.REMINDER_REMOVE_FAIL, [
+            MessageCreator.block(index.toString()),
+          ])
         )
       );
-    };
+      return;
+    }
+
+    await client.reminderManager.removeReminder(reminder);
+    await InteractionUtils.reply(
+      interaction,
+      MessageCreator.success(
+        localizer.get(FurudeTranslationKeys.REMINDER_REMOVE_SUCCESS, [
+          MessageCreator.block(index.toString()),
+        ])
+      )
+    );
   }
 }

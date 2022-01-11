@@ -16,9 +16,9 @@ class CitizenCreator extends UserBasedContextCreator<
 export default class CurrencyContext extends DefaultContext {
   public citizen!: DBCitizen;
 
-  protected override async build(): Promise<void> {
+  public override async build(): Promise<void> {
     await super.build();
-    this.citizen = await this.CITIZENS.create(this.runner.interaction.user);
+    this.citizen = await this.CITIZENS.create(this.interaction.user);
   }
 
   public CITIZENS = new CitizenCreator(this);

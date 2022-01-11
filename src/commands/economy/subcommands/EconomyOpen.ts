@@ -1,8 +1,7 @@
-import { CommandInteraction, CacheType } from 'discord.js';
-import FurudeRika from '../../../client/FurudeRika';
+import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import FurudeOperations from '../../../database/FurudeOperations';
-import EconomySubCommand, { EconomyRunner } from '../wrapper/EconomySubCommand';
+import EconomySubCommand from '../wrapper/EconomySubCommand';
 
 export default class EconomyOpen extends EconomySubCommand {
   private static readonly STARTING_CAPITAL = 100;
@@ -14,17 +13,12 @@ export default class EconomyOpen extends EconomySubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: EconomyRunner,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const citizen = runner.args!.citizen;
-      const operation = citizen.openAccount(runner.args!.localizer);
+  public async trigger(context: CurrencyContext): Promise<void> {
+    const { citizen, interaction, localizer } = context;
 
-      await FurudeOperations.saveWhenSuccess(citizen, operation);
-      await FurudeOperations.answerInteraction(interaction, operation);
-    };
+    const operation = citizen.openAccount(localizer);
+
+    await FurudeOperations.saveWhenSuccess(citizen, operation);
+    await FurudeOperations.answerInteraction(interaction, operation);
   }
 }

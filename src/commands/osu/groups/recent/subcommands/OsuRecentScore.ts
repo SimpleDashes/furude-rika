@@ -1,9 +1,6 @@
-import { CommandInteraction, CacheType } from 'discord.js';
 import OsuContext from '../../../../../client/contexts/osu/OsuContext';
-import FurudeRika from '../../../../../client/FurudeRika';
 import Strings from '../../../../../containers/Strings';
 import ExpandableEmbedHelper from '../../../../../discord/commands/helpers/ExpandableEmbedHelper';
-import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import IHasExpandableEmbed from '../../../../../discord/commands/interfaces/IHasExpandableEmbed';
 import { MessageButtonCreator } from '../../../../../modules/framework/creators/MessageButtonCreator';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
@@ -35,112 +32,106 @@ export default class OsuRecentScore
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<OsuContext>,
-    client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const server = this.applyToServerOption(
-        this.serverUserOptions.server,
-        interaction
-      );
+  public async trigger(context: OsuContext): Promise<void> {
+    const { interaction, client } = context;
 
-      const osuUser = await this.getUserFromServer(
-        server,
-        runner,
-        this.serverUserOptions.user.apply(interaction),
-        this.discordUserOption.apply(interaction)!
-      );
+    const server = this.applyToServerOption(
+      this.serverUserOptions.server,
+      interaction
+    );
 
-      if (!osuUser) {
-        await this.sendOsuUserNotFound(runner);
-        return;
-      }
-      const recentScores = await this.getUserRecentFromServer(osuUser, false);
-      const recentScore = recentScores[0];
+    const osuUser = await this.getUserFromServer(
+      server,
+      context,
+      this.serverUserOptions.user.apply(interaction),
+      this.discordUserOption.apply(interaction)!
+    );
 
-      if (!recentScore) {
-        await InteractionUtils.reply(
-          interaction,
-          MessageCreator.error(
-            "I couldn't find any recent scores from said user."
-          )
-        );
-        return;
-      }
+    if (!osuUser) {
+      await this.sendOsuUserNotFound(context);
+      return;
+    }
+    const recentScores = await this.getUserRecentFromServer(osuUser, false);
+    const recentScore = recentScores[0];
 
-      await client.beatmapCache.fetchFromScore(recentScore);
-
-      let expandedEmbed = new BaseEmbed();
-      const minimizedEmbed = this.createMinimizedEmbed(
-        runner,
-        osuUser,
-        recentScore
-      );
-
-      await ExpandableEmbedHelper.createExpandingInteractiveButton(
-        minimizedEmbed,
-        expandedEmbed,
+    if (!recentScore) {
+      await InteractionUtils.reply(
         interaction,
-        {},
-        {
-          onExpand: async () => {
-            await MessageButtonCreator.createLimitedButtonBasedPaging(
-              interaction,
-              {},
-              [interaction.user.id],
-              recentScores,
-              OsuRecentScore.SCORES_PER_PAGE,
-              1,
-              60,
-              async (options, page, _content) => {
-                const scores: IOsuScore[] = [];
-                await MessageButtonCreator.loopPages(
-                  OsuRecentScore.SCORES_PER_PAGE,
-                  page,
-                  async (i) => {
-                    const score = recentScores[i];
-                    if (score) {
-                      await client.beatmapCache.fetchFromScore(score);
-                      scores.push(score);
-                    }
-                  }
-                );
-                expandedEmbed = this.createExpandedEmbed(
-                  runner,
-                  osuUser,
-                  scores,
-                  page
-                );
-                options.embeds = [expandedEmbed];
-              }
-            );
-          },
-        }
+        MessageCreator.error(
+          "I couldn't find any recent scores from said user."
+        )
       );
-    };
+      return;
+    }
+
+    await client.beatmapCache.fetchFromScore(recentScore);
+
+    let expandedEmbed = new BaseEmbed();
+    const minimizedEmbed = this.createMinimizedEmbed(
+      context,
+      osuUser,
+      recentScore
+    );
+
+    await ExpandableEmbedHelper.createExpandingInteractiveButton(
+      minimizedEmbed,
+      expandedEmbed,
+      interaction,
+      {},
+      {
+        onExpand: async () => {
+          await MessageButtonCreator.createLimitedButtonBasedPaging(
+            interaction,
+            {},
+            [interaction.user.id],
+            recentScores,
+            OsuRecentScore.SCORES_PER_PAGE,
+            1,
+            60,
+            async (options, page, _content) => {
+              const scores: IOsuScore[] = [];
+              await MessageButtonCreator.loopPages(
+                OsuRecentScore.SCORES_PER_PAGE,
+                page,
+                async (i) => {
+                  const score = recentScores[i];
+                  if (score) {
+                    await client.beatmapCache.fetchFromScore(score);
+                    scores.push(score);
+                  }
+                }
+              );
+              expandedEmbed = this.createExpandedEmbed(
+                context,
+                osuUser,
+                scores,
+                page
+              );
+              options.embeds = [expandedEmbed];
+            }
+          );
+        },
+      }
+    );
   }
 
-  createBaseEmbed(
-    runner: IFurudeRunner<OsuContext>,
-    user: IOsuUser<unknown>
-  ): BaseEmbed {
+  createBaseEmbed(context: OsuContext, user: IOsuUser<unknown>): BaseEmbed {
+    const { interaction } = context;
     return new BaseEmbed(
       {
-        author: this.getUserInfoAuthor(user, runner),
+        author: this.getUserInfoAuthor(user, context),
       },
-      runner.interaction
+      interaction
     );
   }
 
   createMinimizedEmbed(
-    runner: IFurudeRunner<OsuContext>,
+    context: OsuContext,
     user: IOsuUser<unknown>,
     score: IOsuScore
   ): BaseEmbed {
-    const embed = this.createBaseEmbed(runner, user).setDescription(
-      this.createMinimizedDescription(score, runner)
+    const embed = this.createBaseEmbed(context, user).setDescription(
+      this.createMinimizedDescription(score, context)
     );
 
     if (score.apiBeatmap) {
@@ -151,12 +142,12 @@ export default class OsuRecentScore
   }
 
   createExpandedEmbed(
-    runner: IFurudeRunner<OsuContext>,
+    context: OsuContext,
     user: IOsuUser<unknown>,
     scores: IOsuScore[],
     page: number
   ): BaseEmbed {
-    const embed = this.createBaseEmbed(runner, user);
+    const embed = this.createBaseEmbed(context, user);
     embed.description = Strings.EMPTY;
     for (let i = 0; i < scores.length; i++) {
       const score = scores[i]!;
@@ -173,19 +164,22 @@ export default class OsuRecentScore
             ) + 1
           }.`
         ) + ' ';
-      embed.description += this.createMinimizedDescription(score, runner);
+      embed.description += this.createMinimizedDescription(score, context);
     }
     return embed;
   }
 
   private createMinimizedDescription(
     score: IOsuScore,
-    runner: IFurudeRunner<OsuContext>
+    context: OsuContext
   ): string {
     const { apiBeatmap } = score;
-    const { language } = runner.args!.localizer;
+    const { localizer } = context;
+    const { language } = localizer;
+
     let string = Strings.EMPTY;
     let canHyperLink: boolean = false;
+
     if (apiBeatmap) {
       string += `${apiBeatmap.title} [${apiBeatmap.version}]`;
       if (!!apiBeatmap.beatmapID) {
@@ -194,19 +188,25 @@ export default class OsuRecentScore
     } else {
       string += `NOT FOUND`;
     }
+
     string = canHyperLink
       ? MessageCreator.bold(
           MessageCreator.hyperLink(string, apiBeatmap!.getPageUrl())
         )
       : MessageCreator.block(string);
+
     string = MessageCreator.breakLine(string);
+
     string += `▸ ${score.score.toLocaleString(language)} ▸ x${
       score.counts.combo
     } ▸ [${score.counts[300]}/${score.counts[100]}/${score.counts[50]}/${
       score.counts.misses
     }]`;
+
     string = MessageCreator.breakLine(string);
+
     string += `▸ Score Set ${MessageCreator.timeStamp(score.date)}`;
+
     return string;
   }
 }

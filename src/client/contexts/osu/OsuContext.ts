@@ -13,9 +13,9 @@ class OsuUserCreator extends UserBasedContextCreator<OsuContext, DBOsuPlayer> {
 export default class OsuContext extends DefaultContext {
   public osuPlayer!: DBOsuPlayer;
 
-  protected override async build(): Promise<void> {
+  public override async build(): Promise<void> {
     await super.build();
-    this.osuPlayer = await this.OSU_PLAYER.create(this.runner.interaction.user);
+    this.osuPlayer = await this.OSU_PLAYER.create(this.interaction.user);
   }
 
   public OSU_PLAYER = new OsuUserCreator(this);

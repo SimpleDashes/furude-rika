@@ -1,7 +1,6 @@
 import DefaultContext from '../../../../../client/contexts/DefaultContext';
 import SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlakeIDEntity';
 import IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
-import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import {
   Preconditions,
   SetPreconditions,
@@ -10,7 +9,7 @@ import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/Customizes
 
 @SetPreconditions(Preconditions.WithPermission('MANAGE_CHANNELS'))
 export default class CustomizeDefaultChannelLocale extends CustomizesServerRelatedLocaleSubCommand {
-  protected override locale = this.registerOption(
+  protected override localeOption = this.registerOption(
     this.getLocaleOption().setDescription("The channel's new locale.")
   );
 
@@ -21,8 +20,8 @@ export default class CustomizeDefaultChannelLocale extends CustomizesServerRelat
   }
 
   public entityToLocalize(
-    runner: IFurudeRunner<DefaultContext>
+    context: DefaultContext
   ): IHasPreferredLocale & SnowFlakeIDEntity {
-    return runner.args!.dbChannel!;
+    return context.dbChannel!;
   }
 }

@@ -1,10 +1,8 @@
-import { CommandInteraction, CacheType, Collection } from 'discord.js';
+import { Collection } from 'discord.js';
 
 import { Parser } from 'expr-eval';
-import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import IFurudeRunner from '../../discord/commands/interfaces/IFurudeRunner';
 import CollectionHelper from '../../modules/framework/helpers/CollectionHelper';
 import StringUtils from '../../modules/framework/helpers/StringUtils';
 import StringOption from '../../modules/framework/options/classes/StringOption';
@@ -35,94 +33,83 @@ export default class Calc extends FurudeCommand {
     });
   }
 
-  public override createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const gotExpression = this.expression
-        .apply(interaction)!
-        .replace(' ', '');
-      const gotVariablesRaw = this.variables.apply(interaction);
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, localizer } = context;
 
-      const gotVariables = this.getAllInputVariablesCollection(
-        gotVariablesRaw!,
-        gotExpression
+    const gotExpression = this.expression.apply(interaction)!.replace(' ', '');
+    const gotVariablesRaw = this.variables.apply(interaction);
+
+    const gotVariables = this.getAllInputVariablesCollection(
+      gotVariablesRaw!,
+      gotExpression
+    );
+
+    const allVariables = this.getAllRequiredVariablesArray(gotExpression);
+
+    const missingVariables = this.getAllMissingRequiredVariablesArray(
+      allVariables,
+      gotVariables
+    );
+
+    const expressionText = MessageCreator.block(gotExpression!.trim());
+
+    if (missingVariables.length != 0) {
+      await InteractionUtils.reply(
+        interaction,
+        MessageCreator.error(
+          localizer.get(FurudeTranslationKeys.CALC_MISSING_VARIABLES, [
+            MessageCreator.block(missingVariables.toString()),
+            expressionText,
+          ])
+        )
       );
+      return;
+    }
 
-      const allVariables = this.getAllRequiredVariablesArray(gotExpression);
-
-      const missingVariables = this.getAllMissingRequiredVariablesArray(
-        allVariables,
-        gotVariables
+    let parsedExpression;
+    try {
+      parsedExpression = Parser.parse(gotExpression!);
+    } catch {
+      await InteractionUtils.reply(
+        interaction,
+        MessageCreator.error(
+          localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, [
+            expressionText,
+          ])
+        )
       );
+      return;
+    }
 
-      const expressionText = MessageCreator.block(gotExpression!.trim());
+    let evaluatedResult: number | null = null;
+    try {
+      evaluatedResult = parsedExpression.evaluate(
+        CollectionHelper.collectionToRecord(gotVariables)
+      );
+    } catch {}
 
-      if (missingVariables.length != 0) {
-        await InteractionUtils.reply(
-          interaction,
-          MessageCreator.error(
-            runner.args!.localizer.get(
-              FurudeTranslationKeys.CALC_MISSING_VARIABLES,
-              [
-                MessageCreator.block(missingVariables.toString()),
-                expressionText,
-              ]
-            )
-          )
-        );
-        return;
+    let displayText;
+    if (evaluatedResult) {
+      displayText = localizer.get(FurudeTranslationKeys.CALC_RESULTS, [
+        expressionText,
+        MessageCreator.block(evaluatedResult.toString()),
+      ]);
+      if (gotVariables && gotVariablesRaw) {
+        displayText += `, ${localizer.get(
+          FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
+          [MessageCreator.block(gotVariablesRaw.trim())]
+        )}`;
       }
+      displayText = MessageCreator.success(displayText);
+    } else {
+      displayText = MessageCreator.error(
+        localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, [
+          expressionText,
+        ])
+      );
+    }
 
-      let parsedExpression;
-      try {
-        parsedExpression = Parser.parse(gotExpression!);
-      } catch {
-        await InteractionUtils.reply(
-          interaction,
-          MessageCreator.error(
-            runner.args!.localizer.get(
-              FurudeTranslationKeys.CALC_EVALUATE_ERROR,
-              [expressionText]
-            )
-          )
-        );
-        return;
-      }
-
-      let evaluatedResult: number | null = null;
-      try {
-        evaluatedResult = parsedExpression.evaluate(
-          CollectionHelper.collectionToRecord(gotVariables)
-        );
-      } catch {}
-
-      let displayText;
-      if (evaluatedResult) {
-        displayText = runner.args!.localizer.get(
-          FurudeTranslationKeys.CALC_RESULTS,
-          [expressionText, MessageCreator.block(evaluatedResult.toString())]
-        );
-        if (gotVariables && gotVariablesRaw) {
-          displayText += `, ${runner.args!.localizer.get(
-            FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
-            [MessageCreator.block(gotVariablesRaw.trim())]
-          )}`;
-        }
-        displayText = MessageCreator.success(displayText);
-      } else {
-        displayText = MessageCreator.error(
-          runner.args!.localizer.get(
-            FurudeTranslationKeys.CALC_EVALUATE_ERROR,
-            [expressionText]
-          )
-        );
-      }
-
-      await InteractionUtils.reply(interaction, displayText);
-    };
+    await InteractionUtils.reply(interaction, displayText);
   }
 
   private getAllMissingRequiredVariablesArray(

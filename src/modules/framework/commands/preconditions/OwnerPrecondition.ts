@@ -1,5 +1,5 @@
 import { Snowflake } from 'discord.js';
-import IRunsCommand from '../interfaces/IRunsCommand';
+import ICommandContext from '../interfaces/ICommandContext';
 import PermissionPrecondition from './abstracts/PermissionPrecondition';
 
 export default class OwnerPrecondition extends PermissionPrecondition {
@@ -11,8 +11,8 @@ export default class OwnerPrecondition extends PermissionPrecondition {
   }
 
   protected async validateInternally(
-    runner: IRunsCommand<any>
+    context: ICommandContext<any>
   ): Promise<boolean> {
-    return this.ownerIDS.includes(runner.interaction.user.id);
+    return this.ownerIDS.includes(context.interaction.user.id);
   }
 }

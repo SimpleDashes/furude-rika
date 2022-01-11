@@ -1,11 +1,9 @@
-import { CommandInteraction, CacheType } from 'discord.js';
+import assert from 'assert';
 import DefaultContext from '../../../../../client/contexts/DefaultContext';
-import FurudeRika from '../../../../../client/FurudeRika';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import DBUser from '../../../../../database/entity/DBUser';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
-import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import {
   Preconditions,
   SetPreconditions,
@@ -33,21 +31,16 @@ export default class CustomizeTimeForXP extends FurudeSubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const secondsForXP = this.secondsOption.apply(interaction)!;
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, localizer, dbGuild } = context;
 
-      const operation = runner.args!.dbGuild!.setTimeForXP(
-        runner.args!.localizer,
-        secondsForXP
-      );
+    assert(dbGuild);
 
-      await FurudeOperations.saveWhenSuccess(runner.args!.dbGuild!);
-      await FurudeOperations.answerInteraction(interaction, operation);
-    };
+    const secondsForXP = this.secondsOption.apply(interaction)!;
+
+    const operation = dbGuild!.setTimeForXP(localizer, secondsForXP);
+
+    await FurudeOperations.saveWhenSuccess(dbGuild);
+    await FurudeOperations.answerInteraction(interaction, operation);
   }
 }

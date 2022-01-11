@@ -7,9 +7,11 @@ import BaseContext from './BaseContext';
 
 export abstract class ContextCreator<C extends DefaultContext, P, T> {
   protected context: C;
+
   public constructor(context: C) {
     this.context = context;
   }
+
   public abstract create(arg: P): Promise<T>;
   public abstract default(arg: P): Promise<T>;
 
@@ -29,11 +31,7 @@ export abstract class UserBasedContextCreator<
   T
 > extends ContextCreator<C, User, T> {
   protected userDefault(arg: User, defaultValue: T): Promise<T> {
-    return super.baseDefault(
-      arg,
-      this.context.runner.interaction.user,
-      defaultValue
-    );
+    return super.baseDefault(arg, this.context.interaction.user, defaultValue);
   }
 }
 
@@ -44,7 +42,7 @@ export class UsersCreator extends DefaultContextCreator<User, DBUser> {
   public async default(arg: User): Promise<DBUser> {
     return this.baseDefault(
       arg,
-      this.context.runner.interaction.user,
+      this.context.interaction.user,
       this.context.dbUser
     );
   }
@@ -57,7 +55,7 @@ export class GuildCreator extends DefaultContextCreator<Guild, DBGuild> {
   public async default(arg: Guild): Promise<DBGuild> {
     return this.baseDefault(
       arg,
-      this.context.runner.interaction.guild!,
+      this.context.interaction.guild!,
       this.context.dbGuild!
     );
   }
@@ -73,7 +71,7 @@ export class ChannelCreator extends DefaultContextCreator<
   public async default(arg: GuildChannel): Promise<DBChannel> {
     return this.baseDefault(
       arg,
-      this.context.runner.interaction.channel as GuildChannel,
+      this.context.interaction.channel as GuildChannel,
       this.context.dbChannel!
     );
   }
@@ -85,13 +83,13 @@ export default class DefaultContext extends BaseContext {
   public dbGuild?: DBGuild;
   public dbChannel?: DBChannel;
 
-  protected async build(): Promise<void> {
+  public async build(): Promise<void> {
     this.localizer = this.createLocalizer();
-    this.dbUser = await this.USERS.create(this.runner.interaction.user);
-    if (this.runner.interaction.inGuild()) {
-      this.dbGuild = await this.GUILDS.create(this.runner.interaction.guild!);
+    this.dbUser = await this.USERS.create(this.interaction.user);
+    if (this.interaction.inGuild()) {
+      this.dbGuild = await this.GUILDS.create(this.interaction.guild!);
       this.dbChannel = await this.CHANNELS.create(
-        this.runner.interaction.channel as GuildChannel
+        this.interaction.channel as GuildChannel
       );
     }
   }
@@ -103,6 +101,6 @@ export default class DefaultContext extends BaseContext {
   public CHANNELS = new ChannelCreator(this);
 
   protected createLocalizer(): FurudeLocales {
-    return new FurudeLocales({ runner: this.runner });
+    return new FurudeLocales({ context: this });
   }
 }

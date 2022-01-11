@@ -1,11 +1,8 @@
-import { CommandInteraction, CacheType } from 'discord.js';
 import DefaultContext from '../../../../../client/contexts/DefaultContext';
-import FurudeRika from '../../../../../client/FurudeRika';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import DBGuild from '../../../../../database/entity/DBGuild';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
-import IFurudeRunner from '../../../../../discord/commands/interfaces/IFurudeRunner';
 import {
   Preconditions,
   SetPreconditions,
@@ -14,6 +11,7 @@ import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
+import assert from 'assert';
 
 class XPChangeOption extends IntegerOption {
   public constructor() {
@@ -49,48 +47,43 @@ export default class CustomizeMinXP extends FurudeSubCommand {
     });
   }
 
-  public createRunnerRunnable(
-    runner: IFurudeRunner<DefaultContext>,
-    _client: FurudeRika,
-    interaction: CommandInteraction<CacheType>
-  ): () => Promise<void> {
-    return async () => {
-      const minValue = this.minOption.apply(interaction);
-      const maxValue = this.maxOption.apply(interaction);
+  public async trigger(context: DefaultContext): Promise<void> {
+    const { interaction, dbGuild } = context;
 
-      const operations = [];
+    assert(dbGuild);
 
-      if (minValue) {
-        operations.push(runner.args!.dbGuild!.setMinXPValue(minValue));
-      }
+    const minValue = this.minOption.apply(interaction);
+    const maxValue = this.maxOption.apply(interaction);
 
-      if (maxValue) {
-        operations.push(runner.args!.dbGuild!.setMaxXPValue(maxValue));
-      }
+    const operations = [];
 
-      await FurudeOperations.saveWhenSuccess(
-        runner.args!.dbGuild!,
-        ...operations
-      );
+    if (minValue) {
+      operations.push(dbGuild.setMinXPValue(minValue));
+    }
 
-      const embed = new BaseEmbed(
-        {
-          title: MessageCreator.bold('XP Rewarding settings'),
-          description: MessageCreator.blockQuote(
-            MessageCreator.bold(
-              MessageCreator.objectToKeyValueString({
-                minimal_xp: runner.args!.dbGuild!.min_rewarded_xp_value,
-                maximal_xp: runner.args!.dbGuild!.max_rewarded_xp_value,
-              })
-            )
-          ),
-        },
-        interaction
-      );
+    if (maxValue) {
+      operations.push(dbGuild!.setMaxXPValue(maxValue));
+    }
 
-      await InteractionUtils.reply(interaction, {
-        embeds: [embed],
-      });
-    };
+    await FurudeOperations.saveWhenSuccess(dbGuild, ...operations);
+
+    const embed = new BaseEmbed(
+      {
+        title: MessageCreator.bold('XP Rewarding settings'),
+        description: MessageCreator.blockQuote(
+          MessageCreator.bold(
+            MessageCreator.objectToKeyValueString({
+              minimal_xp: dbGuild.min_rewarded_xp_value,
+              maximal_xp: dbGuild.max_rewarded_xp_value,
+            })
+          )
+        ),
+      },
+      interaction
+    );
+
+    await InteractionUtils.reply(interaction, {
+      embeds: [embed],
+    });
   }
 }

@@ -9,7 +9,6 @@ import FurudeTranslationKeys from './FurudeTranslationKeys';
 import ResourceResolver from './ResourceResolver';
 import DirectoryMapper from '../modules/framework/io/DirectoryMapper';
 import path from 'path';
-import IFurudeRunner from '../discord/commands/interfaces/IFurudeRunner';
 import DefaultContext from '../client/contexts/DefaultContext';
 
 const resourceResolver = new ResourceResolver(
@@ -24,18 +23,18 @@ const stringWithVariablesManager = new StringWithVariablesManager();
 let builtGlobals = false;
 
 export default class FurudeLocales extends Localizer<IFurudeResource> {
-  private readonly runner?: IFurudeRunner<DefaultContext>;
+  private readonly context?: DefaultContext;
   public language: SupportedFurudeLocales;
 
   public constructor(options?: {
     language?: SupportedFurudeLocales;
-    runner?: IFurudeRunner<any>;
+    context?: DefaultContext;
   }) {
     super({
       defaultLocale: defaultFurudeLocale,
       locales: translations,
     });
-    this.runner = options?.runner;
+    this.context = options?.context;
     this.language = options?.language ?? defaultFurudeLocale;
   }
 
@@ -77,11 +76,11 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
       key,
       args: vars ?? [],
     };
-    if (this.runner) {
+    if (this.context) {
       this.language =
-        this.runner.args?.dbChannel?.preferred_locale ??
-        this.runner.args?.dbGuild?.preferred_locale ??
-        this.runner.args?.dbUser.preferred_locale ??
+        this.context.dbChannel?.preferred_locale ??
+        this.context.dbGuild?.preferred_locale ??
+        this.context.dbUser.preferred_locale ??
         this.language;
     }
     const find = translations.find((translation) => {

@@ -1,33 +1,24 @@
-import { CommandInteraction, CacheType } from 'discord.js';
+import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import FurudeOperations from '../../../database/FurudeOperations';
 import IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
 import { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
-import { EconomyRunner } from './EconomySubCommand';
-
 export default class DailyHelper {
-  public static createRunnerRunnable(
-    runner: EconomyRunner,
-    interaction: CommandInteraction<CacheType>,
+  public static async trigger(
+    context: CurrencyContext,
     type: HyperTypes
-  ): () => Promise<void> {
-    return async () => {
-      const citizen = runner.args!.citizen;
+  ): Promise<void> {
+    const { citizen, localizer, interaction } = context;
 
-      const baseOperation = citizen.claimDaily(
-        interaction,
-        runner.args!.localizer,
-        type
-      );
+    const baseOperation = citizen.claimDaily(interaction, localizer, type);
 
-      const operation: IDatabaseOperation = {
-        ...baseOperation,
-        ...{
-          response: `${type.toUpperCase()}: ${baseOperation.response}`,
-        },
-      };
-
-      await FurudeOperations.saveWhenSuccess(citizen, operation);
-      await FurudeOperations.answerInteraction(interaction, operation);
+    const operation: IDatabaseOperation = {
+      ...baseOperation,
+      ...{
+        response: `${type.toUpperCase()}: ${baseOperation.response}`,
+      },
     };
+
+    await FurudeOperations.saveWhenSuccess(citizen, operation);
+    await FurudeOperations.answerInteraction(interaction, operation);
   }
 }
