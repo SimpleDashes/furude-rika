@@ -1,4 +1,5 @@
-import { Guild, GuildChannel, User } from 'discord.js';
+import { hoursToSeconds } from 'date-fns';
+import { Guild, GuildChannel, Snowflake, User } from 'discord.js';
 import {
   BaseEntity,
   Connection,
@@ -6,6 +7,7 @@ import {
   FindManyOptions,
   FindOneOptions,
 } from 'typeorm';
+import { CacheCollection } from '../client/managers/abstracts/BaseFurudeCacheManager';
 import SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBCitizen from './entity/DBCitizen';
@@ -156,29 +158,49 @@ interface IDatabaseGetter<
     IDatabaseGetterGetAllOnly<T> {}
 
 abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
+  protected abstract typeObject(): TClassRepository<T>;
+  protected typeObjectConst: TClassRepository<T>;
+
   protected db: FurudeDB;
-  protected abstract typeObject: TClassRepository<T>;
+  protected cache: CacheCollection<Snowflake, T>;
+
+  protected cacheLimit() {
+    return 100;
+  }
+
+  protected cacheHours() {
+    return 1;
+  }
 
   public constructor(db: FurudeDB) {
     this.db = db;
+    this.typeObjectConst = this.typeObject();
+    this.cache = new CacheCollection(
+      this.cacheLimit(),
+      hoursToSeconds(this.cacheHours()),
+      this.typeObjectConst.name
+    );
   }
 
   protected static async get<
     K extends IHasSnowFlakeID,
     T extends SnowFlakeIDEntity
-  >(
-    that: BaseDatabaseGetter<T>,
-    key: K,
-    query?: FindOneOptions<T>
-  ): Promise<T> {
-    return await that.db.getSnowflake(key, that.typeObject, query);
+  >(that: BaseDatabaseGetter<T>, key: K): Promise<T> {
+    let entity: T;
+    if (that.cache.has(key.id)) {
+      entity = that.cache.get(key.id)!;
+    } else {
+      entity = await that.db.getSnowflake(key, that.typeObjectConst);
+      that.cache.set(entity.s_id, entity);
+    }
+    return entity;
   }
 
   protected static async getAllOn<T extends SnowFlakeIDEntity>(
     that: BaseDatabaseGetter<T>,
     query?: FindManyOptions<T>
   ): Promise<T[]> {
-    return await that.db.getSnowflakes(that.typeObject, query);
+    return await that.db.getSnowflakes(that.typeObjectConst, query);
   }
 }
 
@@ -189,8 +211,8 @@ abstract class DatabaseGetterGetOnly<
   extends BaseDatabaseGetter<T>
   implements IDatabaseGetterGetOnly<K, T>
 {
-  public async get(key: K, query?: FindManyOptions<T>): Promise<T> {
-    return await BaseDatabaseGetter.get(this, key, query);
+  public async get(key: K): Promise<T> {
+    return await BaseDatabaseGetter.get(this, key);
   }
 }
 
@@ -215,8 +237,8 @@ abstract class DatabaseGetter<
   extends BaseDatabaseGetter<T>
   implements IDatabaseGetter<K, T>
 {
-  public async get(key: K, query?: FindManyOptions<T>): Promise<T> {
-    return await BaseDatabaseGetter.get(this, key, query);
+  public async get(key: K): Promise<T> {
+    return await BaseDatabaseGetter.get(this, key);
   }
   public async getAllOn(query?: FindManyOptions<T>): Promise<T[]> {
     return await BaseDatabaseGetter.getAllOn(this, query);
@@ -226,11 +248,8 @@ abstract class DatabaseGetter<
 abstract class UserBasedDatabaseGetter<
   T extends SnowFlakeIDEntity
 > extends DatabaseGetter<User, T> {
-  public override async get(
-    user: User,
-    query?: FindManyOptions<T>
-  ): Promise<T> {
-    return super.get(user, query);
+  public override async get(user: User): Promise<T> {
+    return super.get(user);
   }
   public override async getAllOn(query?: FindManyOptions<T>): Promise<T[]> {
     return super.getAllOn(query);
@@ -238,23 +257,37 @@ abstract class UserBasedDatabaseGetter<
 }
 
 class UserGetter extends UserBasedDatabaseGetter<DBUser> {
-  protected typeObject: TClassRepository<DBUser> = DBUser;
+  protected typeObject(): TClassRepository<DBUser> {
+    return DBUser;
+  }
+
+  public override cacheLimit(): number {
+    return 1000;
+  }
 }
 
 class CitizenGetter extends UserBasedDatabaseGetter<DBCitizen> {
-  protected typeObject: TClassRepository<DBCitizen> = DBCitizen;
+  protected typeObject(): TClassRepository<DBCitizen> {
+    return DBCitizen;
+  }
 }
 
 class OsuUserGetter extends UserBasedDatabaseGetter<DBOsuPlayer> {
-  protected typeObject: TClassRepository<DBOsuPlayer> = DBOsuPlayer;
+  protected typeObject(): TClassRepository<DBOsuPlayer> {
+    return DBOsuPlayer;
+  }
 }
 
 class GuildGetter extends DatabaseGetterGetOnly<Guild, DBGuild> {
-  protected typeObject: TClassRepository<DBGuild> = DBGuild;
+  protected typeObject(): TClassRepository<DBGuild> {
+    return DBGuild;
+  }
 }
 
 class ChannelGetter extends DatabaseGetter<GuildChannel, DBChannel> {
-  protected typeObject: TClassRepository<DBChannel> = DBChannel;
+  protected typeObject(): TClassRepository<DBChannel> {
+    return DBChannel;
+  }
 }
 
 export {
