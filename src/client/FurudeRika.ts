@@ -136,7 +136,7 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
       if (operation.successfully) {
         consola.success(operation.response);
       }
-      FurudeOperations.saveWhenSuccess(user, operation);
+      await FurudeOperations.saveWhenSuccess(user, operation);
     });
   }
 
