@@ -182,6 +182,13 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
     );
   }
 
+  protected static addCache<T extends SnowFlakeIDEntity>(
+    that: BaseDatabaseGetter<T>,
+    entity: T
+  ) {
+    that.cache.set(entity.s_id, entity);
+  }
+
   protected static async findOne<
     K extends IHasSnowFlakeID,
     T extends SnowFlakeIDEntity
@@ -191,7 +198,7 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
       entity = that.cache.get(key.id)!;
     } else {
       entity = await that.db.getSnowflake(key, that.typeObjectConst);
-      that.cache.set(entity.s_id, entity);
+      this.addCache(that, entity);
     }
     return entity;
   }
@@ -200,7 +207,11 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
     that: BaseDatabaseGetter<T>,
     query?: FindManyOptions<T>
   ): Promise<T[]> {
-    return await that.db.getSnowflakes(that.typeObjectConst, query);
+    const entities = await that.db.getSnowflakes(that.typeObjectConst, query);
+    for (const entity of entities) {
+      this.addCache(that, entity);
+    }
+    return entities;
   }
 }
 
@@ -215,20 +226,6 @@ abstract class DatabaseGetterGetOnly<
     return await BaseDatabaseGetter.findOne(this, key);
   }
 }
-
-/**
-abstract class DatabaseGetterGetAllOnly<
-    M extends IHasSnowFlakeID,
-    T extends SnowFlakeIDEntity
-  >
-  extends BaseDatabaseGetter
-  implements IDatabaseGetterGetAllOnly<M, T>
-{
-  public async getAllOn(key: M): Promise<T[]> {
-    return await BaseDatabaseGetter.getAll(this, key);
-  }
-}
- */
 
 abstract class DatabaseGetter<
     K extends IHasSnowFlakeID,
