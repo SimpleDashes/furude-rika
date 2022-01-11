@@ -140,8 +140,32 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
     });
   }
 
-  public override onCommandRun(response: ICommandRunResponse): void {
-    const { interaction, command } = response;
+  public override async beforeCommandRun(
+    response: ICommandRunResponse<DefaultContext>
+  ): Promise<void> {
+    const { context } = response;
+    const { interaction } = context;
+    await interaction.deferReply();
+  }
+
+  public override async onCommandRun(
+    response: ICommandRunResponse<DefaultContext>
+  ): Promise<void> {
+    const { command, context } = response;
+    const { interaction, dbUser, dbGuild } = context;
+
+    dbUser.incrementExperience(
+      interaction.user,
+      interaction.inGuild() &&
+        interaction.channel instanceof BaseGuildTextChannel
+        ? {
+            rawGuild: interaction.guild!,
+            dbGuild: dbGuild!,
+            channel: interaction.channel!,
+          }
+        : undefined
+    );
+
     consola.success(
       `Command "${
         command.information.name

@@ -131,7 +131,7 @@ export default abstract class BaseBot<
       subOrGroup: S
     ) => Promise<void>,
     selectedDirectoryBase: string = pathName
-  ) {
+  ): Promise<void> {
     const subOrGroupPath = path.join(commandRes.directory.path, pathName);
 
     if (fsSync.existsSync(subOrGroupPath)) {
@@ -177,7 +177,7 @@ export default abstract class BaseBot<
     }
   }
 
-  async start() {
+  async start(): Promise<void> {
     await this.login(this.devInfo.token);
 
     const developmentGuildID =
@@ -222,8 +222,7 @@ export default abstract class BaseBot<
       );
 
       let groupToRunSubcommand: ICommand<BaseBot, CTX> = command;
-
-      let runnerCommand: ICommand<BaseBot, ICommandContext<BaseBot>> = command;
+      let runnerCommand: ICommand<BaseBot, CTX> = command;
 
       if (subCommandGroupOption) {
         const subCommandGroup = this.subCommandGroups
@@ -251,7 +250,7 @@ export default abstract class BaseBot<
       const context = runnerCommand.createContext({
         interaction,
         client: this,
-      });
+      }) as CTX;
 
       await context.build();
 
@@ -278,18 +277,22 @@ export default abstract class BaseBot<
 
       if (!(await canRunSubCommandOrGroup(runnerCommand))) return;
 
+      const response = {
+        context,
+        command: runnerCommand,
+      };
+
+      await this.beforeCommandRun(response);
+
       await runnerCommand.trigger(context);
 
-      this.onCommandRun({
-        interaction,
-        command: runnerCommand,
-      });
+      await this.onCommandRun(response);
     });
   }
 
   private async verifyPreconditions(
     preconditioned: Partial<IHasPreconditions>,
-    context: ICommandContext<any>
+    context: CTX
   ): Promise<boolean> {
     if (!preconditioned.preconditions) return true;
 
@@ -312,7 +315,11 @@ export default abstract class BaseBot<
     );
   }
 
-  public onCommandRun(response: ICommandRunResponse) {
+  public async beforeCommandRun(
+    _response: ICommandRunResponse<CTX>
+  ): Promise<void> {}
+
+  public async onCommandRun(response: ICommandRunResponse<CTX>): Promise<void> {
     consola.log(`${response.command} command was ran!`);
   }
 }
