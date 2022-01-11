@@ -20,6 +20,6 @@ export default class ExperienceLeaderboardGlobal extends ExperienceLeaderboardSu
   }
 
   public async getUsers(context: DefaultContext): Promise<DBUser[]> {
-    return await context.db.USER.getAllOn();
+    return await context.db.USER.find();
   }
 }

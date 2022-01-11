@@ -25,7 +25,7 @@ export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSub
   }
 
   public async getUsers(context: DefaultContext): Promise<DBUser[]> {
-    return await context.db.USER.getAllOn({
+    return await context.db.USER.find({
       where: {
         'experience.locals': {
           $elemMatch: { key: context.interaction.guildId! },

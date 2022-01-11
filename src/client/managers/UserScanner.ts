@@ -6,7 +6,7 @@ export default class UserScanner extends BaseFurudeScanner {
   protected scanningWhat: string = 'USER';
 
   protected async runScan(): Promise<void> {
-    const users = await this.rika.db.USER.getAllOn();
+    const users = await this.rika.db.USER.find();
     for (const dbUser of users) {
       let discordUser;
       try {

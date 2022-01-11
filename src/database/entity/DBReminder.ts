@@ -93,7 +93,7 @@ export default class DBReminder extends GeneratedIDEntity {
       Numbers.defaultOptionalNumber(end_time.weeks)
     );
 
-    rika.reminderManager.addReminder(this, localizer);
+    rika.reminderManager.addReminders(localizer, this);
 
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.REMINDER_WILL_REMIND_YOU)

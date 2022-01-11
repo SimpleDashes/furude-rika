@@ -37,7 +37,7 @@ export abstract class UserBasedContextCreator<
 
 export class UsersCreator extends DefaultContextCreator<User, DBUser> {
   public async create(arg: User): Promise<DBUser> {
-    return await this.context.db.USER.get(arg);
+    return await this.context.db.USER.findOne(arg);
   }
   public async default(arg: User): Promise<DBUser> {
     return this.baseDefault(
@@ -50,7 +50,7 @@ export class UsersCreator extends DefaultContextCreator<User, DBUser> {
 
 export class GuildCreator extends DefaultContextCreator<Guild, DBGuild> {
   public async create(arg: Guild): Promise<DBGuild> {
-    return await this.context.db.GUILD.get(arg);
+    return await this.context.db.GUILD.findOne(arg);
   }
   public async default(arg: Guild): Promise<DBGuild> {
     return this.baseDefault(
@@ -66,7 +66,7 @@ export class ChannelCreator extends DefaultContextCreator<
   DBChannel
 > {
   public async create(arg: GuildChannel): Promise<DBChannel> {
-    return await this.context.db.CHANNEL.get(arg);
+    return await this.context.db.CHANNEL.findOne(arg);
   }
   public async default(arg: GuildChannel): Promise<DBChannel> {
     return this.baseDefault(

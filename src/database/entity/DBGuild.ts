@@ -44,7 +44,7 @@ export default class DBGuild
   public static MAX_XP_CHANGE_VALUE = 100;
 
   @Column()
-  preferred_locale?: SupportedFurudeLocales | undefined | null;
+  preferred_locale?: SupportedFurudeLocales | undefined;
 
   @Column('number')
   min_rewarded_xp_value?: number;

@@ -126,11 +126,11 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
         !(message.channel instanceof BaseGuildTextChannel)
       )
         return;
-      const user = await this.db.USER.get(message.member.user);
+      const user = await this.db.USER.findOne(message.member.user);
       user.setUsername(message.member.user.username);
       const operation = user.incrementExperience(message.member.user, {
         rawGuild: message.guild,
-        dbGuild: await this.db.GUILD.get(message.guild),
+        dbGuild: await this.db.GUILD.findOne(message.guild),
         channel: message.channel,
       });
       if (operation.successfully) {

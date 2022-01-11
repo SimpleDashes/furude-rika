@@ -144,11 +144,11 @@ interface IDatabaseGetterGetOnly<
   K extends IHasSnowFlakeID,
   T extends SnowFlakeIDEntity
 > {
-  get(key: K): Promise<T>;
+  findOne(key: K | Snowflake): Promise<T>;
 }
 
 interface IDatabaseGetterGetAllOnly<T extends SnowFlakeIDEntity> {
-  getAllOn(query?: FindManyOptions<T>): Promise<T[]>;
+  find(query?: FindManyOptions<T>): Promise<T[]>;
 }
 
 interface IDatabaseGetter<
@@ -182,7 +182,7 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
     );
   }
 
-  protected static async get<
+  protected static async findOne<
     K extends IHasSnowFlakeID,
     T extends SnowFlakeIDEntity
   >(that: BaseDatabaseGetter<T>, key: K): Promise<T> {
@@ -196,7 +196,7 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
     return entity;
   }
 
-  protected static async getAllOn<T extends SnowFlakeIDEntity>(
+  protected static async find<T extends SnowFlakeIDEntity>(
     that: BaseDatabaseGetter<T>,
     query?: FindManyOptions<T>
   ): Promise<T[]> {
@@ -211,8 +211,8 @@ abstract class DatabaseGetterGetOnly<
   extends BaseDatabaseGetter<T>
   implements IDatabaseGetterGetOnly<K, T>
 {
-  public async get(key: K): Promise<T> {
-    return await BaseDatabaseGetter.get(this, key);
+  public async findOne(key: K): Promise<T> {
+    return await BaseDatabaseGetter.findOne(this, key);
   }
 }
 
@@ -237,22 +237,22 @@ abstract class DatabaseGetter<
   extends BaseDatabaseGetter<T>
   implements IDatabaseGetter<K, T>
 {
-  public async get(key: K): Promise<T> {
-    return await BaseDatabaseGetter.get(this, key);
+  public async findOne(key: K): Promise<T> {
+    return await BaseDatabaseGetter.findOne(this, key);
   }
-  public async getAllOn(query?: FindManyOptions<T>): Promise<T[]> {
-    return await BaseDatabaseGetter.getAllOn(this, query);
+  public async find(query?: FindManyOptions<T>): Promise<T[]> {
+    return await BaseDatabaseGetter.find(this, query);
   }
 }
 
 abstract class UserBasedDatabaseGetter<
   T extends SnowFlakeIDEntity
 > extends DatabaseGetter<User, T> {
-  public override async get(user: User): Promise<T> {
-    return super.get(user);
+  public override async findOne(user: User): Promise<T> {
+    return super.findOne(user);
   }
-  public override async getAllOn(query?: FindManyOptions<T>): Promise<T[]> {
-    return super.getAllOn(query);
+  public override async find(query?: FindManyOptions<T>): Promise<T[]> {
+    return super.find(query);
   }
 }
 

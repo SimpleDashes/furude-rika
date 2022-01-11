@@ -4,7 +4,7 @@ import DefaultContext, { UserBasedContextCreator } from '../DefaultContext';
 
 class OsuUserCreator extends UserBasedContextCreator<OsuContext, DBOsuPlayer> {
   public async create(arg: User): Promise<DBOsuPlayer> {
-    return this.context.db.OSU_USERS.get(arg);
+    return this.context.db.OSU_USERS.findOne(arg);
   }
   public default(arg: User): Promise<DBOsuPlayer> {
     return this.userDefault(arg, this.context.osuPlayer);

@@ -7,7 +7,7 @@ class CitizenCreator extends UserBasedContextCreator<
   DBCitizen
 > {
   public async create(arg: User): Promise<DBCitizen> {
-    return this.context.db.CITIZEN.get(arg);
+    return this.context.db.CITIZEN.findOne(arg);
   }
   public default(arg: User): Promise<DBCitizen> {
     return this.userDefault(arg, this.context.citizen);

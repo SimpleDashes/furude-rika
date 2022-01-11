@@ -31,7 +31,7 @@ export default class DBUser
   public static MIN_SECONDS_FOR_EXPERIENCE_GLOBAL = 30;
 
   @Column()
-  preferred_locale?: SupportedFurudeLocales | undefined | null;
+  preferred_locale?: SupportedFurudeLocales | undefined;
 
   @Column('string')
   username: string = Strings.UNKNOWN;
