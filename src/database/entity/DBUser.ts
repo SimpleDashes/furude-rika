@@ -6,7 +6,7 @@ import Strings from '../../containers/Strings';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
-import { assertDefined } from '../../modules/framework/types/TypeAssertions';
+import { assertDefinedGet } from '../../modules/framework/types/TypeAssertions';
 import FurudeOperations from '../FurudeOperations';
 import IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
@@ -116,8 +116,9 @@ export default class DBUser
             max:
               dbGuild.max_rewarded_xp_value ?? DBUser.MAX_GLOBAL_EXPERIENCE_ADD,
           });
-          const localValue = this.experience.currentLocal(rawGuild);
-          assertDefined(localValue);
+          const localValue = assertDefinedGet(
+            this.experience.currentLocal(rawGuild)
+          );
           this.experience.setLocal(
             rawGuild,
             localValue + incrementedLocalExperience

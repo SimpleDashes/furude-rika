@@ -9,7 +9,8 @@ import StringOption from '../../modules/framework/options/classes/StringOption';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../modules/framework/types/TypeAssertions';
+import { assertDefinedGet } from '../../modules/framework/types/TypeAssertions';
+import Strings from '../../containers/Strings';
 
 export default class Calc extends FurudeCommand {
   private readonly expressionOption = this.registerOption(
@@ -37,12 +38,12 @@ export default class Calc extends FurudeCommand {
   public async trigger(context: DefaultContext): Promise<void> {
     const { interaction, localizer } = context;
 
-    let expression = this.expressionOption.apply(interaction);
-    assertDefined(expression);
-    expression = expression.replace(' ', '');
+    const expression = assertDefinedGet(
+      this.expressionOption.apply(interaction)
+    ).replace(' ', '');
 
-    const rawVariables = this.variablesOption.apply(interaction);
-    assertDefined(rawVariables);
+    const rawVariables =
+      this.variablesOption.apply(interaction) ?? Strings.EMPTY;
 
     const gotVariables = this.getAllInputVariablesCollection(
       rawVariables,
@@ -171,7 +172,7 @@ export default class Calc extends FurudeCommand {
     gotVariablesRaw: string,
     gotExpression: string
   ): Collection<string, number> {
-    const gotVariables: Collection<string, number> | null = new Collection();
+    const gotVariables: Collection<string, number> = new Collection();
     if (gotVariablesRaw) {
       const split =
         StringUtils.toCollectionSplittedByEqualSignAsString(gotVariablesRaw);

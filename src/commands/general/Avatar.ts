@@ -5,7 +5,10 @@ import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
 import UserOption from '../../modules/framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../modules/framework/types/TypeAssertions';
+import {
+  assertDefined,
+  assertDefinedGet,
+} from '../../modules/framework/types/TypeAssertions';
 
 export default class Avatar extends FurudeCommand {
   private readonly userOption: UserOption = this.registerOption(
@@ -24,8 +27,7 @@ export default class Avatar extends FurudeCommand {
   public async trigger(context: DefaultContext): Promise<void> {
     const { interaction, localizer } = context;
 
-    const user = this.userOption.apply(interaction);
-    assertDefined(user);
+    const user = assertDefinedGet(this.userOption.apply(interaction));
 
     const avatar = user.avatarURL({ dynamic: true, size: 1024 });
     assertDefined(avatar);

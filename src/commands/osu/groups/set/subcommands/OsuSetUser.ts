@@ -1,6 +1,6 @@
 import OsuContext from '../../../../../client/contexts/osu/OsuContext';
 import FurudeOperations from '../../../../../database/FurudeOperations';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
+import { assertDefinedGet } from '../../../../../modules/framework/types/TypeAssertions';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
 
 export default class OsuSetUser extends OsuSubCommand {
@@ -27,8 +27,9 @@ export default class OsuSetUser extends OsuSubCommand {
       interaction
     );
 
-    const username = this.serverUserOptions.user.apply(interaction);
-    assertDefined(username);
+    const username = assertDefinedGet(
+      this.serverUserOptions.user.apply(interaction)
+    );
 
     const osuUser = await this.getUserFromServer(server, context, username);
 

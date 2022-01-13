@@ -6,7 +6,10 @@ import { MessageButtonCreator } from '../../../../../modules/framework/creators/
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
+import {
+  assertDefined,
+  assertDefinedGet,
+} from '../../../../../modules/framework/types/TypeAssertions';
 import IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
 import IOsuUser from '../../../../../modules/osu/users/IOsuUser';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
@@ -41,8 +44,9 @@ export default class OsuRecentScore
       interaction
     );
 
-    const discordUser = this.discordUserOption.apply(interaction);
-    assertDefined(discordUser);
+    const discordUser = assertDefinedGet(
+      this.discordUserOption.apply(interaction)
+    );
 
     const osuUser = await this.getUserFromServer(
       server,
@@ -164,6 +168,7 @@ export default class OsuRecentScore
       if (i > 0) {
         embed.description = MessageCreator.breakLine(embed.description);
       }
+
       embed.description +=
         MessageCreator.bold(
           `${
@@ -174,6 +179,7 @@ export default class OsuRecentScore
             ) + 1
           }.`
         ) + ' ';
+
       embed.description += this.createMinimizedDescription(score, context);
     }
     return embed;

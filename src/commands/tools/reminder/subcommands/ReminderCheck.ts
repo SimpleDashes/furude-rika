@@ -8,7 +8,10 @@ import MessageCreator from '../../../../modules/framework/helpers/MessageCreator
 import UserOption from '../../../../modules/framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
+import {
+  assertDefined,
+  assertDefinedGet,
+} from '../../../../modules/framework/types/TypeAssertions';
 
 export default class ReminderCheck extends FurudeSubCommand {
   public static MAX_REMINDER_LENGTH = 16;
@@ -29,9 +32,7 @@ export default class ReminderCheck extends FurudeSubCommand {
   public async trigger(context: DefaultContext): Promise<void> {
     const { interaction, localizer, client } = context;
 
-    const user = this.userOption.apply(interaction);
-
-    assertDefined(user);
+    const user = assertDefinedGet(this.userOption.apply(interaction));
 
     const reminders = DBReminder.getAllRemindersForUser(client, user);
 

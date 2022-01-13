@@ -7,7 +7,7 @@ import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
-import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
+import { assertDefinedGet } from '../../../modules/framework/types/TypeAssertions';
 
 export default class EconomyOpen extends EconomySubCommand {
   private readonly userOption = this.registerOption(
@@ -28,10 +28,7 @@ export default class EconomyOpen extends EconomySubCommand {
   public async trigger(context: CurrencyContext): Promise<void> {
     const { interaction, localizer } = context;
 
-    const user = this.userOption.apply(interaction);
-
-    assertDefined(user);
-
+    const user = assertDefinedGet(this.userOption.apply(interaction));
     const citizen = await context.CITIZENS.default(user);
 
     if (citizen.justCreated) {

@@ -8,7 +8,10 @@ import {
   SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
+import {
+  assertDefined,
+  assertDefinedGet,
+} from '../../../../../modules/framework/types/TypeAssertions';
 
 @SetPreconditions(Preconditions.WithPermission('ADMINISTRATOR'))
 export default class CustomizeTimeForXP extends FurudeSubCommand {
@@ -36,8 +39,9 @@ export default class CustomizeTimeForXP extends FurudeSubCommand {
 
     assertDefined(dbGuild);
 
-    const secondsForXP = this.secondsOption.apply(interaction);
-    assertDefined(secondsForXP);
+    const secondsForXP = assertDefinedGet(
+      this.secondsOption.apply(interaction)
+    );
 
     const operation = dbGuild.setTimeForXP(localizer, secondsForXP);
 

@@ -6,7 +6,7 @@ import FurudeOperations from '../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
 import StringOption from '../../../../modules/framework/options/classes/StringOption';
-import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
+import { assertDefinedGet } from '../../../../modules/framework/types/TypeAssertions';
 
 class ReminderTimeOption extends IntegerOption {
   public constructor(name: CommandOptions) {
@@ -67,9 +67,9 @@ export default class ReminderReminderMe extends FurudeSubCommand {
   public async trigger(context: DefaultContext): Promise<void> {
     const { interaction, client, localizer } = context;
 
-    const remindWhat = this.remindWhatOption.apply(interaction);
-
-    assertDefined(remindWhat);
+    const remindWhat = assertDefinedGet(
+      this.remindWhatOption.apply(interaction)
+    );
 
     const seconds = this.secondsOption.apply(interaction);
     const minutes = this.minutesOption.apply(interaction);

@@ -5,7 +5,7 @@ import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales
 import IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
 import SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
 import FurudeOperations from '../../../database/FurudeOperations';
-import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
+import { assertDefinedGet } from '../../../modules/framework/types/TypeAssertions';
 
 export default abstract class CustomizesLocaleSubCommand extends FurudeSubCommand {
   protected abstract readonly localeOption: StringOption;
@@ -33,8 +33,7 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
   public async trigger(context: DefaultContext): Promise<void> {
     const { interaction, localizer } = context;
 
-    const rawLocale = this.localeOption.apply(interaction);
-    assertDefined(rawLocale);
+    const rawLocale = assertDefinedGet(this.localeOption.apply(interaction));
 
     const preferredLocale =
       SupportedFurudeLocales[rawLocale as SupportedFurudeLocales] ?? null;
