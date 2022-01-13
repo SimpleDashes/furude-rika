@@ -1,23 +1,23 @@
 import { hoursToSeconds } from 'date-fns';
-import { Guild, GuildChannel, Snowflake, User } from 'discord.js';
-import {
+import type { Guild, GuildChannel, Snowflake, User } from 'discord.js';
+import type {
   BaseEntity,
   Connection,
-  createConnection,
   FindManyOptions,
   FindOneOptions,
 } from 'typeorm';
+import { createConnection } from 'typeorm';
 import { CacheCollection } from '../client/managers/abstracts/BaseFurudeCacheManager';
 import { assertDefined } from '../modules/framework/types/TypeAssertions';
-import SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
+import type SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBCitizen from './entity/DBCitizen';
 import DBGuild from './entity/DBGuild';
 import DBOsuPlayer from './entity/DBOsuPlayer';
 import DBUser from './entity/DBUser';
-import IHasJustCreatedIdentifier from './interfaces/IHasJustCreatedIdentifier';
-import IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
-import TClassRepository from './types/TClassRepository';
+import type IHasJustCreatedIdentifier from './interfaces/IHasJustCreatedIdentifier';
+import type IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
+import type { ClassRepository } from './types/ClassRepository';
 
 export default class FurudeDB {
   public readonly uri: string;
@@ -44,7 +44,7 @@ export default class FurudeDB {
   }
 
   private assignNewEntityToEntity<T extends BaseEntity>(
-    constructor: TClassRepository<T>,
+    constructor: ClassRepository<T>,
     findEntity: T | null,
     onNotFound?: (o: T) => void
   ): T {
@@ -57,7 +57,7 @@ export default class FurudeDB {
   }
 
   private async createEntityWhenNotFound<T extends BaseEntity>(
-    constructor: TClassRepository<T>,
+    constructor: ClassRepository<T>,
     findEntity: () => Promise<T | undefined>,
     onNotFound?: (o: T) => void
   ): Promise<T> {
@@ -95,7 +95,7 @@ export default class FurudeDB {
 
   public async getSnowflake<T extends SnowFlakeIDEntity>(
     snowflake: IHasSnowFlakeID,
-    type: TClassRepository<T>,
+    type: ClassRepository<T>,
     query?: FindOneOptions<T>
   ): Promise<T> {
     const identifyJustCreated = (
@@ -126,7 +126,7 @@ export default class FurudeDB {
   }
 
   public async getSnowflakes<T extends SnowFlakeIDEntity>(
-    type: TClassRepository<T>,
+    type: ClassRepository<T>,
     query?: FindManyOptions<T>
   ): Promise<T[]> {
     const snowFlakes: T[] = await type.find(query);
@@ -151,11 +151,11 @@ interface IDatabaseGetterGetOnly<
   K extends IHasSnowFlakeID,
   T extends SnowFlakeIDEntity
 > {
-  findOne(key: K | Snowflake): Promise<T>;
+  findOne: (key: K | Snowflake) => Promise<T>;
 }
 
 interface IDatabaseGetterGetAllOnly<T extends SnowFlakeIDEntity> {
-  find(query?: FindManyOptions<T>): Promise<T[]>;
+  find: (query?: FindManyOptions<T>) => Promise<T[]>;
 }
 
 interface IDatabaseGetter<
@@ -165,8 +165,8 @@ interface IDatabaseGetter<
     IDatabaseGetterGetAllOnly<T> {}
 
 abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
-  protected abstract typeObject(): TClassRepository<T>;
-  protected typeObjectConst: TClassRepository<T>;
+  protected abstract typeObject(): ClassRepository<T>;
+  protected typeObjectConst: ClassRepository<T>;
 
   protected db: FurudeDB;
   protected cache: CacheCollection<Snowflake, T>;
@@ -197,12 +197,15 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
   }
 
   protected static async findOne<
-    K extends IHasSnowFlakeID,
+    K extends IHasSnowFlakeID | Snowflake,
     T extends SnowFlakeIDEntity
   >(that: BaseDatabaseGetter<T>, key: K): Promise<T> {
-    let entity = that.cache.get(key.id);
+    const newKey: IHasSnowFlakeID = {
+      id: typeof key === 'string' ? key : key.id,
+    };
+    let entity = that.cache.get(newKey.id);
     if (!entity) {
-      entity = await that.db.getSnowflake(key, that.typeObjectConst);
+      entity = await that.db.getSnowflake(newKey, that.typeObjectConst);
       this.addCache(that, entity);
     }
     return entity;
@@ -227,7 +230,7 @@ abstract class DatabaseGetterGetOnly<
   extends BaseDatabaseGetter<T>
   implements IDatabaseGetterGetOnly<K, T>
 {
-  public async findOne(key: K): Promise<T> {
+  public async findOne(key: K | Snowflake): Promise<T> {
     return await BaseDatabaseGetter.findOne(this, key);
   }
 }
@@ -239,7 +242,7 @@ abstract class DatabaseGetter<
   extends BaseDatabaseGetter<T>
   implements IDatabaseGetter<K, T>
 {
-  public async findOne(key: K): Promise<T> {
+  public async findOne(key: K | Snowflake): Promise<T> {
     return await BaseDatabaseGetter.findOne(this, key);
   }
   public async find(query?: FindManyOptions<T>): Promise<T[]> {
@@ -259,7 +262,7 @@ abstract class UserBasedDatabaseGetter<
 }
 
 class UserGetter extends UserBasedDatabaseGetter<DBUser> {
-  protected typeObject(): TClassRepository<DBUser> {
+  protected typeObject(): ClassRepository<DBUser> {
     return DBUser;
   }
 
@@ -269,29 +272,34 @@ class UserGetter extends UserBasedDatabaseGetter<DBUser> {
 }
 
 class CitizenGetter extends UserBasedDatabaseGetter<DBCitizen> {
-  protected typeObject(): TClassRepository<DBCitizen> {
+  protected typeObject(): ClassRepository<DBCitizen> {
     return DBCitizen;
   }
 }
 
 class OsuUserGetter extends UserBasedDatabaseGetter<DBOsuPlayer> {
-  protected typeObject(): TClassRepository<DBOsuPlayer> {
+  protected typeObject(): ClassRepository<DBOsuPlayer> {
     return DBOsuPlayer;
   }
 }
 
 class GuildGetter extends DatabaseGetterGetOnly<Guild, DBGuild> {
-  protected typeObject(): TClassRepository<DBGuild> {
+  protected typeObject(): ClassRepository<DBGuild> {
     return DBGuild;
   }
 }
 
 class ChannelGetter extends DatabaseGetter<GuildChannel, DBChannel> {
-  protected typeObject(): TClassRepository<DBChannel> {
+  protected typeObject(): ClassRepository<DBChannel> {
     return DBChannel;
   }
 }
 
+export type {
+  IDatabaseGetter,
+  IDatabaseGetterGetAllOnly,
+  IDatabaseGetterGetOnly,
+};
 export {
   UserGetter,
   ChannelGetter,
@@ -302,7 +310,4 @@ export {
   DatabaseGetterGetOnly,
   BaseDatabaseGetter,
   OsuUserGetter,
-  IDatabaseGetter,
-  IDatabaseGetterGetAllOnly,
-  IDatabaseGetterGetOnly,
 };

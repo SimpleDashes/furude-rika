@@ -1,9 +1,12 @@
-import { CommandInteraction } from 'discord.js';
-import BaseBot from '../../client/BaseBot';
+import type { CommandInteraction } from 'discord.js';
+import type IBot from '../../client/IBot';
 
 export default interface ICommandContext {
-  readonly client: BaseBot<ICommandContext>;
+  readonly client: IBot;
   readonly interaction: CommandInteraction;
 
-  build(): Promise<void>;
+  build: () => Promise<void>;
 }
+
+export type OmittedCommandContext<T extends ICommandContext = ICommandContext> =
+  Omit<T, 'build'>;

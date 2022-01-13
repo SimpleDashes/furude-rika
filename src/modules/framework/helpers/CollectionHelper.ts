@@ -1,4 +1,4 @@
-import { Collection } from 'discord.js';
+import type { Collection } from 'discord.js';
 import { assertDefined } from '../types/TypeAssertions';
 
 export default class CollectionHelper {

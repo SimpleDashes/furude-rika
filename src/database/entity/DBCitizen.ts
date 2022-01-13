@@ -1,15 +1,15 @@
 import { addDays, intervalToDuration } from 'date-fns';
-import { CommandInteraction } from 'discord.js';
+import type { CommandInteraction } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import CurrencyContainer from '../../containers/CurrencyContainer';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import FurudeLocales from '../../localization/FurudeLocales';
+import type FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import FurudeOperations from '../FurudeOperations';
-import IDatabaseOperation from '../interfaces/IDatabaseOperation';
+import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDate';
 import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
-import { HyperTypes } from '../objects/hypervalues/HyperTypes';
+import type { HyperTypes } from '../objects/hypervalues/HyperTypes';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 
 interface IStreakOperation extends IDatabaseOperation {

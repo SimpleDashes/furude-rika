@@ -1,10 +1,10 @@
-import OsuModes from '../../enums/OsuModes';
-import BeatmapApprovalState from './enums/BeatmapApprovalState';
-import BeatmapGenres from './enums/BeatmapGenres';
-import BeatmapLanguages from './enums/BeatmapLanguages';
-import IBeatmapDifficulty from './interfaces/IBeatmapDifficulty';
-import ICreatorInformation from './interfaces/ICreatorInformation';
-import IOsuPerformanceDifficulty from './interfaces/IOsuPerformanceDifficulty';
+import type OsuModes from '../../enums/OsuModes';
+import type BeatmapApprovalState from './enums/BeatmapApprovalState';
+import type BeatmapGenres from './enums/BeatmapGenres';
+import type BeatmapLanguages from './enums/BeatmapLanguages';
+import type IBeatmapDifficulty from './interfaces/IBeatmapDifficulty';
+import type ICreatorInformation from './interfaces/ICreatorInformation';
+import type IOsuPerformanceDifficulty from './interfaces/IOsuPerformanceDifficulty';
 
 export default interface IAPIOsuBeatmap {
   approved: BeatmapApprovalState;
@@ -41,9 +41,9 @@ export default interface IAPIOsuBeatmap {
   downloadAvailable: boolean;
   audioAvailable: boolean;
 
-  getPageUrl(): string;
+  getPageUrl: () => string;
 
-  getCoverImage(): string;
+  getCoverImage: () => string;
 
-  getCoverThumbnail(): string;
+  getCoverThumbnail: () => string;
 }

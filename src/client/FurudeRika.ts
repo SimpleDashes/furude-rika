@@ -1,13 +1,13 @@
 import { BaseGuildTextChannel } from 'discord.js';
 import BaseBot from '../modules/framework/client/BaseBot';
 import consola from 'consola';
-import ICommandRunResponse from '../modules/framework/client/ICommandRunResponse';
+import type ICommandRunResponse from '../modules/framework/client/ICommandRunResponse';
 import DeployHandler from '../modules/framework/rest/DeployHandler';
 import DirectoryMapperFactory from '../modules/framework/io/DirectoryMapperFactory';
 import path from 'path';
 import FurudeLocales from '../localization/FurudeLocales';
 import FurudeDB from '../database/FurudeDB';
-import DefaultContext from './contexts/DefaultContext';
+import type DefaultContext from './contexts/DefaultContext';
 import FurudeOperations from '../database/FurudeOperations';
 import ReminderManager from './managers/ReminderManager';
 import UserScanner from './managers/UserScanner';
@@ -15,12 +15,12 @@ import OsuServers from '../modules/osu/servers/OsuServers';
 import { secondsToMilliseconds } from 'date-fns';
 import BeatmapCacheManager from './managers/BeatmapCacheManager';
 import { Preconditions } from '../modules/framework/commands/decorators/PreconditionDecorators';
-import CommandPrecondition from '../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
+import type CommandPrecondition from '../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
 import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import GuildPermissionsPrecondition from '../modules/framework/commands/preconditions/GuildPermissionsPreconditions';
 import MessageCreator from '../modules/framework/helpers/MessageCreator';
 import { assertDefined } from '../modules/framework/types/TypeAssertions';
-import { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
+import type { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
 
 export default class FurudeRika extends BaseBot<DefaultContext> {
   public readonly db = new FurudeDB();

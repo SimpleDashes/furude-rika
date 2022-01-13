@@ -1,8 +1,9 @@
 import { SlashCommandChannelOption } from '@discordjs/builders';
-import { GuildChannel, ThreadChannel, CommandInteraction } from 'discord.js';
+import type { CommandInteraction } from 'discord.js';
+import { GuildChannel, ThreadChannel } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
-import IDiscordOption from '../interfaces/IDiscordOption';
+import type IDiscordOption from '../interfaces/IDiscordOption';
 
 export default class ChannelOption
   extends SlashCommandChannelOption

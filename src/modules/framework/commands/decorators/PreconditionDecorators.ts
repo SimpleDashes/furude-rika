@@ -1,14 +1,15 @@
-import { PermissionResolvable } from 'discord.js';
-import Constructor from '../../interfaces/Constructor';
-import ICommand from '../interfaces/ICommand';
-import CommandPrecondition from '../preconditions/abstracts/CommandPrecondition';
+import type { PermissionResolvable } from 'discord.js';
+import type Constructor from '../../interfaces/Constructor';
+import type ICommand from '../interfaces/ICommand';
+import type CommandPrecondition from '../preconditions/abstracts/CommandPrecondition';
 import GuildPermissionsPreconditions from '../preconditions/GuildPermissionsPreconditions';
-import IHasPreconditions from '../preconditions/interfaces/IHasPreconditions';
-import OwnerPrecondition from '../preconditions/OwnerPrecondition';
+import type IHasPreconditions from '../preconditions/interfaces/IHasPreconditions';
+import type OwnerPrecondition from '../preconditions/OwnerPrecondition';
 import RequiresGuildPrecondition from '../preconditions/RequiresGuildPrecondition';
 import RequiresSubCommandsPrecondition from '../preconditions/RequiresSubCommandsPrecondition';
 import RequiresSubCommandsGroupsPrecondition from '../preconditions/RequiresSubCommandsGroupsPrecondition';
-import ICommandContext from '../interfaces/ICommandContext';
+import type ICommandContext from '../interfaces/ICommandContext';
+import type SubCommandGroup from '../SubCommandGroup';
 
 export class SetupPrecondition {
   public static setup(owner: OwnerPrecondition): void {
@@ -63,11 +64,13 @@ export class Preconditions {
   };
 }
 
-function SetPreconditions(...preconditions: CommandPrecondition<never>[]) {
+function SetPreconditions<CTX extends ICommandContext>(
+  ...preconditions: CommandPrecondition<CTX>[]
+) {
   return (
-    target: Constructor<[...unknown[]], ICommand<ICommandContext>>
+    target: Constructor<[...unknown[]], ICommand<CTX> | SubCommandGroup>
   ): void => {
-    const prototype = target.prototype as Partial<IHasPreconditions<never>>;
+    const prototype = target.prototype as IHasPreconditions<CTX>;
     prototype.preconditions ??= [];
 
     const maybeGuildPrecondition = preconditions.find(

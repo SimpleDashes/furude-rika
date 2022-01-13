@@ -1,7 +1,8 @@
 import { SlashCommandMentionableOption } from '@discordjs/builders';
-import { CommandInteraction, GuildMember, Role, User } from 'discord.js';
+import type { CommandInteraction} from 'discord.js';
+import { GuildMember, Role, User } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
-import IDiscordOption from '../interfaces/IDiscordOption';
+import type IDiscordOption from '../interfaces/IDiscordOption';
 
 export default class MentionableOptions
   extends SlashCommandMentionableOption

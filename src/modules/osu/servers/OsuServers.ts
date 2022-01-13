@@ -1,24 +1,19 @@
-import IOsuScore from '../scores/IOsuScore';
-import IOsuUser from '../users/IOsuUser';
-import IAPIOsuBeatmap from './beatmaps/IAPIOsuBeatmap';
 import BanchoServer from './implementations/bancho/BanchoServer';
-import IBanchoAPIBeatmapResponse from './implementations/bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
-import IBanchoAPIUserRecentScore from './implementations/bancho/interfaces/scores/IBanchoAPIUserRecentScore';
-import IBanchoAPIUserResponse from './implementations/bancho/interfaces/users/IBanchoAPIUserResponse';
 import DroidServer from './implementations/droid/DroidServer';
-import OsuServer from './OsuServer';
+import type OsuServer from './OsuServer';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type AnyServer = OsuServer<
-  unknown,
-  IOsuUser<unknown>,
-  IBanchoAPIUserResponse,
-  unknown,
-  IOsuScore,
-  IBanchoAPIUserRecentScore,
-  unknown,
-  IAPIOsuBeatmap,
-  IBanchoAPIBeatmapResponse,
-  unknown
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any
 >;
 
 export default class OsuServers {

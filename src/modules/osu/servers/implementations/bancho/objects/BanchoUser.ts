@@ -1,10 +1,10 @@
 import Protocol from '../../../../../connection/Protocol';
-import IOsuScore from '../../../../scores/IOsuScore';
+import type IOsuScore from '../../../../scores/IOsuScore';
 import BaseOsuUser from '../../../../users/BaseOsuUser';
 import OsuServers from '../../../OsuServers';
-import TBanchoApiRawResponse from '../interfaces/TBanchoApiRawResponse';
-import IBanchoAPIUserResponse from '../interfaces/users/IBanchoAPIUserResponse';
-import IBanchoOsuUserRecentParams from '../params/IBanchoOsuUserRecentParams';
+import type TBanchoApiRawResponse from '../interfaces/TBanchoApiRawResponse';
+import type IBanchoAPIUserResponse from '../interfaces/users/IBanchoAPIUserResponse';
+import type IBanchoOsuUserRecentParams from '../params/IBanchoOsuUserRecentParams';
 
 export default class BanchoUser extends BaseOsuUser<IBanchoOsuUserRecentParams> {
   public constructor(res: TBanchoApiRawResponse<IBanchoAPIUserResponse>) {

@@ -1,4 +1,4 @@
-import OsuContext from '../../../../../client/contexts/osu/OsuContext';
+import type OsuContext from '../../../../../client/contexts/osu/OsuContext';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import { assertDefinedGet } from '../../../../../modules/framework/types/TypeAssertions';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';

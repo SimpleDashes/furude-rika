@@ -1,4 +1,4 @@
-import OsuUserType from '../../../../enums/OsuUserType';
+import type OsuUserType from '../../../../enums/OsuUserType';
 
 export default interface IBanchoOsuWithUserParam {
   u: string | number;

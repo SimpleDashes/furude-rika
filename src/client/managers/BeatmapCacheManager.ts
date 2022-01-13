@@ -1,7 +1,7 @@
 import { hoursToSeconds } from 'date-fns';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';
-import IOsuScore from '../../modules/osu/scores/IOsuScore';
-import IAPIOsuBeatmap from '../../modules/osu/servers/beatmaps/IAPIOsuBeatmap';
+import type IOsuScore from '../../modules/osu/scores/IOsuScore';
+import type IAPIOsuBeatmap from '../../modules/osu/servers/beatmaps/IAPIOsuBeatmap';
 import DroidScore from '../../modules/osu/servers/implementations/droid/objects/DroidScore';
 import OsuServers from '../../modules/osu/servers/OsuServers';
 import BaseFurudeCacheManager from './abstracts/BaseFurudeCacheManager';

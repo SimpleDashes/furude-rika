@@ -1,4 +1,4 @@
-import DefaultContext from '../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../../containers/CommandOptions';
 import TimeFrames from '../../../../containers/TimeFrames';
 import DBReminder from '../../../../database/entity/DBReminder';

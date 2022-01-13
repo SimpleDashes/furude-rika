@@ -1,15 +1,15 @@
 import Localizer from '../modules/framework/localization/Localizer';
 import StringWithVariablesManager from '../modules/framework/localization/StringWithVariablesManager';
-import IFurudeResource from './IFurudeResource';
+import type IFurudeResource from './IFurudeResource';
 import SupportedFurudeLocales from './SupportedFurudeLocales';
 import { variablePrefix } from '../modules/framework/localization/StringWithVariablesManager';
-import IVariableManagerGetter from '../modules/framework/localization/IVariableManagerGetter';
-import FurudeResource from './FurudeResource';
-import FurudeTranslationKeys from './FurudeTranslationKeys';
+import type IVariableManagerGetter from '../modules/framework/localization/IVariableManagerGetter';
+import type FurudeResource from './FurudeResource';
+import type FurudeTranslationKeys from './FurudeTranslationKeys';
 import ResourceResolver from './ResourceResolver';
 import DirectoryMapper from '../modules/framework/io/DirectoryMapper';
 import path from 'path';
-import DefaultContext from '../client/contexts/DefaultContext';
+import type DefaultContext from '../client/contexts/DefaultContext';
 import Strings from '../containers/Strings';
 import { assertDefined } from '../modules/framework/types/TypeAssertions';
 

@@ -1,7 +1,7 @@
-import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
+import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import FurudeOperations from '../../../database/FurudeOperations';
-import IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
-import { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
+import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
+import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
 export default class DailyHelper {
   public static async trigger(
     context: CurrencyContext,

@@ -1,4 +1,4 @@
-import ContentHost from '../../ContentHost';
+import type ContentHost from '../../ContentHost';
 import Route from '../../routes/Route';
 
 export default class APIRoute<T> extends Route {

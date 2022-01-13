@@ -1,9 +1,9 @@
-import DefaultContext from '../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../client/contexts/DefaultContext';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import StringOption from '../../../modules/framework/options/classes/StringOption';
 import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
-import IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
-import SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
+import type IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
+import type SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
 import FurudeOperations from '../../../database/FurudeOperations';
 import { assertDefinedGet } from '../../../modules/framework/types/TypeAssertions';
 

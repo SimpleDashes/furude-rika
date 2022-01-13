@@ -1,3 +1,4 @@
+import type DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import {
   Preconditions,
@@ -5,7 +6,7 @@ import {
 } from '../../modules/framework/commands/decorators/PreconditionDecorators';
 
 @SetPreconditions(Preconditions.RequiresSubCommand)
-export default class Experience extends FurudeCommand {
+export default class Experience extends FurudeCommand<DefaultContext> {
   public constructor() {
     super({
       name: 'experience',

@@ -1,3 +1,4 @@
+import type CurrencyContext from '../../client/contexts/currency/CurrencyContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import {
   Preconditions,
@@ -5,7 +6,7 @@ import {
 } from '../../modules/framework/commands/decorators/PreconditionDecorators';
 
 @SetPreconditions(Preconditions.RequiresSubCommand)
-export default class Economy extends FurudeCommand {
+export default class Economy extends FurudeCommand<CurrencyContext> {
   public constructor() {
     super({
       name: 'economy',

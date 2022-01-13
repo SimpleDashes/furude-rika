@@ -1,14 +1,14 @@
 import { addDays, addHours, addMinutes, addSeconds, addWeeks } from 'date-fns';
-import { Snowflake, User } from 'discord.js';
+import type { Snowflake, User } from 'discord.js';
 import { Column, Entity } from 'typeorm';
-import FurudeRika from '../../client/FurudeRika';
+import type FurudeRika from '../../client/FurudeRika';
 import Strings from '../../containers/Strings';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import Numbers from '../../modules/framework/helpers/Numbers';
-import FurudeLocales from '../../localization/FurudeLocales';
+import type FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import FurudeOperations from '../FurudeOperations';
-import IDatabaseOperation from '../interfaces/IDatabaseOperation';
+import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import GeneratedIDEntity from './abstracts/GeneratedIDEntity';
 
 @Entity()

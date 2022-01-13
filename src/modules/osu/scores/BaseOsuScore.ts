@@ -1,8 +1,9 @@
-import IAPIOsuBeatmap from '../servers/beatmaps/IAPIOsuBeatmap';
-import IBaseBanchoAPIScore from '../servers/implementations/bancho/interfaces/scores/IBaseBanchoAPIScore';
-import OsuServers, { AnyServer } from '../servers/OsuServers';
-import IOsuScoreCounts from './interfaces/IOsuScoreCounts';
-import IOsuScore from './IOsuScore';
+import type IAPIOsuBeatmap from '../servers/beatmaps/IAPIOsuBeatmap';
+import type IBaseBanchoAPIScore from '../servers/implementations/bancho/interfaces/scores/IBaseBanchoAPIScore';
+import type { AnyServer } from '../servers/OsuServers';
+import OsuServers from '../servers/OsuServers';
+import type IOsuScoreCounts from './interfaces/IOsuScoreCounts';
+import type IOsuScore from './IOsuScore';
 
 export default class BaseOsuScore implements IOsuScore {
   public readonly beatmapID: number;

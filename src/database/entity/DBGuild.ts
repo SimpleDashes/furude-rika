@@ -1,13 +1,13 @@
-import { GuildChannel, Snowflake } from 'discord.js';
+import type { GuildChannel, Snowflake } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import BindableInteger from '../../modules/bindables/BindableInteger';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import FurudeLocales from '../../localization/FurudeLocales';
+import type FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import type SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
 import FurudeOperations from '../FurudeOperations';
-import IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
+import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
+import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
 import EntityExtension from '../objects/abstracts/EntityExtension';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import DBUser from './DBUser';

@@ -1,5 +1,5 @@
 import { secondsToMilliseconds } from 'date-fns';
-import {
+import type {
   ButtonInteraction,
   InteractionCollector,
   Message,

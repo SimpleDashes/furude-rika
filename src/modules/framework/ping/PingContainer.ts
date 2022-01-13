@@ -1,5 +1,5 @@
 import ManagesInternalArray from '../containers/ManagesInternalArray';
-import PingData from './PingData';
+import type PingData from './PingData';
 
 export default class PingContainer<
   A,

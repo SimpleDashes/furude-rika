@@ -1,34 +1,30 @@
-import {
-  Client,
-  ClientOptions,
-  Collection,
-  CommandInteraction,
-} from 'discord.js';
+import type { ClientOptions } from 'discord.js';
+import { Client, Collection, CommandInteraction } from 'discord.js';
 import DirectoryMapper from '../io/DirectoryMapper';
 import CommandResolver from '../io/object_resolvers/command_resolvers/CommandResolver';
 import type { resolvedClass } from '../io/object_resolvers/ClassResolver';
-import ClassResolver from '../io/object_resolvers/ClassResolver';
-import IBot from './IBot';
-import BaseCommand from '../commands/BaseCommand';
-import ICommandRunResponse from './ICommandRunResponse';
+import type ClassResolver from '../io/object_resolvers/ClassResolver';
+import type IBot from './IBot';
+import type BaseCommand from '../commands/BaseCommand';
+import type ICommandRunResponse from './ICommandRunResponse';
 import consola from 'consola';
-import IBotDevInformation from './IBotDevInformation';
-import DirectoryMapperFactory from '../io/DirectoryMapperFactory';
+import type IBotDevInformation from './IBotDevInformation';
+import type DirectoryMapperFactory from '../io/DirectoryMapperFactory';
 import path from 'path';
 import fsSync from 'fs';
 import SubCommandResolver from '../io/object_resolvers/command_resolvers/SubCommandResolver';
-import SubCommand from '../commands/SubCommand';
+import type SubCommand from '../commands/SubCommand';
 import OwnerPrecondition from '../commands/preconditions/OwnerPrecondition';
-import IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
-import ICommand from '../commands/interfaces/ICommand';
-import SubCommandGroup from '../commands/SubCommandGroup';
+import type IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
+import type ICommand from '../commands/interfaces/ICommand';
+import type SubCommandGroup from '../commands/SubCommandGroup';
 import SubCommandGroupResolver from '../io/object_resolvers/command_resolvers/SubCommandGroupResolver';
 import fs from 'fs/promises';
 import { SetupPrecondition } from '../commands/decorators/PreconditionDecorators';
 import RequiresSubCommandsPrecondition from '../commands/preconditions/RequiresSubCommandsPrecondition';
 import RequiresSubCommandsGroupsPrecondition from '../commands/preconditions/RequiresSubCommandsGroupsPrecondition';
-import ICommandContext from '../commands/interfaces/ICommandContext';
-import IDevOptions from './IBotDevOptions';
+import type ICommandContext from '../commands/interfaces/ICommandContext';
+import type IDevOptions from './IBotDevOptions';
 import { assertDefined } from '../types/TypeAssertions';
 
 export default abstract class BaseBot<CTX extends ICommandContext>
@@ -38,12 +34,14 @@ export default abstract class BaseBot<CTX extends ICommandContext>
   public readonly commands: Collection<string, BaseCommand<CTX>> =
     new Collection();
 
-  public readonly subCommands: Collection<ICommand<CTX>, SubCommand<CTX>[]> =
-    new Collection();
+  public readonly subCommands: Collection<
+    ICommand<CTX> | SubCommandGroup,
+    SubCommand<CTX>[]
+  > = new Collection();
 
   public readonly subCommandGroups: Collection<
     BaseCommand<CTX>,
-    SubCommandGroup<CTX>[]
+    SubCommandGroup[]
   > = new Collection();
 
   public readonly commandMappers: DirectoryMapper[] = [];
@@ -79,11 +77,10 @@ export default abstract class BaseBot<CTX extends ICommandContext>
       const newMappers = await this.commandMapperFactory.buildMappers();
       this.commandMappers.push(...newMappers);
     }
-    const commandResolver = new CommandResolver(...this.commandMappers);
+    const commandResolver = new CommandResolver<CTX>(...this.commandMappers);
     const resolvedCommands = await commandResolver.getAllObjects();
     for (const commandRes of resolvedCommands) {
       this.commands.set(commandRes.object.name, commandRes.object);
-
       await this.registerSubOrGroup(
         commandRes,
         this.subCommandsDirectory,
@@ -93,7 +90,6 @@ export default abstract class BaseBot<CTX extends ICommandContext>
           command.addSubcommand(sub);
         }
       );
-
       await this.registerSubOrGroup(
         commandRes,
         this.subCommandGroupsDirectory,
@@ -117,12 +113,12 @@ export default abstract class BaseBot<CTX extends ICommandContext>
   }
 
   private async registerSubOrGroup<
-    C extends ICommand<CTX>,
-    S extends ICommand<CTX>
+    C extends ICommand<CTX> | SubCommandGroup,
+    S extends ICommand<CTX> | SubCommandGroup
   >(
     commandRes: resolvedClass<C>,
     pathName: string,
-    collection: Collection<ICommand<CTX>, S[]>,
+    collection: Collection<ICommand<CTX> | SubCommandGroup, S[]>,
     resolver: (mapper: DirectoryMapper) => ClassResolver<S>,
     manipulator?: (
       res: resolvedClass<S>,
@@ -223,7 +219,7 @@ export default abstract class BaseBot<CTX extends ICommandContext>
         )
       );
 
-      let groupToRunSubcommand: ICommand<CTX> = command;
+      let groupToRunSubcommand: ICommand<CTX> | SubCommandGroup = command;
       let runnerCommand: ICommand<CTX> = command;
 
       if (subCommandGroupOption) {
@@ -250,12 +246,15 @@ export default abstract class BaseBot<CTX extends ICommandContext>
       const context = runnerCommand.createContext({
         interaction,
         client: this,
-      }) as CTX;
+      });
 
       await context.build();
 
       const canRunCommand = async (
-        command: ICommand<CTX> | (ICommand<CTX> & IHasPreconditions)
+        command:
+          | ICommand<CTX>
+          | (ICommand<CTX> & IHasPreconditions)
+          | SubCommandGroup
       ): Promise<boolean> => {
         return await this.verifyPreconditions(
           command as IHasPreconditions,
@@ -264,7 +263,7 @@ export default abstract class BaseBot<CTX extends ICommandContext>
       };
 
       const canRunSubCommandOrGroup = async (
-        inner: ICommand<CTX>
+        inner: ICommand<CTX> | SubCommandGroup
       ): Promise<boolean> => {
         return inner === commandWithPreconditions
           ? true
@@ -277,7 +276,7 @@ export default abstract class BaseBot<CTX extends ICommandContext>
 
       if (!(await canRunSubCommandOrGroup(runnerCommand))) return;
 
-      const response = {
+      const response: ICommandRunResponse<CTX> = {
         context,
         command: runnerCommand,
       };

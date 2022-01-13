@@ -1,5 +1,5 @@
 import { Collection } from 'discord.js';
-import IKeyValueSet from '../interfaces/IKeyValueSet';
+import type IKeyValueSet from '../interfaces/IKeyValueSet';
 import { assertDefined } from '../types/TypeAssertions';
 
 export default class StringUtils {

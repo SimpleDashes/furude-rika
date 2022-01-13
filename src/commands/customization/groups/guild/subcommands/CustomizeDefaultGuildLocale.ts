@@ -1,6 +1,6 @@
-import DefaultContext from '../../../../../client/contexts/DefaultContext';
-import SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlakeIDEntity';
-import IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
+import type DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlakeIDEntity';
+import type IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
 import {
   Preconditions,
   SetPreconditions,
@@ -8,7 +8,7 @@ import {
 import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
-@SetPreconditions(Preconditions.WithPermission('MANAGE_GUILD'))
+@SetPreconditions<DefaultContext>(Preconditions.WithPermission('MANAGE_GUILD'))
 export default class CustomizeDefaultGuildLocale extends CustomizesServerRelatedLocaleSubCommand {
   protected override localeOption = this.registerOption(
     this.getLocaleOption().setDescription("The guild's new locale.")

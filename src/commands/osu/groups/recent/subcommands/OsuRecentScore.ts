@@ -1,7 +1,7 @@
-import OsuContext from '../../../../../client/contexts/osu/OsuContext';
+import type OsuContext from '../../../../../client/contexts/osu/OsuContext';
 import Strings from '../../../../../containers/Strings';
 import ExpandableEmbedHelper from '../../../../../discord/commands/helpers/ExpandableEmbedHelper';
-import IHasExpandableEmbed from '../../../../../discord/commands/interfaces/IHasExpandableEmbed';
+import type IHasExpandableEmbed from '../../../../../discord/commands/interfaces/IHasExpandableEmbed';
 import { MessageButtonCreator } from '../../../../../modules/framework/creators/MessageButtonCreator';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
@@ -10,8 +10,8 @@ import {
   assertDefined,
   assertDefinedGet,
 } from '../../../../../modules/framework/types/TypeAssertions';
-import IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
-import IOsuUser from '../../../../../modules/osu/users/IOsuUser';
+import type IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
+import type IOsuUser from '../../../../../modules/osu/users/IOsuUser';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
 
 export default class OsuRecentScore

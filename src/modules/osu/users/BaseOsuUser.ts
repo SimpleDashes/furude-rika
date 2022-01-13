@@ -1,14 +1,14 @@
 import OsuUserEventsBindable from '../bindables/OsuUserEventsBindable';
-import IBanchoAPIUserResponse from '../servers/implementations/bancho/interfaces/users/IBanchoAPIUserResponse';
-import TBanchoApiRawResponse from '../servers/implementations/bancho/interfaces/TBanchoApiRawResponse';
-import IOsuUserCounts from './interfaces/IOsuUserCounts';
-import IOsuUserEvent from './interfaces/IOsuUserEvent';
-import IOsuUserPPS from './interfaces/IOsuUserPPS';
-import IOsuUserRanks from './interfaces/IOsuUserRanks';
-import IOsuUserScores from './interfaces/IOsuUserScores';
-import IOsuUser from './IOsuUser';
-import IOsuScore from '../scores/IOsuScore';
-import { AnyServer } from '../servers/OsuServers';
+import type IBanchoAPIUserResponse from '../servers/implementations/bancho/interfaces/users/IBanchoAPIUserResponse';
+import type TBanchoApiRawResponse from '../servers/implementations/bancho/interfaces/TBanchoApiRawResponse';
+import type IOsuUserCounts from './interfaces/IOsuUserCounts';
+import type IOsuUserEvent from './interfaces/IOsuUserEvent';
+import type IOsuUserPPS from './interfaces/IOsuUserPPS';
+import type IOsuUserRanks from './interfaces/IOsuUserRanks';
+import type IOsuUserScores from './interfaces/IOsuUserScores';
+import type IOsuUser from './IOsuUser';
+import type IOsuScore from '../scores/IOsuScore';
+import type { AnyServer } from '../servers/OsuServers';
 import { assertDefined } from '../../framework/types/TypeAssertions';
 
 export default abstract class BaseOsuUser<P> implements IOsuUser<P> {

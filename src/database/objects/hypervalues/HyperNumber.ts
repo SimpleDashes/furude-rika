@@ -1,5 +1,5 @@
 import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
-import { HyperTypes } from './HyperTypes';
+import type { HyperTypes } from './HyperTypes';
 import HyperValue from './HyperValue';
 
 export default abstract class HyperNumber<K> extends HyperValue<number, K> {

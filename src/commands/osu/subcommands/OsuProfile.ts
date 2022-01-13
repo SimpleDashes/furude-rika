@@ -1,10 +1,10 @@
 import { secondsToHours } from 'date-fns';
-import OsuContext from '../../../client/contexts/osu/OsuContext';
+import type OsuContext from '../../../client/contexts/osu/OsuContext';
 import ExpandableEmbedHelper from '../../../discord/commands/helpers/ExpandableEmbedHelper';
-import IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';
+import type IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
-import IOsuUser from '../../../modules/osu/users/IOsuUser';
+import type IOsuUser from '../../../modules/osu/users/IOsuUser';
 import OsuSubCommand from '../wrapper/OsuSubCommand';
 
 export default class OsuProfile

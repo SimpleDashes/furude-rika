@@ -1,4 +1,4 @@
-import DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import DBGuild from '../../../../../database/entity/DBGuild';
 import FurudeOperations from '../../../../../database/FurudeOperations';
@@ -22,7 +22,7 @@ class XPChangeOption extends IntegerOption {
   }
 }
 
-@SetPreconditions(
+@SetPreconditions<DefaultContext>(
   Preconditions.GuildOnly,
   Preconditions.WithPermission('ADMINISTRATOR')
 )

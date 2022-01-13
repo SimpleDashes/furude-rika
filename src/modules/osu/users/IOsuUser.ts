@@ -1,10 +1,10 @@
-import IOsuScore from '../scores/IOsuScore';
-import { AnyServer } from '../servers/OsuServers';
-import IOsuUserCounts from './interfaces/IOsuUserCounts';
-import IOsuUserEvent from './interfaces/IOsuUserEvent';
-import IOsuUserPPS from './interfaces/IOsuUserPPS';
-import IOsuUserRanks from './interfaces/IOsuUserRanks';
-import IOsuUserScores from './interfaces/IOsuUserScores';
+import type IOsuScore from '../scores/IOsuScore';
+import type { AnyServer } from '../servers/OsuServers';
+import type IOsuUserCounts from './interfaces/IOsuUserCounts';
+import type IOsuUserEvent from './interfaces/IOsuUserEvent';
+import type IOsuUserPPS from './interfaces/IOsuUserPPS';
+import type IOsuUserRanks from './interfaces/IOsuUserRanks';
+import type IOsuUserScores from './interfaces/IOsuUserScores';
 
 export default interface IOsuUser<P> {
   user_id: number;
@@ -21,9 +21,9 @@ export default interface IOsuUser<P> {
   events: IOsuUserEvent[];
   server: AnyServer;
 
-  fetchScores(params: P, fetchBeatmaps?: boolean): Promise<IOsuScore[]>;
+  fetchScores: (params: P, fetchBeatmaps?: boolean) => Promise<IOsuScore[]>;
 
-  getAvatarUrl(): string;
+  getAvatarUrl: () => string;
 
-  getProfileUrl(): string;
+  getProfileUrl: () => string;
 }

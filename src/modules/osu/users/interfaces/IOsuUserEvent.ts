@@ -1,4 +1,4 @@
-import OsuUserEventEpicFactor from '../../bindables/OsuUserEventEpicFactor';
+import type OsuUserEventEpicFactor from '../../bindables/OsuUserEventEpicFactor';
 
 export default interface IOsuUserEvent {
   display_html: string;

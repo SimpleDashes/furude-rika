@@ -1,12 +1,13 @@
 import { Column, Entity } from 'typeorm';
-import FurudeLocales from '../../localization/FurudeLocales';
+import type FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import OsuServers, { AnyServer } from '../../modules/osu/servers/OsuServers';
-import BanchoUser from '../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
-import IOsuUser from '../../modules/osu/users/IOsuUser';
+import type { AnyServer } from '../../modules/osu/servers/OsuServers';
+import OsuServers from '../../modules/osu/servers/OsuServers';
+import type BanchoUser from '../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
+import type IOsuUser from '../../modules/osu/users/IOsuUser';
 import FurudeOperations from '../FurudeOperations';
-import IDatabaseOperation from '../interfaces/IDatabaseOperation';
+import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import HyperNumber from '../objects/hypervalues/HyperNumber';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';

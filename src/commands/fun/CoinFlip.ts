@@ -1,4 +1,4 @@
-import DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
@@ -10,7 +10,7 @@ enum COIN {
   TAILS = FurudeTranslationKeys.COIN_FLIP_TAILS,
 }
 
-export default class CoinFlip extends FurudeCommand {
+export default class CoinFlip extends FurudeCommand<DefaultContext> {
   private readonly coinsArray = [COIN.HEAD, COIN.TAILS];
 
   public constructor() {

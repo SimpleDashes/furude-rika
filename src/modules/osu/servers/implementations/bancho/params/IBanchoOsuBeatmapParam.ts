@@ -1,5 +1,5 @@
-import IBanchoOsuWithModesParam from './IBanchoOsuWithModesParam';
-import IBanchoOsuWithUserParam from './IBanchoOsuWithUserParam';
+import type IBanchoOsuWithModesParam from './IBanchoOsuWithModesParam';
+import type IBanchoOsuWithUserParam from './IBanchoOsuWithUserParam';
 
 export default interface IBanchoBeatmapParam
   extends IBanchoOsuWithUserParam,

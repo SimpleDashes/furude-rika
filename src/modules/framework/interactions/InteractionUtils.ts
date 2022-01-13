@@ -1,5 +1,5 @@
-import { APIMessage } from 'discord-api-types';
-import {
+import type { APIMessage } from 'discord-api-types';
+import type {
   ButtonInteraction,
   CacheType,
   CommandInteraction,

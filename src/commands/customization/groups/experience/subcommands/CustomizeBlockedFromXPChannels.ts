@@ -1,11 +1,11 @@
 import assert from 'assert';
 import { ChannelType } from 'discord-api-types';
-import { GuildChannel } from 'discord.js';
-import DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type { GuildChannel } from 'discord.js';
+import type DefaultContext from '../../../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import Strings from '../../../../../containers/Strings';
 import FurudeOperations from '../../../../../database/FurudeOperations';
-import IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
+import type IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import {
   Preconditions,
@@ -16,11 +16,11 @@ import MessageCreator from '../../../../../modules/framework/helpers/MessageCrea
 import BooleanOption from '../../../../../modules/framework/options/classes/BooleanOption';
 import ChannelOption from '../../../../../modules/framework/options/classes/ChannelOption';
 
-@SetPreconditions(
+@SetPreconditions<DefaultContext>(
   Preconditions.GuildOnly,
   Preconditions.WithPermission('ADMINISTRATOR')
 )
-export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand {
+export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand<DefaultContext> {
   private channelToManipulate = this.registerOption(
     new ChannelOption()
       .setRequired(true)

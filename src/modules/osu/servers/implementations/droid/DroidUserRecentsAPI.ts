@@ -1,9 +1,9 @@
 import OsuUserRecentRoute from '../../routes/OsuUserRecentRoute';
 import DroidScore from './objects/DroidScore';
-import IBanchoAPIUserRecentScore from '../bancho/interfaces/scores/IBanchoAPIUserRecentScore';
-import IDroidOsuUserRecentsParam from './params/IDroidOsuUserRecentsParams';
+import type IBanchoAPIUserRecentScore from '../bancho/interfaces/scores/IBanchoAPIUserRecentScore';
+import type IDroidOsuUserRecentsParam from './params/IDroidOsuUserRecentsParams';
 import cheerio from 'cheerio';
-import IBanchoAPIBeatmapResponse from '../bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
+import type IBanchoAPIBeatmapResponse from '../bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
 import BaseOsuAPIBeatmap from '../../beatmaps/BaseOsuAPIBeatmap';
 import { assertDefined } from '../../../../framework/types/TypeAssertions';
 

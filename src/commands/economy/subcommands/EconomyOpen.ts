@@ -1,4 +1,4 @@
-import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
+import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import FurudeOperations from '../../../database/FurudeOperations';
 import EconomySubCommand from '../wrapper/EconomySubCommand';

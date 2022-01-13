@@ -1,5 +1,5 @@
-import { User } from 'discord.js';
-import DBOsuPlayer from '../../../database/entity/DBOsuPlayer';
+import type { User } from 'discord.js';
+import type DBOsuPlayer from '../../../database/entity/DBOsuPlayer';
 import DefaultContext, { UserBasedContextCreator } from '../DefaultContext';
 
 class OsuUserCreator extends UserBasedContextCreator<OsuContext, DBOsuPlayer> {

@@ -1,4 +1,4 @@
-import DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import DBUser from '../../../../../database/entity/DBUser';
 import FurudeOperations from '../../../../../database/FurudeOperations';
@@ -13,7 +13,7 @@ import {
   assertDefinedGet,
 } from '../../../../../modules/framework/types/TypeAssertions';
 
-@SetPreconditions(Preconditions.WithPermission('ADMINISTRATOR'))
+@SetPreconditions<DefaultContext>(Preconditions.WithPermission('ADMINISTRATOR'))
 export default class CustomizeTimeForXP extends FurudeSubCommand {
   private secondsOption = this.registerOption(
     new IntegerOption()

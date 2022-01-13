@@ -1,7 +1,7 @@
-import { Snowflake } from 'discord.js';
+import type { Snowflake } from 'discord.js';
 import { Column } from 'typeorm';
 import KeySetHelper from '../../../modules/framework/helpers/KeySetHelper';
-import TSnowflakeSet from '../../interfaces/TSnowflakeSet';
+import type { SnowflakeSet } from '../../types/TSnowflakeSet';
 import { HyperTypes } from './HyperTypes';
 
 /**
@@ -12,7 +12,7 @@ import { HyperTypes } from './HyperTypes';
  */
 export default abstract class GlobalLocalValue<T, K> {
   @Column('array')
-  public locals: TSnowflakeSet<T>[] = [];
+  public locals: SnowflakeSet<T>[] = [];
 
   @Column('number')
   public global: T | null;

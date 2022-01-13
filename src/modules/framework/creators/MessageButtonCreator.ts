@@ -1,5 +1,5 @@
 import { secondsToMilliseconds } from 'date-fns';
-import {
+import type {
   ButtonInteraction,
   CacheType,
   Collection,
@@ -7,19 +7,20 @@ import {
   InteractionCollector,
   InteractionReplyOptions,
   Message,
-  MessageActionRow,
-  MessageButton,
   MessageComponentInteraction,
   MessageEmbed,
-  Snowflake,
+  Snowflake} from 'discord.js';
+import {
+  MessageActionRow,
+  MessageButton
 } from 'discord.js';
 import Strings from '../../../containers/Strings';
 import MessageCreator from '../helpers/MessageCreator';
 import StringHelper from '../helpers/StringHelper';
 import InteractionUtils from '../interactions/InteractionUtils';
-import PageOption from '../options/custom/PageOption';
+import type PageOption from '../options/custom/PageOption';
 import InteractionCollectorCreator from './abstracts/InteractionCollectorCreator';
-import OnButtonPageChange from './interfaces/OnButtonPageChange';
+import type OnButtonPageChange from './interfaces/OnButtonPageChange';
 import Symbols from './Symbols';
 import { capitalize } from '@stdlib/string';
 import { assertDefined } from '../types/TypeAssertions';

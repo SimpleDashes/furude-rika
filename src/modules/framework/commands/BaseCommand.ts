@@ -1,8 +1,9 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import ICommand from './interfaces/ICommand';
-import ICommandInformation from './interfaces/ICommandInformation';
+import type ICommand from './interfaces/ICommand';
+import type ICommandInformation from './interfaces/ICommandInformation';
 import CommandHelper from './CommandHelper';
-import ICommandContext from './interfaces/ICommandContext';
+import type ICommandContext from './interfaces/ICommandContext';
+import type { OmittedCommandContext } from './interfaces/ICommandContext';
 
 export default abstract class BaseCommand<CTX extends ICommandContext>
   extends SlashCommandBuilder
@@ -18,7 +19,7 @@ export default abstract class BaseCommand<CTX extends ICommandContext>
 
   public abstract trigger(context: CTX): Promise<void>;
 
-  public abstract createContext(baseContext: ICommandContext): CTX;
+  public abstract createContext(baseContext: OmittedCommandContext): CTX;
 
   public registerOption<C>(option: C): C {
     return CommandHelper.registerOption(this, option);

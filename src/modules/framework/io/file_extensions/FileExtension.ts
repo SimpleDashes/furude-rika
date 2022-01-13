@@ -1,4 +1,4 @@
-import IHasString from '../../interfaces/IHasString';
+import type IHasString from '../../interfaces/IHasString';
 
 export default class FileExtension implements IHasString {
   private extensionName: string;

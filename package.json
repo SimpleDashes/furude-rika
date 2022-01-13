@@ -7,7 +7,8 @@
     "build": "tsc --build tsconfig.json",
     "start": "node dist/index.js",
     "format": "npx prettier -w src",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint_fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "engines": {
     "node": "16.x"
@@ -51,6 +52,7 @@
     "bracketSpacing": true
   },
   "eslintConfig": {
+    "root": true,
     "env": {
       "es2021": true,
       "node": true
@@ -64,7 +66,7 @@
       "ecmaVersion": "latest",
       "sourceType": "module",
       "project": [
-        "tsconfig.json"
+        "./tsconfig.json"
       ]
     },
     "plugins": [
@@ -73,7 +75,11 @@
     "rules": {
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/explicit-member-accessibility": "error",
-      "@typescript-eslint/explicit-function-return-type": "error"
+      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/consistent-type-exports": "error",
+      "@typescript-eslint/adjacent-overload-signatures": "error",
+      "@typescript-eslint/method-signature-style": "error"
     }
   }
 }

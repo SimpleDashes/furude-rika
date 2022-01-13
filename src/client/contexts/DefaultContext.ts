@@ -1,8 +1,9 @@
-import { Guild, GuildChannel, User } from 'discord.js';
-import DBChannel from '../../database/entity/DBChannel';
-import DBGuild from '../../database/entity/DBGuild';
-import DBUser from '../../database/entity/DBUser';
+import type { Guild, GuildChannel, User } from 'discord.js';
+import type DBChannel from '../../database/entity/DBChannel';
+import type DBGuild from '../../database/entity/DBGuild';
+import type DBUser from '../../database/entity/DBUser';
 import FurudeLocales from '../../localization/FurudeLocales';
+import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 import BaseContext from './BaseContext';
 
 export abstract class ContextCreator<C extends DefaultContext, P, T> {
@@ -53,10 +54,12 @@ export class GuildCreator extends DefaultContextCreator<Guild, DBGuild> {
     return await this.context.db.GUILD.findOne(arg);
   }
   public async default(arg: Guild): Promise<DBGuild> {
+    assertDefined(this.context.interaction.guild);
+    assertDefined(this.context.dbGuild);
     return this.baseDefault(
       arg,
-      this.context.interaction.guild!,
-      this.context.dbGuild!
+      this.context.interaction.guild,
+      this.context.dbGuild
     );
   }
 }
@@ -68,11 +71,13 @@ export class ChannelCreator extends DefaultContextCreator<
   public async create(arg: GuildChannel): Promise<DBChannel> {
     return await this.context.db.CHANNEL.findOne(arg);
   }
+
   public async default(arg: GuildChannel): Promise<DBChannel> {
+    assertDefined(this.context.dbChannel);
     return this.baseDefault(
       arg,
       this.context.interaction.channel as GuildChannel,
-      this.context.dbChannel!
+      this.context.dbChannel
     );
   }
 }
@@ -87,7 +92,8 @@ export default class DefaultContext extends BaseContext {
     this.localizer = this.createLocalizer();
     this.dbUser = await this.USERS.create(this.interaction.user);
     if (this.interaction.inGuild()) {
-      this.dbGuild = await this.GUILDS.create(this.interaction.guild!);
+      assertDefined(this.interaction.guild);
+      this.dbGuild = await this.GUILDS.create(this.interaction.guild);
       this.dbChannel = await this.CHANNELS.create(
         this.interaction.channel as GuildChannel
       );

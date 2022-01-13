@@ -1,4 +1,4 @@
-import DefaultContext from '../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../../containers/CommandOptions';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';

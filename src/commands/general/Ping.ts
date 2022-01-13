@@ -1,5 +1,5 @@
-import { CommandInteraction } from 'discord.js';
-import DefaultContext from '../../client/contexts/DefaultContext';
+import type { CommandInteraction } from 'discord.js';
+import type DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
 import UserType from '../../modules/framework/enums/UserType';
@@ -35,7 +35,7 @@ class PingContainerType extends PingContainer<
   }
 }
 
-export default class Ping extends FurudeCommand {
+export default class Ping extends FurudeCommand<DefaultContext> {
   private readonly pingContainer: PingContainerType = new PingContainerType();
 
   public constructor() {

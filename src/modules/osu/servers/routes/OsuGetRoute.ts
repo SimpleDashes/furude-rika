@@ -1,9 +1,9 @@
-import IGetter from '../../../connection/apis/http/IGetter';
-import APIRoute from '../../../connection/apis/routes/APIRoute';
+import type IGetter from '../../../connection/apis/http/IGetter';
+import type APIRoute from '../../../connection/apis/routes/APIRoute';
 import APISubRoute from '../../../connection/apis/routes/APISubRoute';
-import IBanchoOsuParam from '../implementations/bancho/params/IBanchoOsuParam';
+import type IBanchoOsuParam from '../implementations/bancho/params/IBanchoOsuParam';
 import axios from 'axios';
-import TBanchoApiRawResponse from '../implementations/bancho/interfaces/TBanchoApiRawResponse';
+import type TBanchoApiRawResponse from '../implementations/bancho/interfaces/TBanchoApiRawResponse';
 
 export default abstract class OsuGetRoute<T, B, P>
   extends APISubRoute<APIRoute<IBanchoOsuParam>>

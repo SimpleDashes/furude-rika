@@ -1,7 +1,7 @@
 import { Collection } from 'discord.js';
 
 import { Parser } from 'expr-eval';
-import DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import CollectionHelper from '../../modules/framework/helpers/CollectionHelper';
 import StringUtils from '../../modules/framework/helpers/StringUtils';
@@ -12,7 +12,7 @@ import InteractionUtils from '../../modules/framework/interactions/InteractionUt
 import { assertDefinedGet } from '../../modules/framework/types/TypeAssertions';
 import Strings from '../../containers/Strings';
 
-export default class Calc extends FurudeCommand {
+export default class Calc extends FurudeCommand<DefaultContext> {
   private readonly expressionOption = this.registerOption(
     new StringOption()
       .setRequired(true)

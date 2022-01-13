@@ -1,7 +1,8 @@
 import { assertInstanceOf } from '../modules/framework/types/TypeAssertions';
 import BanchoServer from '../modules/osu/servers/implementations/bancho/BanchoServer';
 import DroidServer from '../modules/osu/servers/implementations/droid/DroidServer';
-import OsuServers, { AnyServer } from '../modules/osu/servers/OsuServers';
+import type { AnyServer } from '../modules/osu/servers/OsuServers';
+import OsuServers from '../modules/osu/servers/OsuServers';
 
 export type OsuServerSwitcher<S extends AnyServer, T> = { (server: S): T };
 

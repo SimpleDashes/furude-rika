@@ -1,4 +1,4 @@
-import { Guild, Snowflake } from 'discord.js';
+import type { Guild, Snowflake } from 'discord.js';
 
 export default class GuildHyperHelper {
   public static getLocalDecorationKey(key: Guild): Snowflake {

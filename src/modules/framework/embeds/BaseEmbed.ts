@@ -1,8 +1,9 @@
-import {
+import type {
   Interaction,
-  MessageEmbed,
   MessageEmbedOptions,
-  User,
+  User} from 'discord.js';
+import {
+  MessageEmbed
 } from 'discord.js';
 import UserType from '../enums/UserType';
 import { assertDefined } from '../types/TypeAssertions';

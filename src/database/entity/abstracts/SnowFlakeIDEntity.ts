@@ -1,8 +1,9 @@
 import { Snowflake } from 'discord.js';
-import { Column, Entity, SaveOptions } from 'typeorm';
-import BindableValue from '../../../modules/bindables/BindableValue';
-import IHasJustCreatedIdentifier from '../../interfaces/IHasJustCreatedIdentifier';
-import IOnSaveListener from '../../interfaces/IOnSaveListener';
+import type { SaveOptions } from 'typeorm';
+import { Column, Entity } from 'typeorm';
+import type BindableValue from '../../../modules/bindables/BindableValue';
+import type IHasJustCreatedIdentifier from '../../interfaces/IHasJustCreatedIdentifier';
+import type IOnSaveListener from '../../interfaces/IOnSaveListener';
 import GeneratedIDEntity from './GeneratedIDEntity';
 
 @Entity()

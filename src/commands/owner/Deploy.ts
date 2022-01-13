@@ -1,4 +1,4 @@
-import DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../client/contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import BooleanOption from '../../modules/framework/options/classes/BooleanOption';
@@ -12,8 +12,8 @@ import {
   SetPreconditions,
 } from '../../modules/framework/commands/decorators/PreconditionDecorators';
 
-@SetPreconditions(Preconditions.OwnerOnly)
-export default class Deploy extends FurudeCommand {
+@SetPreconditions<DefaultContext>(Preconditions.OwnerOnly)
+export default class Deploy extends FurudeCommand<DefaultContext> {
   private readonly commandName = this.registerOption(
     new StringOption()
       .setRequired(true)

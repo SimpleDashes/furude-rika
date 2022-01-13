@@ -1,6 +1,6 @@
-import IAPIOsuBeatmap from '../servers/beatmaps/IAPIOsuBeatmap';
-import { AnyServer } from '../servers/OsuServers';
-import IOsuScoreCounts from './interfaces/IOsuScoreCounts';
+import type IAPIOsuBeatmap from '../servers/beatmaps/IAPIOsuBeatmap';
+import type { AnyServer } from '../servers/OsuServers';
+import type IOsuScoreCounts from './interfaces/IOsuScoreCounts';
 
 export default interface IOsuScore {
   beatmapID: number;
@@ -14,5 +14,5 @@ export default interface IOsuScore {
   server: AnyServer;
   apiBeatmap?: IAPIOsuBeatmap;
 
-  fetchBeatmap(): Promise<IAPIOsuBeatmap | undefined>;
+  fetchBeatmap: () => Promise<IAPIOsuBeatmap | undefined>;
 }

@@ -1,6 +1,6 @@
-import DefaultContext from '../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
-import DBUser from '../../../database/entity/DBUser';
+import type DBUser from '../../../database/entity/DBUser';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
 import ArrayHelper from '../../../modules/framework/helpers/ArrayHelper';

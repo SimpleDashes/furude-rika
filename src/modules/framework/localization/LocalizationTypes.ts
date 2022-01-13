@@ -1,3 +1,3 @@
 type StringWithVariableGetter = Record<string, string>[] | string[];
 
-export { StringWithVariableGetter };
+export type { StringWithVariableGetter };

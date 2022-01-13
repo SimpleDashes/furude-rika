@@ -1,6 +1,6 @@
-import ILocalizerResource from '../modules/framework/localization/ILocalizerResource';
-import IFurudeResource from './IFurudeResource';
-import SupportedFurudeLocales from './SupportedFurudeLocales';
+import type ILocalizerResource from '../modules/framework/localization/ILocalizerResource';
+import type IFurudeResource from './IFurudeResource';
+import type SupportedFurudeLocales from './SupportedFurudeLocales';
 
 export default class FurudeResource
   implements ILocalizerResource<IFurudeResource>

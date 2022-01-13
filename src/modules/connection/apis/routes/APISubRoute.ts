@@ -1,6 +1,6 @@
 import SubRoute from '../../routes/SubRoute';
 import RequestBuilder from '../http/RequestBuilder';
-import APIRoute from './APIRoute';
+import type APIRoute from './APIRoute';
 
 export default class APISubRoute<T extends APIRoute<T>> extends SubRoute {
   private base: T;

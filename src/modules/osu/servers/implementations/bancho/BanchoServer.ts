@@ -1,20 +1,20 @@
-import APIRoute from '../../../../connection/apis/routes/APIRoute';
+import type APIRoute from '../../../../connection/apis/routes/APIRoute';
 import Domains from '../../../../connection/Domains';
-import BanchoUser from './objects/BanchoUser';
-import IBanchoAPIUserResponse from './interfaces/users/IBanchoAPIUserResponse';
+import type BanchoUser from './objects/BanchoUser';
+import type IBanchoAPIUserResponse from './interfaces/users/IBanchoAPIUserResponse';
 import OsuServer from '../../OsuServer';
 import BanchoUsersAPI from './BanchoUsersAPI';
-import IBanchoOsuParam from './params/IBanchoOsuParam';
-import IBanchoOsuUserParams from './params/IBanchoOsuUserParams';
-import IBanchoAPIUserRecentScore from './interfaces/scores/IBanchoAPIUserRecentScore';
-import IBanchoOsuUserRecentParams from './params/IBanchoOsuUserRecentParams';
-import OsuUserRecentRoute from '../../routes/OsuUserRecentRoute';
+import type IBanchoOsuParam from './params/IBanchoOsuParam';
+import type IBanchoOsuUserParams from './params/IBanchoOsuUserParams';
+import type IBanchoAPIUserRecentScore from './interfaces/scores/IBanchoAPIUserRecentScore';
+import type IBanchoOsuUserRecentParams from './params/IBanchoOsuUserRecentParams';
+import type OsuUserRecentRoute from '../../routes/OsuUserRecentRoute';
 import BanchoUserRecentsAPI from './BanchoUserRecentsAPI';
-import BanchoScore from './objects/BanchoScore';
-import IAPIOsuBeatmap from '../../beatmaps/IAPIOsuBeatmap';
-import IBanchoAPIBeatmapResponse from './interfaces/beatmaps/IBanchoAPIBeatmapResponse';
-import IBanchoBeatmapParam from './params/IBanchoOsuBeatmapParam';
-import OsuBeatmapsRoute from '../../routes/OsuBeatmapsRoute';
+import type BanchoScore from './objects/BanchoScore';
+import type IAPIOsuBeatmap from '../../beatmaps/IAPIOsuBeatmap';
+import type IBanchoAPIBeatmapResponse from './interfaces/beatmaps/IBanchoAPIBeatmapResponse';
+import type IBanchoBeatmapParam from './params/IBanchoOsuBeatmapParam';
+import type OsuBeatmapsRoute from '../../routes/OsuBeatmapsRoute';
 import BanchoBeatmapsAPI from './BanchoBeatmapsAPI';
 
 export default class BanchoServer extends OsuServer<

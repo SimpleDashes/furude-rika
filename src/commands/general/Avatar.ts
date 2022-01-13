@@ -1,4 +1,4 @@
-import DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../client/contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
@@ -10,7 +10,7 @@ import {
   assertDefinedGet,
 } from '../../modules/framework/types/TypeAssertions';
 
-export default class Avatar extends FurudeCommand {
+export default class Avatar extends FurudeCommand<DefaultContext> {
   private readonly userOption: UserOption = this.registerOption(
     new UserOption(true)
       .setName(CommandOptions.user)

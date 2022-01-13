@@ -1,4 +1,4 @@
-import { BaseEntity } from 'typeorm';
+import type { BaseEntity } from 'typeorm';
 
 /**
  * Extensions are used to store multiple objects or functions

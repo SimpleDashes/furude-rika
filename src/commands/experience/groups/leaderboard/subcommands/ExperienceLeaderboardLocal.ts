@@ -1,6 +1,6 @@
-import DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../../client/contexts/DefaultContext';
 import GenericNames from '../../../../../containers/GenericNames';
-import DBUser from '../../../../../database/entity/DBUser';
+import type DBUser from '../../../../../database/entity/DBUser';
 import {
   Preconditions,
   SetPreconditions,
@@ -8,7 +8,7 @@ import {
 import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 
-@SetPreconditions(Preconditions.GuildOnly)
+@SetPreconditions<DefaultContext>(Preconditions.GuildOnly)
 export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSubCommand {
   public constructor() {
     super({

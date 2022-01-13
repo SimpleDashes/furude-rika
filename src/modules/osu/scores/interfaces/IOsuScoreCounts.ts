@@ -1,4 +1,4 @@
-import IOsuCount from '../../interfaces/IOsuCount';
+import type IOsuCount from '../../interfaces/IOsuCount';
 
 export default interface IOsuScoreCounts extends IOsuCount {
   misses: number;

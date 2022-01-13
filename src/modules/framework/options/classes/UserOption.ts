@@ -1,7 +1,7 @@
 import { SlashCommandUserOption } from '@discordjs/builders';
-import { CommandInteraction, User } from 'discord.js';
+import type { CommandInteraction, User } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
-import IDiscordOption from '../interfaces/IDiscordOption';
+import type IDiscordOption from '../interfaces/IDiscordOption';
 
 export default class UserOption
   extends SlashCommandUserOption

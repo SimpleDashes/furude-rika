@@ -1,5 +1,6 @@
-import { APIButtonComponent } from 'discord-api-types';
-import { MessageButton, MessageButtonOptions } from 'discord.js';
+import type { APIButtonComponent } from 'discord-api-types';
+import type { MessageButtonOptions } from 'discord.js';
+import { MessageButton } from 'discord.js';
 
 export default class MessageButtonFactory {
   private static currentID = 0;

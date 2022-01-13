@@ -1,5 +1,5 @@
-import IBanchoAPIUserResponse from '../bancho/interfaces/users/IBanchoAPIUserResponse';
-import IDroidOsuUserParam from './params/IDroidOsuUserParam';
+import type IBanchoAPIUserResponse from '../bancho/interfaces/users/IBanchoAPIUserResponse';
+import type IDroidOsuUserParam from './params/IDroidOsuUserParam';
 import DroidUser from './objects/DroidUser';
 import cheerio from 'cheerio';
 import OsuUserRoute from '../../routes/OsuUserRoute';

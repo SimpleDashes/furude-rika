@@ -1,15 +1,16 @@
-import {
+import type {
   MessageComponentInteraction,
   CacheType,
   CommandInteraction,
   MessageButton,
 } from 'discord.js';
+import type {
+  IListenerButton} from '../../../modules/framework/creators/MessageButtonCreator';
 import {
-  IListenerButton,
   MessageButtonCreator,
 } from '../../../modules/framework/creators/MessageButtonCreator';
 import MessageButtonFactory from '../../../modules/framework/creators/MessageButtonFactory';
-import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
+import type BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 
 type ButtonCustomizer = (button: MessageButton) => void;

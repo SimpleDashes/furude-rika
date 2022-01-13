@@ -1,11 +1,11 @@
-import IBanchoAPIUserResponse from '../../bancho/interfaces/users/IBanchoAPIUserResponse';
-import TBanchoApiRawResponse from '../../bancho/interfaces/TBanchoApiRawResponse';
+import type IBanchoAPIUserResponse from '../../bancho/interfaces/users/IBanchoAPIUserResponse';
+import type TBanchoApiRawResponse from '../../bancho/interfaces/TBanchoApiRawResponse';
 import OsuServers from '../../../OsuServers';
-import IOsuScore from '../../../../scores/IOsuScore';
-import IDroidOsuUserRecentsParams from '../params/IDroidOsuUserRecentsParams';
+import type IOsuScore from '../../../../scores/IOsuScore';
+import type IDroidOsuUserRecentsParams from '../params/IDroidOsuUserRecentsParams';
 import BaseOsuUser from '../../../../users/BaseOsuUser';
 import RequestBuilder from '../../../../../connection/apis/http/RequestBuilder';
-import IDroidOsuUserParam from '../params/IDroidOsuUserParam';
+import type IDroidOsuUserParam from '../params/IDroidOsuUserParam';
 
 interface IDroidUserExtension {
   html?: string;

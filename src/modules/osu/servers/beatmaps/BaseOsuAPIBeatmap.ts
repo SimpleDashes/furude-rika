@@ -1,12 +1,12 @@
 import OsuModes from '../../enums/OsuModes';
-import IBanchoAPIBeatmapResponse from '../implementations/bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
+import type IBanchoAPIBeatmapResponse from '../implementations/bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
 import BeatmapApprovalState from './enums/BeatmapApprovalState';
 import BeatmapGenres from './enums/BeatmapGenres';
 import BeatmapLanguages from './enums/BeatmapLanguages';
-import IAPIOsuBeatmap from './IAPIOsuBeatmap';
-import IBeatmapDifficulty from './interfaces/IBeatmapDifficulty';
-import ICreatorInformation from './interfaces/ICreatorInformation';
-import IOsuPerformanceDifficulty from './interfaces/IOsuPerformanceDifficulty';
+import type IAPIOsuBeatmap from './IAPIOsuBeatmap';
+import type IBeatmapDifficulty from './interfaces/IBeatmapDifficulty';
+import type ICreatorInformation from './interfaces/ICreatorInformation';
+import type IOsuPerformanceDifficulty from './interfaces/IOsuPerformanceDifficulty';
 
 export default class BaseOsuAPIBeatmap implements IAPIOsuBeatmap {
   public readonly approved: BeatmapApprovalState;

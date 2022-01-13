@@ -1,6 +1,6 @@
-import DirectoryMapper from '../io/DirectoryMapper';
+import type DirectoryMapper from '../io/DirectoryMapper';
 
 export default interface IBot {
   readonly commandMappers: DirectoryMapper[];
-  start(): Promise<void>;
+  start: () => Promise<void>;
 }

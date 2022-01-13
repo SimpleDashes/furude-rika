@@ -1,9 +1,9 @@
-import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
+import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import FurudeOperations from '../../../database/FurudeOperations';
-import IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
-import { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
-import ICommandInformation from '../../../modules/framework/commands/interfaces/ICommandInformation';
-import IHasPreconditions from '../../../modules/framework/commands/preconditions/interfaces/IHasPreconditions';
+import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
+import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
+import type ICommandInformation from '../../../modules/framework/commands/interfaces/ICommandInformation';
+import type IHasPreconditions from '../../../modules/framework/commands/preconditions/interfaces/IHasPreconditions';
 import EconomySubCommand, { MustHaveOpenAccount } from './EconomySubCommand';
 
 export default abstract class DailySubCommand extends EconomySubCommand {

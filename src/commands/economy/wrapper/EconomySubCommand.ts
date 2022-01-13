@@ -4,7 +4,7 @@ import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import CommandPrecondition from '../../../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
 import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
-import ICommandContext from '../../../modules/framework/commands/interfaces/ICommandContext';
+import type { OmittedCommandContext } from '../../../modules/framework/commands/interfaces/ICommandContext';
 
 class MustHaveOpenAccountPrecondition extends CommandPrecondition<CurrencyContext> {
   public constructor() {
@@ -39,7 +39,9 @@ export default abstract class EconomySubCommand extends FurudeSubCommand<Currenc
     return localizer.get(key, [CurrencyContainer.CURRENCY_NAME]);
   }
 
-  public override createContext(baseContext: ICommandContext): CurrencyContext {
+  public override createContext(
+    baseContext: OmittedCommandContext
+  ): CurrencyContext {
     return new CurrencyContext(baseContext);
   }
 }

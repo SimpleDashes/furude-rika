@@ -6,7 +6,7 @@ import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
-import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
+import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import { assertDefinedGet } from '../../../modules/framework/types/TypeAssertions';
 
 export default class EconomyOpen extends EconomySubCommand {

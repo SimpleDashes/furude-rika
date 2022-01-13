@@ -1,7 +1,8 @@
 import { SlashCommandRoleOption } from '@discordjs/builders';
-import { CommandInteraction, Role } from 'discord.js';
+import type { CommandInteraction} from 'discord.js';
+import { Role } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
-import IDiscordOption from '../interfaces/IDiscordOption';
+import type IDiscordOption from '../interfaces/IDiscordOption';
 
 export default class RoleOption
   extends SlashCommandRoleOption

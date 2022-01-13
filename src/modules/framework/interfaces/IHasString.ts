@@ -1,3 +1,3 @@
 export default interface IHasString {
-  toString(): string;
+  toString: () => string;
 }

@@ -1,16 +1,17 @@
-import {
+import type {
   ApplicationCommandDataResolvable,
   CacheType,
   CommandInteraction,
   Guild,
 } from 'discord.js';
 import consola from 'consola';
-import BaseBot from '../client/BaseBot';
-import { RequestData, REST } from '@discordjs/rest';
+import type BaseBot from '../client/BaseBot';
+import type { RequestData } from '@discordjs/rest';
+import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { assertDefined } from '../types/TypeAssertions';
-import IWithTaskCompletionListener from '../interfaces/IWithTaskCompletionListener';
-import ICommandContext from '../commands/interfaces/ICommandContext';
+import type IWithTaskCompletionListener from '../interfaces/IWithTaskCompletionListener';
+import type ICommandContext from '../commands/interfaces/ICommandContext';
 
 type resFunctions = Partial<IWithTaskCompletionListener> & {
   onCommandNotFound?: () => void;
@@ -21,8 +22,8 @@ const rest = new REST({ version: '9' });
 let putToken = false;
 
 export default class DeployHandler {
-  public static async deployCommand(options: {
-    client: BaseBot<ICommandContext>;
+  public static async deployCommand<CTX extends ICommandContext>(options: {
+    client: BaseBot<CTX>;
     commandName: string;
     isDebug: boolean;
     interaction?: CommandInteraction<CacheType>;
@@ -63,8 +64,8 @@ export default class DeployHandler {
     if (onSuccess) onSuccess();
   }
 
-  public static async deployAll(
-    client: BaseBot<ICommandContext>,
+  public static async deployAll<CTX extends ICommandContext>(
+    client: BaseBot<CTX>,
     isDebug: boolean,
     resFunctions?: IWithTaskCompletionListener
   ): Promise<void> {

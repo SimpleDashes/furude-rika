@@ -1,7 +1,7 @@
-import IAPIOsuBeatmap from '../../../beatmaps/IAPIOsuBeatmap';
+import type IAPIOsuBeatmap from '../../../beatmaps/IAPIOsuBeatmap';
 
 import OsuServers from '../../../OsuServers';
-import IBaseBanchoAPIScore from '../../bancho/interfaces/scores/IBaseBanchoAPIScore';
+import type IBaseBanchoAPIScore from '../../bancho/interfaces/scores/IBaseBanchoAPIScore';
 import BanchoScore from '../../bancho/objects/BanchoScore';
 
 interface IDroidScoreExtension {

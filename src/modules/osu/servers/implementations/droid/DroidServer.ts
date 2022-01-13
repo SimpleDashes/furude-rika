@@ -1,18 +1,18 @@
-import APIRoute from '../../../../connection/apis/routes/APIRoute';
+import type APIRoute from '../../../../connection/apis/routes/APIRoute';
 import Domains from '../../../../connection/Domains';
-import IBanchoAPIUserResponse from '../bancho/interfaces/users/IBanchoAPIUserResponse';
+import type IBanchoAPIUserResponse from '../bancho/interfaces/users/IBanchoAPIUserResponse';
 import OsuServer from '../../OsuServer';
-import IDroidOsuParam from './params/IDroidOsuParam';
-import IDroidOsuUserParam from './params/IDroidOsuUserParam';
+import type IDroidOsuParam from './params/IDroidOsuParam';
+import type IDroidOsuUserParam from './params/IDroidOsuUserParam';
 import DroidUsersAPI from './DroidUsersAPI';
 import OsuModes from '../../../enums/OsuModes';
 import Protocol from '../../../../connection/Protocol';
-import DroidScore from './objects/DroidScore';
-import IBanchoAPIUserRecentScore from '../bancho/interfaces/scores/IBanchoAPIUserRecentScore';
-import DroidUser from './objects/DroidUser';
+import type DroidScore from './objects/DroidScore';
+import type IBanchoAPIUserRecentScore from '../bancho/interfaces/scores/IBanchoAPIUserRecentScore';
+import type DroidUser from './objects/DroidUser';
 import DroidUserRecentsAPI from './DroidUserRecentsAPI';
-import IDroidOsuUserRecentsParam from './params/IDroidOsuUserRecentsParams';
-import OsuBeatmapsRoute from '../../routes/OsuBeatmapsRoute';
+import type IDroidOsuUserRecentsParam from './params/IDroidOsuUserRecentsParams';
+import type OsuBeatmapsRoute from '../../routes/OsuBeatmapsRoute';
 
 export default class DroidServer extends OsuServer<
   IDroidOsuParam,

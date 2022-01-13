@@ -1,4 +1,4 @@
-import { MessageOptions } from 'discord.js';
+import type { MessageOptions } from 'discord.js';
 
 /**
  * Represents a function to be called when page change occurs

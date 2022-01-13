@@ -11,7 +11,7 @@ class ValueChangeEvent<T> {
 }
 
 interface IValueChangeListener<T> {
-  onValueChange(event: ValueChangeEvent<T>): void;
+  onValueChange: (event: ValueChangeEvent<T>) => void;
 }
 
 export default class BindableValue<T> implements IValueChangeListener<T> {

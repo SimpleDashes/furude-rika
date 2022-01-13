@@ -1,5 +1,6 @@
-import i18next, { Resource } from 'i18next';
-import ILocalizerResource from './ILocalizerResource';
+import type { Resource } from 'i18next';
+import i18next from 'i18next';
+import type ILocalizerResource from './ILocalizerResource';
 
 export default class Localizer<I> {
   public readonly defaultLocale: string;

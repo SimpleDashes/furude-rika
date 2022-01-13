@@ -1,7 +1,7 @@
-import IBanchoOsuParam from './IBanchoOsuParam';
-import IBanchoOsuUserRecentsLimit from './IBanchoOsuUserRecentsLimit';
-import IBanchoOsuWithModesParam from './IBanchoOsuWithModesParam';
-import IBanchoOsuWithUserParam from './IBanchoOsuWithUserParam';
+import type IBanchoOsuParam from './IBanchoOsuParam';
+import type IBanchoOsuUserRecentsLimit from './IBanchoOsuUserRecentsLimit';
+import type IBanchoOsuWithModesParam from './IBanchoOsuWithModesParam';
+import type IBanchoOsuWithUserParam from './IBanchoOsuWithUserParam';
 
 export default interface IBanchoOsuUserRecentParams
   extends IBanchoOsuWithUserParam,

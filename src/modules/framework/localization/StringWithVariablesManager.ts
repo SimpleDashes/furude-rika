@@ -1,5 +1,5 @@
-import IStringWithVariable from './IStringWithVariable';
-import IVariableManagerGetter from './IVariableManagerGetter';
+import type IStringWithVariable from './IStringWithVariable';
+import type IVariableManagerGetter from './IVariableManagerGetter';
 
 const variablePrefix = '[$';
 const variableEnd = ']';

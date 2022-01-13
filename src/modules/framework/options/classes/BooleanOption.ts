@@ -1,7 +1,7 @@
 import { SlashCommandBooleanOption } from '@discordjs/builders';
-import { CommandInteraction } from 'discord.js';
+import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
-import IDiscordOption from '../interfaces/IDiscordOption';
+import type IDiscordOption from '../interfaces/IDiscordOption';
 
 export default class BooleanOption
   extends SlashCommandBooleanOption

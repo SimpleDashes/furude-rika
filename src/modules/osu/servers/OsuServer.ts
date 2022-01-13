@@ -1,20 +1,20 @@
 import APIRoute from '../../connection/apis/routes/APIRoute';
 import ContentHost from '../../connection/ContentHost';
-import Protocol from '../../connection/Protocol';
+import type Protocol from '../../connection/Protocol';
 import OsuModes from '../enums/OsuModes';
-import IOsuScore from '../scores/IOsuScore';
-import IOsuUser from '../users/IOsuUser';
-import IBanchoAPIUserResponse from './implementations/bancho/interfaces/users/IBanchoAPIUserResponse';
-import IBanchoAPIUserRecentScore from './implementations/bancho/interfaces/scores/IBanchoAPIUserRecentScore';
-import OsuUserRecentRoute from './routes/OsuUserRecentRoute';
-import OsuUserRoute from './routes/OsuUserRoute';
-import IAPIOsuBeatmap from './beatmaps/IAPIOsuBeatmap';
-import OsuBeatmapsRoute from './routes/OsuBeatmapsRoute';
-import IBanchoAPIBeatmapResponse from './implementations/bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
+import type IOsuScore from '../scores/IOsuScore';
+import type IOsuUser from '../users/IOsuUser';
+import type IBanchoAPIUserResponse from './implementations/bancho/interfaces/users/IBanchoAPIUserResponse';
+import type IBanchoAPIUserRecentScore from './implementations/bancho/interfaces/scores/IBanchoAPIUserRecentScore';
+import type OsuUserRecentRoute from './routes/OsuUserRecentRoute';
+import type OsuUserRoute from './routes/OsuUserRoute';
+import type IAPIOsuBeatmap from './beatmaps/IAPIOsuBeatmap';
+import type OsuBeatmapsRoute from './routes/OsuBeatmapsRoute';
+import type IBanchoAPIBeatmapResponse from './implementations/bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
 
 export default abstract class OsuServer<
   BASE_PARAMS,
-  U extends IOsuUser<unknown>,
+  U extends IOsuUser<S_P>,
   U_B extends IBanchoAPIUserResponse,
   U_P extends BASE_PARAMS,
   S extends IOsuScore,

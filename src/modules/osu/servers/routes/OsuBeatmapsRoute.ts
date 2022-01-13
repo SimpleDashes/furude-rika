@@ -1,5 +1,5 @@
-import IAPIOsuBeatmap from '../beatmaps/IAPIOsuBeatmap';
-import IBanchoAPIBeatmapResponse from '../implementations/bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
+import type IAPIOsuBeatmap from '../beatmaps/IAPIOsuBeatmap';
+import type IBanchoAPIBeatmapResponse from '../implementations/bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
 import OsuGetRoute from './OsuGetRoute';
 
 export default abstract class OsuBeatmapsRoute<

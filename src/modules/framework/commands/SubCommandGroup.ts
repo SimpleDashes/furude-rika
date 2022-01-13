@@ -1,26 +1,13 @@
 import { SlashCommandSubcommandGroupBuilder } from '@discordjs/builders';
 import CommandHelper from './CommandHelper';
-import ICommand from './interfaces/ICommand';
-import ICommandContext from './interfaces/ICommandContext';
-import ICommandInformation from './interfaces/ICommandInformation';
+import type ICommandInformation from './interfaces/ICommandInformation';
 
-export default abstract class SubCommandGroup<CTX extends ICommandContext>
-  extends SlashCommandSubcommandGroupBuilder
-  implements ICommand<CTX>
-{
+export default abstract class SubCommandGroup extends SlashCommandSubcommandGroupBuilder {
   public readonly information: ICommandInformation;
 
   public constructor(information: ICommandInformation) {
     super();
     this.information = information;
     CommandHelper.setInformation(this, this.information);
-  }
-
-  public abstract trigger(context: CTX): Promise<void>;
-
-  public abstract createContext(baseContext: ICommandContext): CTX;
-
-  public registerOption<C>(option: C): C {
-    return CommandHelper.registerOption(this, option);
   }
 }

@@ -1,15 +1,15 @@
-import { APIMessage } from 'discord-api-types';
-import {
+import type { APIMessage } from 'discord-api-types';
+import type {
   CommandInteraction,
   InteractionReplyOptions,
   Message,
   MessagePayload,
   WebhookEditMessageOptions,
 } from 'discord.js';
-import { BaseEntity } from 'typeorm';
+import type { BaseEntity } from 'typeorm';
 import MessageCreator from '../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../modules/framework/interactions/InteractionUtils';
-import IDatabaseOperation from './interfaces/IDatabaseOperation';
+import type IDatabaseOperation from './interfaces/IDatabaseOperation';
 
 export default class FurudeOperations {
   public static any(

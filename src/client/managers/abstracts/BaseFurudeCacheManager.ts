@@ -1,5 +1,5 @@
 import { LimitedCapacityCollection } from '../../../modules/framework/collections/LimitedCapacityCollection';
-import FurudeRika from '../../FurudeRika';
+import type FurudeRika from '../../FurudeRika';
 import BaseFurudeManager from './BaseFurudeManager';
 import consola from 'consola';
 

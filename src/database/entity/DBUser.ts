@@ -1,19 +1,19 @@
 import { intervalToDuration } from 'date-fns';
-import { Guild, GuildChannel, User } from 'discord.js';
+import type { Guild, GuildChannel, User } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import Globals from '../../containers/Globals';
 import Strings from '../../containers/Strings';
-import FurudeLocales from '../../localization/FurudeLocales';
+import type FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import type SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
 import { assertDefinedGet } from '../../modules/framework/types/TypeAssertions';
 import FurudeOperations from '../FurudeOperations';
-import IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
+import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
+import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
 import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDate';
 import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
-import DBGuild from './DBGuild';
+import type DBGuild from './DBGuild';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 
 export type IncrementLocalUserExperienceInfo = {

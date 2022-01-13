@@ -1,6 +1,6 @@
 import UrlBuilder from '../apis/http/UrlBuilder';
-import ContentHost from '../ContentHost';
-import IRoute from './IRoute';
+import type ContentHost from '../ContentHost';
+import type IRoute from './IRoute';
 
 export default class Route implements IRoute {
   private readonly host: ContentHost;

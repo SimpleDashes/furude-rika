@@ -1,5 +1,5 @@
 interface IOnSaveListener {
-  beforeSaving(): void;
+  beforeSaving: () => void;
 }
 
 export default IOnSaveListener;

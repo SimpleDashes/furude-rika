@@ -1,5 +1,5 @@
-import { User } from 'discord.js';
-import DBCitizen from '../../../database/entity/DBCitizen';
+import type { User } from 'discord.js';
+import type DBCitizen from '../../../database/entity/DBCitizen';
 import DefaultContext, { UserBasedContextCreator } from '../DefaultContext';
 
 class CitizenCreator extends UserBasedContextCreator<

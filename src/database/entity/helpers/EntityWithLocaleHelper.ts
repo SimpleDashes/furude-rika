@@ -1,9 +1,9 @@
-import FurudeLocales from '../../../localization/FurudeLocales';
-import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
-import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
+import type FurudeLocales from '../../../localization/FurudeLocales';
+import type FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
+import type SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
 import FurudeOperations from '../../FurudeOperations';
-import IDatabaseOperation from '../../interfaces/IDatabaseOperation';
-import IHasPreferredLocale from '../../interfaces/IHasPreferredLocale';
+import type IDatabaseOperation from '../../interfaces/IDatabaseOperation';
+import type IHasPreferredLocale from '../../interfaces/IHasPreferredLocale';
 
 export default class EntityWithLocaleHelper {
   public static setPreferredLocale<T extends IHasPreferredLocale>(

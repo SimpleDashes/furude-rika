@@ -1,6 +1,6 @@
-import DefaultContext from '../../../client/contexts/DefaultContext';
-import SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
-import IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
+import type DefaultContext from '../../../client/contexts/DefaultContext';
+import type SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
+import type IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
 import CustomizesLocaleSubCommand from '../wrapper/CustomizesLocaleSubCommand';
 
 export default class CustomizeUserLocale extends CustomizesLocaleSubCommand {

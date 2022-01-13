@@ -1,9 +1,9 @@
 import { Column, Entity } from 'typeorm';
-import FurudeLocales from '../../localization/FurudeLocales';
+import type FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
-import IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
+import type SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
+import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 
