@@ -13,9 +13,9 @@ export default class DBChannel
   implements IHasPreferredLocale
 {
   @Column()
-  preferred_locale?: SupportedFurudeLocales | undefined;
+  public preferred_locale?: SupportedFurudeLocales | undefined;
 
-  setPreferredLocale(
+  public setPreferredLocale(
     localizer: FurudeLocales,
     locale: SupportedFurudeLocales | null | undefined
   ): IDatabaseOperation {

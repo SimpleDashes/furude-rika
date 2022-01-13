@@ -44,18 +44,18 @@ export default class DBGuild
   public static MAX_XP_CHANGE_VALUE = 100;
 
   @Column()
-  preferred_locale?: SupportedFurudeLocales | undefined;
+  public preferred_locale?: SupportedFurudeLocales | undefined;
 
   @Column('number')
-  min_rewarded_xp_value?: number;
+  public min_rewarded_xp_value?: number;
 
   @Column('number')
-  max_rewarded_xp_value?: number;
+  public max_rewarded_xp_value?: number;
 
   @Column('number')
-  time_for_xp?: number;
+  public time_for_xp?: number;
 
-  setPreferredLocale(
+  public setPreferredLocale(
     localizer: FurudeLocales,
     locale: SupportedFurudeLocales | null | undefined
   ): IDatabaseOperation {
@@ -73,17 +73,14 @@ export default class DBGuild
    * are blocked from being rewarded experience on
    */
   @Column('array')
-  blocked_xp_channels: Snowflake[] = [];
+  public blocked_xp_channels: Snowflake[] = [];
 
-  private extension? = new DBGuildExtension(this);
+  @Column()
+  // TODO CHECK IF THAT SAVES TO THE DB LIKE WHAT?
+  private extension = new DBGuildExtension(this);
 
   public constructor() {
     super();
-    this.registerSaveListener({
-      beforeSaving: () => {
-        this.extension = undefined;
-      },
-    });
   }
 
   /**
@@ -140,24 +137,25 @@ export default class DBGuild
     );
   }
 
-  public setMinXPValue(value: number) {
-    this.min_rewarded_xp_value = this.extension!.min_rewarded_xp.Current =
-      value;
+  public setMinXPValue(value: number): IDatabaseOperation {
+    this.min_rewarded_xp_value = this.extension.min_rewarded_xp.Current = value;
     return FurudeOperations.success(
       'Changed minimal rewarded xp successfully!'
     );
   }
 
-  public setMaxXPValue(value: number) {
-    this.max_rewarded_xp_value = this.extension!.max_rewarded_xp.Current =
-      value;
+  public setMaxXPValue(value: number): IDatabaseOperation {
+    this.max_rewarded_xp_value = this.extension.max_rewarded_xp.Current = value;
     return FurudeOperations.success(
       'Changed maximal rewarded xp successfully!'
     );
   }
 
-  public setTimeForXP(localizer: FurudeLocales, time: number) {
-    this.time_for_xp = this.extension!.time_for_xp.Current = time;
+  public setTimeForXP(
+    localizer: FurudeLocales,
+    time: number
+  ): IDatabaseOperation {
+    this.time_for_xp = this.extension.time_for_xp.Current = time;
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.DATABASE_GUILD_CHANGED_TIME_FOR_XP, [
         MessageCreator.block(time.toFixed()),

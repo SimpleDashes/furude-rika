@@ -10,9 +10,9 @@ export default abstract class DailySubCommand extends EconomySubCommand {
   public constructor(information: ICommandInformation) {
     super(information);
     if (
-      !(this as unknown as IHasPreconditions).preconditions.includes(
-        MustHaveOpenAccount
-      )
+      !(
+        this as unknown as IHasPreconditions<CurrencyContext>
+      ).preconditions.includes(MustHaveOpenAccount)
     ) {
       throw 'DailySubCommand implementations should include MustHaveOpenAccount precondition.';
     }

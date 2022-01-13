@@ -7,9 +7,9 @@ export default class IntegerOption
   extends SlashCommandIntegerOption
   implements IDiscordOption<number>
 {
-  apiType: ApplicationCommandOptionTypes =
+  public apiType: ApplicationCommandOptionTypes =
     ApplicationCommandOptionTypes.INTEGER;
-  apply(interaction: CommandInteraction): number | null {
+  public apply(interaction: CommandInteraction): number | null {
     return interaction.options.getInteger(this.name, this.required);
   }
 }

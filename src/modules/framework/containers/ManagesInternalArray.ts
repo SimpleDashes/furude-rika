@@ -1,7 +1,7 @@
 export default abstract class ManagesInternalArray<T> {
   protected internalArray: T[] = [];
 
-  public get InternalArray() {
+  public get InternalArray(): T[] {
     return this.internalArray;
   }
 
@@ -11,7 +11,7 @@ export default abstract class ManagesInternalArray<T> {
    * @param item Item to be pushed
    * @returns said item
    */
-  protected pushGet(item: T) {
+  protected pushGet(item: T): T {
     this.internalArray.push(item);
     return item;
   }

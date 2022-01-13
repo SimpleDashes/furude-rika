@@ -1,6 +1,5 @@
 import { CommandInteraction, User, MessageEmbedAuthor } from 'discord.js';
 import OsuContext from '../../../client/contexts/osu/OsuContext';
-import FurudeRika from '../../../client/FurudeRika';
 import CommandOptions from '../../../containers/CommandOptions';
 import Strings from '../../../containers/Strings';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
@@ -34,11 +33,11 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
       .addChoices(OsuServers.servers.map((s) => [s.name, s.name]));
   }
 
-  protected getOsuUserOption() {
+  protected getOsuUserOption(): StringOption {
     return new StringOption().setName(CommandOptions.username);
   }
 
-  protected registerDiscordUserOption(command: OsuSubCommand) {
+  protected registerDiscordUserOption(command: OsuSubCommand): UserOption {
     return command.registerOption(
       new UserOption(true).setName(CommandOptions.user)
     );
@@ -77,12 +76,12 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
     const server = this.applyToServerOption(options.server, interaction);
 
     user ??= interaction.user;
-    let username = options.user.apply(interaction);
+    const username = options.user.apply(interaction);
 
     return await this.getUserFromServer(server, context, username, user);
   }
 
-  protected async sendOsuUserNotFound(context: OsuContext) {
+  protected async sendOsuUserNotFound(context: OsuContext): Promise<void> {
     const { interaction, localizer } = context;
     await InteractionUtils.reply(
       interaction,
@@ -149,7 +148,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
   protected getParamsForOsuUserRecentRequest(
     user: IOsuUser<unknown>,
     limit?: number
-  ) {
+  ): IBanchoOsuUserRecentParams | IDroidOsuUserRecentsParam {
     let params: Partial<
       IBanchoOsuUserRecentParams | IDroidOsuUserRecentsParam
     > = {};
@@ -173,7 +172,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
         ),
       },
     };
-    return params;
+    return params as IBanchoOsuUserRecentParams | IDroidOsuUserRecentsParam;
   }
 
   protected getUserInfoAuthor(
@@ -195,9 +194,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
     return author;
   }
 
-  public override createContext(
-    baseContext: ICommandContext<FurudeRika>
-  ): OsuContext {
+  public override createContext(baseContext: ICommandContext): OsuContext {
     return new OsuContext(baseContext);
   }
 }

@@ -3,7 +3,7 @@ import consola from 'consola';
 import BaseFurudeScanner from './abstracts/BaseFurudeScanner';
 
 export default class UserScanner extends BaseFurudeScanner {
-  protected scanningWhat: string = 'USER';
+  protected scanningWhat = 'USER';
 
   protected async runScan(): Promise<void> {
     const users = await this.rika.db.USER.find();
@@ -19,6 +19,6 @@ export default class UserScanner extends BaseFurudeScanner {
         `Dumped data about the user: ${dbUser.username} with the id: ${dbUser.s_id}`
       );
     }
-    DBUser.save(users);
+    await DBUser.save(users);
   }
 }

@@ -1,8 +1,7 @@
 import i18next, { Resource } from 'i18next';
-import ILocalizerStructure from './ILocalizerStructure';
 import ILocalizerResource from './ILocalizerResource';
 
-export default class Localizer<I extends ILocalizerStructure> {
+export default class Localizer<I> {
   public readonly defaultLocale: string;
   public readonly locales: ILocalizerResource<I>[];
 
@@ -14,7 +13,7 @@ export default class Localizer<I extends ILocalizerStructure> {
     this.locales = options.locales;
   }
 
-  protected onReady() {
+  protected async onReady(): Promise<void> {
     const foundDefaultLocale = this.locales.find(
       (locale) => locale.locale === this.defaultLocale
     );
@@ -23,15 +22,15 @@ export default class Localizer<I extends ILocalizerStructure> {
       throw `locales should include the defaultLocale`;
     }
 
-    const resources: Record<string, ILocalizerStructure> = {};
+    const resources: Record<string, I> = {};
 
     this.locales.forEach((locale) => {
       resources[locale.locale] = locale.structure;
     });
 
-    i18next.init({
+    await i18next.init({
       lng: this.defaultLocale,
-      resources: resources as Resource,
+      resources: resources as unknown as Resource,
     });
   }
 }

@@ -28,7 +28,7 @@ export default abstract class ClassResolver<T> {
   protected async getObjectsForMapper(
     directoryMapper: DirectoryMapper,
     onImportedClass?: (object: T) => void,
-    args: any[] = []
+    args: never[] = []
   ): Promise<resolvedClass<T>[]> {
     const objects: resolvedClass<T>[] = [];
     const dir = directoryMapper.path;
@@ -42,7 +42,7 @@ export default abstract class ClassResolver<T> {
       const importPath = path.join(dir, file.name);
       const relativePath = path.relative(__dirname, importPath);
       const possibleClass = await import(relativePath);
-      const classClass: Constructor<[...any], T> =
+      const classClass: Constructor<[...never], T> =
         possibleClass.default ?? possibleClass;
       const classObject: unknown = new classClass(...args);
       if (this.isInstanceOfT(classObject)) {

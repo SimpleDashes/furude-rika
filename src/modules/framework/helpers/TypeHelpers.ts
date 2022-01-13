@@ -1,10 +1,7 @@
 export default class TypeHelpers {
-  private constructor() {}
-
   public static isCallback<T>(
-    maybeFunction: any | ((...args: any[]) => T),
-    _returnType?: T
-  ): maybeFunction is (...args: any[]) => T {
+    maybeFunction: unknown | ((...args: unknown[]) => T)
+  ): maybeFunction is (...args: unknown[]) => T {
     return typeof maybeFunction === 'function';
   }
 }

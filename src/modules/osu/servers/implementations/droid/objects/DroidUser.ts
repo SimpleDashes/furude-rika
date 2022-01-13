@@ -15,7 +15,7 @@ export default class DroidUser
   extends BaseOsuUser<IDroidOsuUserRecentsParams>
   implements IDroidUserExtension
 {
-  html?: string;
+  public html?: string;
 
   public constructor(
     raw_res: TBanchoApiRawResponse<IBanchoAPIUserResponse>,
@@ -25,18 +25,18 @@ export default class DroidUser
     this.html = droid.html;
   }
 
-  override async fetchScores(
+  public override async fetchScores(
     params: IDroidOsuUserRecentsParams,
     fetchBeatmaps?: boolean
   ): Promise<IOsuScore[]> {
     return await this.server.userRecents.get(params, fetchBeatmaps);
   }
 
-  getAvatarUrl(): string {
+  public getAvatarUrl(): string {
     return '';
   }
 
-  getProfileUrl(): string {
+  public getProfileUrl(): string {
     const params: IDroidOsuUserParam = {
       uid: this.user_id,
     };

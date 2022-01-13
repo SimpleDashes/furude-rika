@@ -5,10 +5,11 @@ import IDiscordOption from '../interfaces/IDiscordOption';
 
 export default class StringOption
   extends SlashCommandStringOption
-  implements IDiscordOption<String>
+  implements IDiscordOption<string>
 {
-  apiType: ApplicationCommandOptionTypes = ApplicationCommandOptionTypes.STRING;
-  apply(interaction: CommandInteraction): string | null {
+  public apiType: ApplicationCommandOptionTypes =
+    ApplicationCommandOptionTypes.STRING;
+  public apply(interaction: CommandInteraction): string | null {
     return interaction.options.getString(this.name, this.required);
   }
 }

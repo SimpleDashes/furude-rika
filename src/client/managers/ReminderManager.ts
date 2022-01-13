@@ -9,7 +9,7 @@ import BaseFurudeManager from './abstracts/BaseFurudeManager';
 export default class ReminderManager extends BaseFurudeManager {
   public reminders: DBReminder[] = [];
 
-  public async setupReminders() {
+  public async setupReminders(): Promise<void> {
     const reminders = await DBReminder.find();
     const dbUsers = await this.rika.db.USER.find({
       where: {
@@ -29,7 +29,10 @@ export default class ReminderManager extends BaseFurudeManager {
     }
   }
 
-  public addReminders(localizer: FurudeLocales, ...reminders: DBReminder[]) {
+  public addReminders(
+    localizer: FurudeLocales,
+    ...reminders: DBReminder[]
+  ): void {
     this.reminders.push(...reminders);
     for (const reminder of reminders) {
       setTimeout(async () => {
@@ -56,7 +59,7 @@ export default class ReminderManager extends BaseFurudeManager {
     }
   }
 
-  public async removeReminder(reminder: DBReminder) {
+  public async removeReminder(reminder: DBReminder): Promise<void> {
     await reminder.remove();
     this.reminders = this.reminders.filter((r) => r != reminder);
   }

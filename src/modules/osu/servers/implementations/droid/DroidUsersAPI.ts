@@ -9,8 +9,10 @@ export default class DroidUsersAPI extends OsuUserRoute<
   IBanchoAPIUserResponse,
   IDroidOsuUserParam
 > {
-  async get(params?: IDroidOsuUserParam): Promise<DroidUser | undefined> {
-    const data = await this.getResponse(params);
+  public async get(
+    params?: IDroidOsuUserParam
+  ): Promise<DroidUser | undefined> {
+    const data = await this.getRawResponse(params, '');
     const $ = cheerio.load(data);
 
     const stringZero: string = (0).toString();
@@ -20,7 +22,7 @@ export default class DroidUsersAPI extends OsuUserRoute<
       return undefined;
     }
 
-    let apiUser: IBanchoAPIUserResponse = {
+    const apiUser: IBanchoAPIUserResponse = {
       username,
       country: $('small.text-muted').first().text(),
       count300: stringZero,

@@ -19,7 +19,10 @@ class PingDataType extends PingData<IPingCallbackArguments> {
   }
 }
 
-class PingContainerType extends PingContainer<PingDataType> {
+class PingContainerType extends PingContainer<
+  IPingCallbackArguments,
+  PingDataType
+> {
   public readonly discord: PingDataType;
 
   public constructor() {

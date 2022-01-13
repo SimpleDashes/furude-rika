@@ -1,6 +1,8 @@
+import { APIMessage } from 'discord-api-types';
 import {
   CommandInteraction,
   InteractionReplyOptions,
+  Message,
   MessagePayload,
   WebhookEditMessageOptions,
 } from 'discord.js';
@@ -36,14 +38,14 @@ export default class FurudeOperations {
       | MessagePayload
       | WebhookEditMessageOptions
       | (InteractionReplyOptions & { fetchReply: true }) = {}
-  ) {
+  ): Promise<void | Message<boolean> | APIMessage> {
     const displayString = operation.successfully
       ? MessageCreator.success(operation.response)
       : MessageCreator.error(operation.response);
 
     Object.assign(options, { content: displayString });
 
-    return InteractionUtils.reply(interaction, options);
+    return await InteractionUtils.reply(interaction, options);
   }
 
   /**
@@ -55,7 +57,7 @@ export default class FurudeOperations {
   public static async saveWhenSuccess(
     entity: BaseEntity,
     ...operations: IDatabaseOperation[]
-  ) {
+  ): Promise<boolean> {
     if (operations.every((o) => o.successfully)) {
       await entity.save();
       return true;

@@ -7,9 +7,10 @@ import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
+import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
 
 export default class EconomyOpen extends EconomySubCommand {
-  private readonly user = this.registerOption(
+  private readonly userOption = this.registerOption(
     new UserOption(true)
       .setName(CommandOptions.user)
       .setDescription(
@@ -27,8 +28,11 @@ export default class EconomyOpen extends EconomySubCommand {
   public async trigger(context: CurrencyContext): Promise<void> {
     const { interaction, localizer } = context;
 
-    const selectedUser = this.user.apply(interaction)!;
-    const citizen = await context.CITIZENS.default(selectedUser);
+    const user = this.userOption.apply(interaction);
+
+    assertDefined(user);
+
+    const citizen = await context.CITIZENS.default(user);
 
     if (citizen.justCreated) {
       await InteractionUtils.reply(
@@ -41,15 +45,15 @@ export default class EconomyOpen extends EconomySubCommand {
     }
 
     let responseObject = {
-      name: selectedUser.username,
-      global_capital: citizen.capital!.global,
+      name: user.username,
+      global_capital: citizen.capital.global,
     };
 
     if (interaction.guild) {
       responseObject = {
         ...responseObject,
         ...{
-          local_capital: citizen.capital!.currentLocal(interaction.guild),
+          local_capital: citizen.capital.currentLocal(interaction.guild),
         },
       };
     }

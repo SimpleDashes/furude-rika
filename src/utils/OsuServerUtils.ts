@@ -1,3 +1,4 @@
+import { assertInstanceOf } from '../modules/framework/types/TypeAssertions';
 import BanchoServer from '../modules/osu/servers/implementations/bancho/BanchoServer';
 import DroidServer from '../modules/osu/servers/implementations/droid/DroidServer';
 import OsuServers, { AnyServer } from '../modules/osu/servers/OsuServers';
@@ -16,10 +17,12 @@ export default class OsuServerUtils {
   ): void {
     switch (server.name) {
       case OsuServers.bancho.name:
-        listeners.onBancho(server as any as BanchoServer);
+        assertInstanceOf(server, BanchoServer);
+        listeners.onBancho(server);
         break;
       case OsuServers.droid.name:
-        listeners.onDroid(server as any as DroidServer);
+        assertInstanceOf(server, DroidServer);
+        listeners.onDroid(server);
         break;
     }
   }

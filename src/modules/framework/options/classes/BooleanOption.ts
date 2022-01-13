@@ -7,9 +7,12 @@ export default class BooleanOption
   extends SlashCommandBooleanOption
   implements IDiscordOption<boolean>
 {
-  apiType: ApplicationCommandOptionTypes =
+  public apiType: ApplicationCommandOptionTypes =
     ApplicationCommandOptionTypes.BOOLEAN;
-  apply(interaction: CommandInteraction, returnDefault?: boolean): boolean {
+  public apply(
+    interaction: CommandInteraction,
+    returnDefault?: boolean
+  ): boolean {
     return (
       interaction.options.getBoolean(this.name, this.required) ??
       returnDefault ??

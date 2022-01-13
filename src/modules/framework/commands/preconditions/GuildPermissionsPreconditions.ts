@@ -1,9 +1,9 @@
 import assert from 'assert';
 import { PermissionResolvable, GuildMember } from 'discord.js';
 import ICommandContext from '../interfaces/ICommandContext';
-import PermissionPrecondition from './abstracts/PermissionPrecondition';
+import CommandPrecondition from './abstracts/CommandPrecondition';
 
-export default class GuildPermissionsPrecondition extends PermissionPrecondition {
+export default class GuildPermissionsPrecondition extends CommandPrecondition {
   public readonly requiredPermissions: PermissionResolvable;
 
   public constructor(requiredPermissions: PermissionResolvable) {
@@ -12,7 +12,7 @@ export default class GuildPermissionsPrecondition extends PermissionPrecondition
   }
 
   protected async validateInternally(
-    context: ICommandContext<any>
+    context: ICommandContext
   ): Promise<boolean> {
     assert(context.interaction.inGuild());
     return (context.interaction.member as GuildMember).permissions.has(

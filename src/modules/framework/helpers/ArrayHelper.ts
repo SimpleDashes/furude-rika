@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SortType = any | number | bigint;
+
 export default class ArrayHelper {
   public static getRandomArrayElement<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)] as T;
@@ -5,8 +8,8 @@ export default class ArrayHelper {
 
   private static applyDeterministicFieldSort<T>(
     item: T,
-    deterministicField?: (item: T) => any
-  ): any {
+    deterministicField?: (item: T) => SortType
+  ): SortType {
     return deterministicField ? deterministicField(item) : item;
   }
 
@@ -18,7 +21,7 @@ export default class ArrayHelper {
    */
   public static greatestToLowest<T>(
     array: T[],
-    deterministicField?: (item: T) => any
+    deterministicField?: (item: T) => SortType
   ): T[] {
     return array.sort(
       (a, b) =>
@@ -35,7 +38,7 @@ export default class ArrayHelper {
    */
   public static lowestToGreatest<T>(
     array: T[],
-    deterministicField?: (item: T) => any
+    deterministicField?: (item: T) => SortType
   ): T[] {
     return array.sort(
       (a, b) =>

@@ -7,5 +7,5 @@ export default abstract class OsuBeatmapsRoute<
   B extends IBanchoAPIBeatmapResponse,
   P
 > extends OsuGetRoute<T[], B, P> {
-  abstract override get(params?: P | Partial<P>): Promise<T[]>;
+  public abstract override get(params?: P | Partial<P>): Promise<T[]>;
 }

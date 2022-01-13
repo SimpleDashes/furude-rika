@@ -1,4 +1,3 @@
-import DefaultContext from '../../../../client/contexts/DefaultContext';
 import FurudeCommandGroup from '../../../../discord/commands/FurudeCommandGroup';
 import {
   Preconditions,
@@ -14,7 +13,7 @@ export default class OsuSet extends FurudeCommandGroup {
     });
   }
 
-  public trigger(_context: DefaultContext): Promise<void> {
+  public trigger(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

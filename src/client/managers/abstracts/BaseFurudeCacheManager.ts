@@ -5,8 +5,8 @@ import consola from 'consola';
 
 export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
   private name: string;
-  private previousLogSize: number = 0;
   private logPercentIncrease;
+  private previousLogSize = 0;
 
   /**
    *
@@ -20,14 +20,14 @@ export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
     capacity: number,
     lifetime: number,
     name: string,
-    logPercentIncrease: number = 10
+    logPercentIncrease = 10
   ) {
     super(capacity, lifetime);
     this.name = name;
     this.logPercentIncrease = logPercentIncrease;
   }
 
-  override set(key: K, value: V): this {
+  public override set(key: K, value: V): this {
     super.set(key, value);
 
     if (

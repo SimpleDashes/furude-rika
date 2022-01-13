@@ -1,4 +1,3 @@
-import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import BaseCommand from '../../modules/framework/commands/BaseCommand';
 import IFurudeCommand from './interfaces/IFurudeCommand';
@@ -8,12 +7,12 @@ import FurudeCommandWrapper from './FurudeCommandWrapper';
 export default abstract class FurudeCommand<
     CTX extends DefaultContext = DefaultContext
   >
-  extends BaseCommand<FurudeRika, DefaultContext>
-  implements IFurudeCommand<DefaultContext>
+  extends BaseCommand<CTX>
+  implements IFurudeCommand<CTX>
 {
-  public abstract override trigger(context: DefaultContext): Promise<void>;
+  public abstract override trigger(context: CTX): Promise<void>;
 
-  public createContext(baseContext: ICommandContext<FurudeRika>): CTX {
+  public createContext(baseContext: ICommandContext): CTX {
     // TODO THAT CASTING IS A WORKAROUND, PROPER TYPING IS NEEDED ON FUTURE.
     return FurudeCommandWrapper.defaultContext(baseContext) as CTX;
   }

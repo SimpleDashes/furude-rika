@@ -3,7 +3,7 @@ import CommandPrecondition from './abstracts/CommandPrecondition';
 
 export default class RequiresGuildPrecondition extends CommandPrecondition {
   protected async validateInternally(
-    context: ICommandContext<any>
+    context: ICommandContext
   ): Promise<boolean> {
     return context.interaction.inGuild();
   }

@@ -12,7 +12,9 @@ export default class DirectoryMapperFactory {
     this.excludes = excludes ?? [];
   }
 
-  public async buildMappers(root: string = this.root) {
+  public async buildMappers(
+    root: string = this.root
+  ): Promise<DirectoryMapper[]> {
     const files = (await fs.readdir(root, { withFileTypes: true })).filter(
       (file) => !this.excludes.includes(file.name)
     );

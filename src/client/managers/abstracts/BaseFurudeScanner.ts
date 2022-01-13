@@ -15,5 +15,5 @@ export default abstract class BaseFurudeScanner extends BaseFurudeManager {
 
   protected abstract runScan(): Promise<void>;
 
-  protected executeEveryHours: number = 1;
+  protected executeEveryHours = 1;
 }

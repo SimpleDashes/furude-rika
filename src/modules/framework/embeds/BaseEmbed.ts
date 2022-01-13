@@ -5,6 +5,7 @@ import {
   User,
 } from 'discord.js';
 import UserType from '../enums/UserType';
+import { assertDefined } from '../types/TypeAssertions';
 
 export default class BaseEmbed extends MessageEmbed {
   public constructor(
@@ -45,9 +46,11 @@ export default class BaseEmbed extends MessageEmbed {
 
       const defaultText = client.user?.username;
 
+      assertDefined(client.user);
+
       const args = {
         text: defaultText ?? '',
-        iconURL: client.user!.avatarURL() ?? '',
+        iconURL: client.user.avatarURL() ?? '',
       };
 
       if (this.footer) {

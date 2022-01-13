@@ -9,6 +9,7 @@ import IOsuUserScores from './interfaces/IOsuUserScores';
 import IOsuUser from './IOsuUser';
 import IOsuScore from '../scores/IOsuScore';
 import { AnyServer } from '../servers/OsuServers';
+import { assertDefined } from '../../framework/types/TypeAssertions';
 
 export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
   public readonly user_id: number;
@@ -33,7 +34,10 @@ export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
     raw_res: TBanchoApiRawResponse<IBanchoAPIUserResponse>,
     server: AnyServer
   ) {
-    const res: IBanchoAPIUserResponse = raw_res[0]!;
+    const res = raw_res[0];
+
+    assertDefined(res);
+
     this.server = server;
     this.user_id = parseInt(res.user_id);
     this.username = res.username;
@@ -76,12 +80,12 @@ export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
     }
   }
 
-  abstract fetchScores(
+  public abstract fetchScores(
     params: P,
     fetchBeatmaps?: boolean
   ): Promise<IOsuScore[]>;
 
-  abstract getAvatarUrl(): string;
+  public abstract getAvatarUrl(): string;
 
-  abstract getProfileUrl(): string;
+  public abstract getProfileUrl(): string;
 }

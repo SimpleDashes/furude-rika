@@ -2,15 +2,11 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import ICommand from './interfaces/ICommand';
 import ICommandInformation from './interfaces/ICommandInformation';
 import CommandHelper from './CommandHelper';
-import BaseBot from '../client/BaseBot';
 import ICommandContext from './interfaces/ICommandContext';
 
-export default abstract class BaseCommand<
-    T extends BaseBot,
-    CTX extends ICommandContext<T>
-  >
+export default abstract class BaseCommand<CTX extends ICommandContext>
   extends SlashCommandBuilder
-  implements ICommand<T, CTX>
+  implements ICommand<CTX>
 {
   public readonly information: ICommandInformation;
 
@@ -22,7 +18,7 @@ export default abstract class BaseCommand<
 
   public abstract trigger(context: CTX): Promise<void>;
 
-  public abstract createContext(baseContext: ICommandContext<T>): CTX;
+  public abstract createContext(baseContext: ICommandContext): CTX;
 
   public registerOption<C>(option: C): C {
     return CommandHelper.registerOption(this, option);

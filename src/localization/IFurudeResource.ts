@@ -1,6 +1,4 @@
-import ILocalizerStructure from '../modules/framework/localization/ILocalizerStructure';
-
-export default interface IFurudeResource extends ILocalizerStructure {
+export default interface IFurudeResource {
   AVATAR_RESPONSE: string;
 
   PING_TO_PING: string;

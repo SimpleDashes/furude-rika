@@ -5,6 +5,7 @@ import {
   Preconditions,
   SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
 @SetPreconditions(Preconditions.WithPermission('MANAGE_GUILD'))
@@ -20,6 +21,7 @@ export default class CustomizeDefaultGuildLocale extends CustomizesServerRelated
   public entityToLocalize(
     context: DefaultContext
   ): IHasPreferredLocale & SnowFlakeIDEntity {
-    return context.dbGuild!;
+    assertDefined(context.dbGuild);
+    return context.dbGuild;
   }
 }

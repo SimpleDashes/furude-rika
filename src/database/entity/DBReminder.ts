@@ -16,16 +16,16 @@ export default class DBReminder extends GeneratedIDEntity {
   public static readonly MAX_NUMBER_OF_REMINDERS = 10;
 
   @Column('date')
-  remind_start_date: Date = new Date();
+  public remind_start_date: Date = new Date();
 
   @Column('date')
-  remind_end_date: Date = new Date();
+  public remind_end_date: Date = new Date();
 
   @Column('string')
-  reminder: string = Strings.EMPTY;
+  public reminder: string = Strings.EMPTY;
 
   @Column('string')
-  reminder_owner: string = Strings.EMPTY;
+  public reminder_owner: string = Strings.EMPTY;
 
   public build(user: User, remindWhat: string): this {
     this.reminder_owner = user.id;
@@ -100,13 +100,19 @@ export default class DBReminder extends GeneratedIDEntity {
     );
   }
 
-  private static getAllRemindersForID(rika: FurudeRika, uid: Snowflake) {
+  private static getAllRemindersForID(
+    rika: FurudeRika,
+    uid: Snowflake
+  ): DBReminder[] {
     return rika.reminderManager.reminders.filter(
       (r) => r.reminder_owner == uid
     );
   }
 
-  public static getAllRemindersForUser(rika: FurudeRika, user: User) {
+  public static getAllRemindersForUser(
+    rika: FurudeRika,
+    user: User
+  ): DBReminder[] {
     return this.getAllRemindersForID(rika, user.id);
   }
 }

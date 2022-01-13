@@ -1,8 +1,8 @@
 import { Snowflake } from 'discord.js';
 import ICommandContext from '../interfaces/ICommandContext';
-import PermissionPrecondition from './abstracts/PermissionPrecondition';
+import CommandPrecondition from './abstracts/CommandPrecondition';
 
-export default class OwnerPrecondition extends PermissionPrecondition {
+export default class OwnerPrecondition extends CommandPrecondition {
   public readonly ownerIDS: Snowflake[];
 
   public constructor(ownerIDS: Snowflake[]) {
@@ -11,7 +11,7 @@ export default class OwnerPrecondition extends PermissionPrecondition {
   }
 
   protected async validateInternally(
-    context: ICommandContext<any>
+    context: ICommandContext
   ): Promise<boolean> {
     return this.ownerIDS.includes(context.interaction.user.id);
   }

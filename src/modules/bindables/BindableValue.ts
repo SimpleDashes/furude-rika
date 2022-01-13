@@ -1,3 +1,5 @@
+import { assertDefined } from '../framework/types/TypeAssertions';
+
 class ValueChangeEvent<T> {
   public readonly oldValue: T;
   public readonly newValue: T;
@@ -15,11 +17,11 @@ interface IValueChangeListener<T> {
 export default class BindableValue<T> implements IValueChangeListener<T> {
   private current!: T;
 
-  get Current() {
+  public get Current(): T {
     return this.current;
   }
 
-  set Current(value: T) {
+  public set Current(value: T) {
     const ruledNewCurrent = this.applyValueChangeRules(value);
     const changeEvent = new ValueChangeEvent(this.current, ruledNewCurrent);
 
@@ -34,11 +36,11 @@ export default class BindableValue<T> implements IValueChangeListener<T> {
 
   private default!: T;
 
-  get Default() {
+  public get Default(): T {
     return this.default;
   }
 
-  set Default(value: T) {
+  public set Default(value: T) {
     this.default = this.applyValueChangeRules(value);
   }
 
@@ -50,24 +52,24 @@ export default class BindableValue<T> implements IValueChangeListener<T> {
     }
 
     this.Current = appliedCurrentValue;
-    this.Default = value ? appliedCurrentValue : defaultValue!;
+    this.Default = defaultValue ? defaultValue : appliedCurrentValue;
   }
 
   public applyValueChangeRules(value: T): T {
     return value;
   }
 
-  public changeToDefaultValue() {
+  public changeToDefaultValue(): void {
     this.Current = this.default;
   }
 
   protected onValueChangeListeners: IValueChangeListener<T>[] = [];
 
-  public addValueChangeListener(listener: IValueChangeListener<T>) {
+  public addValueChangeListener(listener: IValueChangeListener<T>): void {
     this.onValueChangeListeners.push(listener);
   }
 
-  public removeValueChangeListener(listener: IValueChangeListener<T>) {
+  public removeValueChangeListener(listener: IValueChangeListener<T>): void {
     this.onValueChangeListeners.filter((o) => o != listener);
   }
 
@@ -80,7 +82,10 @@ export default class BindableValue<T> implements IValueChangeListener<T> {
     }
   }
 
-  public onValueChange(_event: ValueChangeEvent<T>): void {}
+  public onValueChange(event: ValueChangeEvent<T>): void {
+    assertDefined(event);
+  }
+
   public defaultCurrentValue(): T | null {
     return null;
   }

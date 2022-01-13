@@ -2,8 +2,6 @@ import { getUnixTime } from 'date-fns';
 import ClientEmojis from '../../../containers/ClientEmojis';
 
 export default abstract class MessageCreator {
-  private constructor() {}
-
   public static prefixedString(prefix: string, value: string): string {
     return `${prefix} | ${value}`;
   }
@@ -36,25 +34,24 @@ export default abstract class MessageCreator {
     return `__${value}__`;
   }
 
-  public static timeStamp(date: Date) {
+  public static timeStamp(date: Date): string {
     return `<t:${getUnixTime(date)}>`;
   }
 
-  public static breakLine(value: string) {
+  public static breakLine(value: string): string {
     return `${value}\n`;
   }
 
   public static objectToKeyValueString(
-    obj: any,
-    options: {
-      fixedNumber: number;
-    } = {
+    object: unknown,
+    options = {
       fixedNumber: 0,
     }
-  ) {
+  ): string {
     let s = '';
-    for (const k in obj) {
-      const v = (obj as Record<string, unknown>)[k];
+    const recordObject = object as Record<string, unknown>;
+    for (const k in recordObject) {
+      const v = recordObject[k];
       s += `${k}: ${
         typeof v === 'number' ? `${v.toFixed(options.fixedNumber)}` : v
       }\n`;

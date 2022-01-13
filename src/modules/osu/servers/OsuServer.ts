@@ -14,7 +14,7 @@ import IBanchoAPIBeatmapResponse from './implementations/bancho/interfaces/beatm
 
 export default abstract class OsuServer<
   BASE_PARAMS,
-  U extends IOsuUser<any>,
+  U extends IOsuUser<unknown>,
   U_B extends IBanchoAPIUserResponse,
   U_P extends BASE_PARAMS,
   S extends IOsuScore,
@@ -25,7 +25,7 @@ export default abstract class OsuServer<
   B_P extends BASE_PARAMS
 > extends ContentHost {
   public abstract readonly name: string;
-  protected apiKey: string = '';
+  protected apiKey = '';
 
   public api: APIRoute<BASE_PARAMS>;
   public users: OsuUserRoute<U, U_B, U_P>;

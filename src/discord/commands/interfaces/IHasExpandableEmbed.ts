@@ -1,7 +1,7 @@
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 
 export default interface IHasExpandableEmbed {
-  createBaseEmbed(...args: any): BaseEmbed;
-  createMinimizedEmbed(...args: any): BaseEmbed;
-  createExpandedEmbed(...args: any): BaseEmbed;
+  createBaseEmbed(...args: unknown[]): BaseEmbed;
+  createMinimizedEmbed(...args: unknown[]): BaseEmbed;
+  createExpandedEmbed(...args: unknown[]): BaseEmbed;
 }

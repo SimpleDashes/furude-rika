@@ -29,7 +29,7 @@ export default class BanchoServer extends OsuServer<
   IBanchoAPIBeatmapResponse,
   IBanchoBeatmapParam & IBanchoOsuParam
 > {
-  public name: string = 'bancho';
+  public name = 'bancho';
 
   public constructor(apiKey: string) {
     super('osu.ppy', Domains.sh, apiKey);

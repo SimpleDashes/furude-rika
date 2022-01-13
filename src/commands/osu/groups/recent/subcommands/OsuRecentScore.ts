@@ -6,6 +6,7 @@ import { MessageButtonCreator } from '../../../../../modules/framework/creators/
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
+import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 import IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
 import IOsuUser from '../../../../../modules/osu/users/IOsuUser';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
@@ -25,7 +26,7 @@ export default class OsuRecentScore
     this
   ).setDescription('The discord user who did that amazing thing.');
 
-  constructor() {
+  public constructor() {
     super({
       name: 'score',
       description: 'Views a osu! recent score.',
@@ -40,11 +41,14 @@ export default class OsuRecentScore
       interaction
     );
 
+    const discordUser = this.discordUserOption.apply(interaction);
+    assertDefined(discordUser);
+
     const osuUser = await this.getUserFromServer(
       server,
       context,
       this.serverUserOptions.user.apply(interaction),
-      this.discordUserOption.apply(interaction)!
+      discordUser
     );
 
     if (!osuUser) {
@@ -88,7 +92,7 @@ export default class OsuRecentScore
             OsuRecentScore.SCORES_PER_PAGE,
             1,
             60,
-            async (options, page, _content) => {
+            async (options, page) => {
               const scores: IOsuScore[] = [];
               await MessageButtonCreator.loopPages(
                 OsuRecentScore.SCORES_PER_PAGE,
@@ -115,7 +119,10 @@ export default class OsuRecentScore
     );
   }
 
-  createBaseEmbed(context: OsuContext, user: IOsuUser<unknown>): BaseEmbed {
+  public createBaseEmbed(
+    context: OsuContext,
+    user: IOsuUser<unknown>
+  ): BaseEmbed {
     const { interaction } = context;
     return new BaseEmbed(
       {
@@ -125,7 +132,7 @@ export default class OsuRecentScore
     );
   }
 
-  createMinimizedEmbed(
+  public createMinimizedEmbed(
     context: OsuContext,
     user: IOsuUser<unknown>,
     score: IOsuScore
@@ -141,7 +148,7 @@ export default class OsuRecentScore
     return embed;
   }
 
-  createExpandedEmbed(
+  public createExpandedEmbed(
     context: OsuContext,
     user: IOsuUser<unknown>,
     scores: IOsuScore[],
@@ -150,9 +157,12 @@ export default class OsuRecentScore
     const embed = this.createBaseEmbed(context, user);
     embed.description = Strings.EMPTY;
     for (let i = 0; i < scores.length; i++) {
-      const score = scores[i]!;
+      const score = scores[i];
+
+      assertDefined(score);
+
       if (i > 0) {
-        embed.description = MessageCreator.breakLine(embed.description!);
+        embed.description = MessageCreator.breakLine(embed.description);
       }
       embed.description +=
         MessageCreator.bold(
@@ -178,22 +188,23 @@ export default class OsuRecentScore
     const { language } = localizer;
 
     let string = Strings.EMPTY;
-    let canHyperLink: boolean = false;
+    let canHyperLink = false;
 
     if (apiBeatmap) {
       string += `${apiBeatmap.title} [${apiBeatmap.version}]`;
-      if (!!apiBeatmap.beatmapID) {
+      if (apiBeatmap.beatmapID) {
         canHyperLink = true;
+        string = MessageCreator.bold(
+          MessageCreator.hyperLink(string, apiBeatmap.getPageUrl())
+        );
       }
     } else {
       string += `NOT FOUND`;
     }
 
-    string = canHyperLink
-      ? MessageCreator.bold(
-          MessageCreator.hyperLink(string, apiBeatmap!.getPageUrl())
-        )
-      : MessageCreator.block(string);
+    if (!canHyperLink) {
+      string = MessageCreator.block(string);
+    }
 
     string = MessageCreator.breakLine(string);
 

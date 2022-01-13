@@ -8,9 +8,11 @@ export default class ChannelOption
   extends SlashCommandChannelOption
   implements IDiscordOption<GuildChannel | ThreadChannel>
 {
-  apiType: ApplicationCommandOptionTypes =
+  public apiType: ApplicationCommandOptionTypes =
     ApplicationCommandOptionTypes.CHANNEL;
-  apply(interaction: CommandInteraction): GuildChannel | ThreadChannel | null {
+  public apply(
+    interaction: CommandInteraction
+  ): GuildChannel | ThreadChannel | null {
     const channel = interaction.options.getChannel(this.name, this.required);
     return channel instanceof GuildChannel || channel instanceof ThreadChannel
       ? channel

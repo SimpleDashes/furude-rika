@@ -1,4 +1,3 @@
-import DefaultContext from '../../../client/contexts/DefaultContext';
 import FurudeCommand from '../../../discord/commands/FurudeCommand';
 import {
   Preconditions,
@@ -15,7 +14,7 @@ export default class RemindMe extends FurudeCommand {
     });
   }
 
-  public trigger(_context: DefaultContext): Promise<void> {
+  public trigger(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

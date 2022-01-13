@@ -51,7 +51,10 @@ export default class OsuProfile
     );
   }
 
-  createBaseEmbed(osuUser: IOsuUser<unknown>, context: OsuContext): BaseEmbed {
+  public createBaseEmbed(
+    osuUser: IOsuUser<unknown>,
+    context: OsuContext
+  ): BaseEmbed {
     return new BaseEmbed(
       {
         author: this.getUserInfoAuthor(osuUser, context),
@@ -60,7 +63,7 @@ export default class OsuProfile
     ).setThumbnail(osuUser.getAvatarUrl());
   }
 
-  createMinimizedEmbed(
+  public createMinimizedEmbed(
     osuUser: IOsuUser<unknown>,
     context: OsuContext
   ): BaseEmbed {
@@ -76,7 +79,7 @@ export default class OsuProfile
     );
   }
 
-  createExpandedEmbed(
+  public createExpandedEmbed(
     osuUser: IOsuUser<unknown>,
     context: OsuContext
   ): BaseEmbed {

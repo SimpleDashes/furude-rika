@@ -1,9 +1,8 @@
-import BaseBot from '../../../client/BaseBot';
 import InteractionUtils from '../../../interactions/InteractionUtils';
 import ICommandContext from '../../interfaces/ICommandContext';
 
 export default abstract class CommandPrecondition<
-  CTX extends ICommandContext<BaseBot> = ICommandContext<BaseBot>
+  CTX extends ICommandContext = ICommandContext
 > {
   public onFailMessage?: (context: CTX) => string;
 
@@ -19,7 +18,5 @@ export default abstract class CommandPrecondition<
     return validated;
   }
 
-  protected abstract validateInternally(
-    context: ICommandContext<any>
-  ): Promise<boolean>;
+  protected abstract validateInternally(context: CTX): Promise<boolean>;
 }

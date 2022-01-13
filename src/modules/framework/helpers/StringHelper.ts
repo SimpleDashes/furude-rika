@@ -8,7 +8,7 @@ export default class StringHelper {
    *
    * @param str The unicode string to get the proper length from.
    */
-  static getUnicodeStringLength(str: string): number {
+  public static getUnicodeStringLength(str: string): number {
     // Standards: https://datatracker.ietf.org/doc/html/rfc3629|Reference
 
     let s: number = str.length;

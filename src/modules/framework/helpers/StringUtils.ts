@@ -1,11 +1,12 @@
 import { Collection } from 'discord.js';
 import IKeyValueSet from '../interfaces/IKeyValueSet';
+import { assertDefined } from '../types/TypeAssertions';
 
 export default class StringUtils {
   public static toCollectionSplittedByEqualSign<T>(
     value: string,
     converter: (string: string) => T
-  ) {
+  ): Collection<string, T> {
     const separated = value.replace(' ', '').split(',');
     const keyValueSets = separated
       .map((rawArg) => {
@@ -21,13 +22,17 @@ export default class StringUtils {
       })
       .filter((set) => set.key != undefined && set.value != undefined);
     const collection: Collection<string, T> = new Collection();
-    keyValueSets.forEach((set) => {
-      collection.set(set.key!, set.value!);
-    });
+    for (const set of keyValueSets) {
+      assertDefined(set.key);
+      assertDefined(set.value);
+      collection.set(set.key, set.value);
+    }
     return collection;
   }
 
-  public static toCollectionSplittedByEqualSignAsString(value: string) {
+  public static toCollectionSplittedByEqualSignAsString(
+    value: string
+  ): Collection<string, string> {
     return this.toCollectionSplittedByEqualSign(value, (s) => s);
   }
 }

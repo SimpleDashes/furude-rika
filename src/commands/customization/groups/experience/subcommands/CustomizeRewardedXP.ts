@@ -62,7 +62,7 @@ export default class CustomizeMinXP extends FurudeSubCommand {
     }
 
     if (maxValue) {
-      operations.push(dbGuild!.setMaxXPValue(maxValue));
+      operations.push(dbGuild.setMaxXPValue(maxValue));
     }
 
     await FurudeOperations.saveWhenSuccess(dbGuild, ...operations);

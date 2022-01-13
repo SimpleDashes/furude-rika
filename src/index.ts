@@ -5,6 +5,7 @@ import 'reflect-metadata';
 dotenv.config();
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface ProcessEnv {
       BOT_TOKEN: string;
@@ -17,4 +18,5 @@ declare global {
 }
 
 const furudeRika = new FurudeRika();
-furudeRika.start();
+
+void furudeRika.start();

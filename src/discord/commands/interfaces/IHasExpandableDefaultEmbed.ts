@@ -3,5 +3,5 @@ import IHasExpandableEmbed from './IHasExpandableEmbed';
 
 export default interface IHasExpandableDefaultEmbed
   extends IHasExpandableEmbed {
-  createDefaultEmbed(...args: any): BaseEmbed;
+  createDefaultEmbed(...args: unknown[]): BaseEmbed;
 }

@@ -7,8 +7,9 @@ export default class RoleOption
   extends SlashCommandRoleOption
   implements IDiscordOption<Role>
 {
-  apiType: ApplicationCommandOptionTypes = ApplicationCommandOptionTypes.ROLE;
-  apply(interaction: CommandInteraction): Role | null {
+  public apiType: ApplicationCommandOptionTypes =
+    ApplicationCommandOptionTypes.ROLE;
+  public apply(interaction: CommandInteraction): Role | null {
     const role = interaction.options.getRole(this.name, this.required);
     return role instanceof Role ? role : null;
   }

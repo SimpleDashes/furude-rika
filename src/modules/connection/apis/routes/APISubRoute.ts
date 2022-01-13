@@ -13,7 +13,7 @@ export default class APISubRoute<T extends APIRoute<T>> extends SubRoute {
   protected build<P>(params: P): string {
     return RequestBuilder.build(this.path, {
       ...params,
-      ...this.base.baseParams,
+      ...(this.base.baseParams as Record<string, string>),
     });
   }
 }

@@ -1,6 +1,4 @@
-import ILocalizerStructure from './ILocalizerStructure';
-
-export default interface ILocalizerResource<S extends ILocalizerStructure> {
+export default interface ILocalizerResource<S> {
   readonly locale: string;
   readonly structure: S;
 }

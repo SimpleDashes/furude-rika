@@ -11,18 +11,18 @@ export default class BanchoUser extends BaseOsuUser<IBanchoOsuUserRecentParams> 
     super(res, OsuServers.bancho);
   }
 
-  async fetchScores(
+  public async fetchScores(
     params: IBanchoOsuUserRecentParams,
     fetchBeatmaps?: boolean
   ): Promise<IOsuScore[]> {
     return await this.server.userRecents.get(params, fetchBeatmaps);
   }
 
-  getAvatarUrl(): string {
+  public getAvatarUrl(): string {
     return `${Protocol.https}://a.ppy.sh/${this.user_id}?.jpg`;
   }
 
-  getProfileUrl(): string {
+  public getProfileUrl(): string {
     return `${OsuServers.bancho.Url}/users/${this.user_id}`;
   }
 }

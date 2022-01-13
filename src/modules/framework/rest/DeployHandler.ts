@@ -8,6 +8,9 @@ import consola from 'consola';
 import BaseBot from '../client/BaseBot';
 import { RequestData, REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
+import { assertDefined } from '../types/TypeAssertions';
+import IWithTaskCompletionListener from '../interfaces/IWithTaskCompletionListener';
+import ICommandContext from '../commands/interfaces/ICommandContext';
 
 type resFunctions = Partial<IWithTaskCompletionListener> & {
   onCommandNotFound?: () => void;
@@ -19,13 +22,13 @@ let putToken = false;
 
 export default class DeployHandler {
   public static async deployCommand(options: {
-    client: BaseBot;
+    client: BaseBot<ICommandContext>;
     commandName: string;
     isDebug: boolean;
     interaction?: CommandInteraction<CacheType>;
     guild?: Guild;
     resFunctions: resFunctions;
-  }) {
+  }): Promise<void> {
     const { client, commandName, isDebug, interaction, resFunctions } = options;
     const { onCommandNotFound, onInvalidCommand, onError, onSuccess } =
       resFunctions;
@@ -61,13 +64,14 @@ export default class DeployHandler {
   }
 
   public static async deployAll(
-    client: BaseBot,
+    client: BaseBot<ICommandContext>,
     isDebug: boolean,
     resFunctions?: IWithTaskCompletionListener
-  ) {
+  ): Promise<void> {
     if (!putToken) {
       putToken = true;
-      rest.setToken(client.devInfo!.token!);
+      assertDefined(client.devInfo.token);
+      rest.setToken(client.devInfo.token);
     }
 
     const commands = [...client.commands.values()].map((command) =>
@@ -76,14 +80,17 @@ export default class DeployHandler {
 
     const req: RequestData = { body: commands };
 
+    assertDefined(client.user);
+    assertDefined(client.devInfo.developmentGuild);
+
     try {
       await rest.put(
         isDebug
           ? Routes.applicationGuildCommands(
-              client.user!.id,
-              client.devInfo.developmentGuild?.id!
+              client.user.id,
+              client.devInfo.developmentGuild.id
             )
-          : Routes.applicationCommands(client.user!.id),
+          : Routes.applicationCommands(client.user.id),
         req
       );
       if (resFunctions?.onSuccess) resFunctions.onSuccess();

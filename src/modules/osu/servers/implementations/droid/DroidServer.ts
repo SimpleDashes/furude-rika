@@ -22,11 +22,11 @@ export default class DroidServer extends OsuServer<
   DroidScore,
   IBanchoAPIUserRecentScore,
   IDroidOsuUserRecentsParam,
-  any,
-  any,
-  any
+  never,
+  never,
+  never
 > {
-  public name: string = 'droid';
+  public name = 'droid';
 
   public constructor() {
     super('ops.dgsrz', Domains.com, '', '', Protocol.http);
@@ -40,10 +40,8 @@ export default class DroidServer extends OsuServer<
     return new DroidUsersAPI(base, 'profile.php');
   }
 
-  protected createBeatmapsRoute(
-    _base: APIRoute<IDroidOsuParam>
-  ): OsuBeatmapsRoute<any, any, any> {
-    return undefined as unknown as OsuBeatmapsRoute<any, any, any>;
+  protected createBeatmapsRoute(): OsuBeatmapsRoute<never, never, never> {
+    return undefined as unknown as OsuBeatmapsRoute<never, never, never>;
   }
 
   protected createUsersRecentRoute(

@@ -5,10 +5,11 @@ import IDiscordOption from '../interfaces/IDiscordOption';
 
 export default class NumberOption
   extends SlashCommandNumberOption
-  implements IDiscordOption<Number>
+  implements IDiscordOption<number>
 {
-  apiType: ApplicationCommandOptionTypes = ApplicationCommandOptionTypes.NUMBER;
-  apply(interaction: CommandInteraction): Number | null {
+  public apiType: ApplicationCommandOptionTypes =
+    ApplicationCommandOptionTypes.NUMBER;
+  public apply(interaction: CommandInteraction): number | null {
     return interaction.options.getNumber(this.name, this.required);
   }
 }

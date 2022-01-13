@@ -9,7 +9,9 @@ export default class BanchoUsersAPI extends OsuGetRoute<
   IBanchoAPIUserResponse,
   IBanchoOsuUserParams
 > {
-  async get(params?: IBanchoOsuUserParams): Promise<BanchoUser | undefined> {
+  public async get(
+    params?: IBanchoOsuUserParams
+  ): Promise<BanchoUser | undefined> {
     return await this.getFirstResultElseUndefined(
       (res) => new BanchoUser(res),
       params

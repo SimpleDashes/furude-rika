@@ -7,9 +7,11 @@ export default class MentionableOptions
   extends SlashCommandMentionableOption
   implements IDiscordOption<GuildMember | Role | User>
 {
-  apiType: ApplicationCommandOptionTypes =
+  public apiType: ApplicationCommandOptionTypes =
     ApplicationCommandOptionTypes.MENTIONABLE;
-  apply(interaction: CommandInteraction): Role | User | GuildMember | null {
+  public apply(
+    interaction: CommandInteraction
+  ): Role | User | GuildMember | null {
     const mentionable = interaction.options.getMentionable(
       this.name,
       this.required

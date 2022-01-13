@@ -1,5 +1,5 @@
 import { Chance } from 'chance';
 
 export default class Globals {
-  static CHANCE = Chance();
+  public static CHANCE = Chance();
 }

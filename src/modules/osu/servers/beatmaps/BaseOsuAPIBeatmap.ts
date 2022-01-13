@@ -94,19 +94,19 @@ export default class BaseOsuAPIBeatmap implements IAPIOsuBeatmap {
     this.maxCombo = parseInt(apiResponse.max_combo);
     this.storyboardAvailable = !!apiResponse.storyboard;
     this.videoAvailable = !!apiResponse.video;
-    this.downloadAvailable = !!!apiResponse.download_unavailable;
-    this.audioAvailable = !!!apiResponse.audio_unavailable;
+    this.downloadAvailable = !apiResponse.download_unavailable;
+    this.audioAvailable = !apiResponse.audio_unavailable;
   }
 
-  getPageUrl(): string {
+  public getPageUrl(): string {
     return `https://osu.ppy.sh/beatmapsets/${this.beatmapSetID}#osu/${this.beatmapID}`;
   }
 
-  getCoverImage(): string {
+  public getCoverImage(): string {
     return `https://assets.ppy.sh/beatmaps/${this.beatmapSetID}/covers/cover.jpg`;
   }
 
-  getCoverThumbnail(): string {
+  public getCoverThumbnail(): string {
     return `https://b.ppy.sh/thumb/${this.beatmapSetID}l.jpg`;
   }
 }

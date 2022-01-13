@@ -7,9 +7,7 @@ const variableEnd = ']';
 export default class StringWithVariablesManager {
   public stringsWithVariables: Record<string, IStringWithVariable> = {};
 
-  public constructor() {}
-
-  public addString(withVariable: string, key?: string) {
+  public addString(withVariable: string, key?: string): void {
     key = key ?? withVariable;
     this.stringsWithVariables[key] = {
       string: withVariable,
@@ -27,7 +25,7 @@ export default class StringWithVariablesManager {
     };
   }
 
-  public getString(args: IVariableManagerGetter) {
+  public getString(args: IVariableManagerGetter): string | undefined {
     const find = this.stringsWithVariables[args.key];
     if (!find) return;
     if (!(args.args.length === find.args.length)) {

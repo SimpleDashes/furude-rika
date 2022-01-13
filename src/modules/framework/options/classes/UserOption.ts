@@ -12,8 +12,9 @@ export default class UserOption
     super();
     this.defaultToSelf = defaultToSelf;
   }
-  apiType: ApplicationCommandOptionTypes = ApplicationCommandOptionTypes.USER;
-  apply(interaction: CommandInteraction) {
+  public apiType: ApplicationCommandOptionTypes =
+    ApplicationCommandOptionTypes.USER;
+  public apply(interaction: CommandInteraction): User | null {
     const user = interaction.options.getUser(this.name, this.required);
     return user ? user : this.defaultToSelf ? interaction.user : null;
   }

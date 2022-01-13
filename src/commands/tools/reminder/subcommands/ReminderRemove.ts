@@ -6,6 +6,7 @@ import MessageCreator from '../../../../modules/framework/helpers/MessageCreator
 import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
+import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
 
 export default class ReminderRemove extends FurudeSubCommand {
   public indexOption = this.registerOption(
@@ -28,7 +29,10 @@ export default class ReminderRemove extends FurudeSubCommand {
   public async trigger(context: DefaultContext): Promise<void> {
     const { client, interaction, localizer } = context;
 
-    const index = this.indexOption.apply(context.interaction)!;
+    const index = this.indexOption.apply(context.interaction);
+
+    assertDefined(index);
+
     const reminder = DBReminder.getAllRemindersForUser(
       client,
       interaction.user

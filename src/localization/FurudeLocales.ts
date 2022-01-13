@@ -10,6 +10,8 @@ import ResourceResolver from './ResourceResolver';
 import DirectoryMapper from '../modules/framework/io/DirectoryMapper';
 import path from 'path';
 import DefaultContext from '../client/contexts/DefaultContext';
+import Strings from '../containers/Strings';
+import { assertDefined } from '../modules/framework/types/TypeAssertions';
 
 const resourceResolver = new ResourceResolver(
   new DirectoryMapper(path.join(__dirname, 'resources'))
@@ -38,7 +40,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
     this.language = options?.language ?? defaultFurudeLocale;
   }
 
-  public async build() {
+  public async build(): Promise<void> {
     if (!builtGlobals) {
       translations.push(
         ...(await resourceResolver.getAllObjects()).map((r) => r.object)
@@ -58,10 +60,10 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
       }
     }
     builtGlobals = true;
-    this.onReady();
+    await this.onReady();
   }
 
-  private getKey(locale: SupportedFurudeLocales, key: string) {
+  private getKey(locale: SupportedFurudeLocales, key: string): string {
     return `${locale}-${key}`;
   }
 
@@ -71,7 +73,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
    * @param options lng: selected language, values: used for replace placeholder string values
    * @returns a localized string
    */
-  public get(key: FurudeTranslationKeys, vars?: string[]) {
+  public get(key: FurudeTranslationKeys, vars?: string[]): string {
     const values: IVariableManagerGetter = {
       key,
       args: vars ?? [],
@@ -86,14 +88,17 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
     const find = translations.find((translation) => {
       return translation.locale === this.language;
     })?.structure[key];
-    if (!find) return '';
+    if (!find) return Strings.EMPTY;
     if (values.args) {
       values.key = this.getKey(this.language, values.key);
       values.args = values.args ?? [];
       if (stringWithVariablesManager.stringsWithVariables[values.key]) {
-        return stringWithVariablesManager.getString(
-          values as IVariableManagerGetter
-        )!;
+        const replacedPlaceHolders =
+          stringWithVariablesManager.getString(values);
+
+        assertDefined(replacedPlaceHolders);
+
+        return replacedPlaceHolders;
       }
     }
     return find;

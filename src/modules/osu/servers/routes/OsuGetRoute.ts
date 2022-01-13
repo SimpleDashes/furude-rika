@@ -14,17 +14,21 @@ export default abstract class OsuGetRoute<T, B, P>
    * @param params The osu!params for this method
    * @returns undefined when not found, else the requested object.
    */
-  abstract get(params?: P | Partial<P>): Promise<T | undefined>;
+  public abstract get(params?: P | Partial<P>): Promise<T | undefined>;
 
-  public async getResponse(params?: P | Partial<P>): Promise<any> {
-    return (await axios.get(this.build(params))).data;
+  public async getRawResponse<T>(
+    params?: P | Partial<P>,
+    type?: T
+  ): Promise<T> {
+    const data = (await axios.get(this.build(params))).data;
+    return type ? (data as T) : data;
   }
 
   public async getFirstResultElseUndefined(
     buildT: (res: TBanchoApiRawResponse<B>) => T,
     params?: P | Partial<P>
   ): Promise<T | undefined> {
-    const res = (await this.getResponse(params)) as TBanchoApiRawResponse<B>;
+    const res = (await this.getRawResponse(params)) as TBanchoApiRawResponse<B>;
     return res.length > 0 ? buildT(res) : undefined;
   }
 }

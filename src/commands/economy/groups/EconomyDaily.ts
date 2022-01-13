@@ -1,4 +1,3 @@
-import DefaultContext from '../../../client/contexts/DefaultContext';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import DBCitizen from '../../../database/entity/DBCitizen';
 import FurudeCommandGroup from '../../../discord/commands/FurudeCommandGroup';
@@ -16,7 +15,7 @@ export default class EconomyDaily extends FurudeCommandGroup {
     });
   }
 
-  public async trigger(_context: DefaultContext): Promise<void> {
+  public async trigger(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

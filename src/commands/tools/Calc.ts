@@ -9,16 +9,17 @@ import StringOption from '../../modules/framework/options/classes/StringOption';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
+import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 
 export default class Calc extends FurudeCommand {
-  private readonly expression = this.registerOption(
+  private readonly expressionOption = this.registerOption(
     new StringOption()
       .setRequired(true)
       .setName('expression')
       .setDescription('The expression for my lazy mind to evaluate')
   );
 
-  private readonly variables = this.registerOption(
+  private readonly variablesOption = this.registerOption(
     new StringOption()
       .setName('variables')
       .setDescription(
@@ -36,22 +37,26 @@ export default class Calc extends FurudeCommand {
   public async trigger(context: DefaultContext): Promise<void> {
     const { interaction, localizer } = context;
 
-    const gotExpression = this.expression.apply(interaction)!.replace(' ', '');
-    const gotVariablesRaw = this.variables.apply(interaction);
+    let expression = this.expressionOption.apply(interaction);
+    assertDefined(expression);
+    expression = expression.replace(' ', '');
+
+    const rawVariables = this.variablesOption.apply(interaction);
+    assertDefined(rawVariables);
 
     const gotVariables = this.getAllInputVariablesCollection(
-      gotVariablesRaw!,
-      gotExpression
+      rawVariables,
+      expression
     );
 
-    const allVariables = this.getAllRequiredVariablesArray(gotExpression);
+    const allVariables = this.getAllRequiredVariablesArray(expression);
 
     const missingVariables = this.getAllMissingRequiredVariablesArray(
       allVariables,
       gotVariables
     );
 
-    const expressionText = MessageCreator.block(gotExpression!.trim());
+    const expressionText = MessageCreator.block(expression.trim());
 
     if (missingVariables.length != 0) {
       await InteractionUtils.reply(
@@ -68,7 +73,7 @@ export default class Calc extends FurudeCommand {
 
     let parsedExpression;
     try {
-      parsedExpression = Parser.parse(gotExpression!);
+      parsedExpression = Parser.parse(expression);
     } catch {
       await InteractionUtils.reply(
         interaction,
@@ -86,7 +91,9 @@ export default class Calc extends FurudeCommand {
       evaluatedResult = parsedExpression.evaluate(
         CollectionHelper.collectionToRecord(gotVariables)
       );
-    } catch {}
+    } catch {
+      // invalid input.
+    }
 
     let displayText;
     if (evaluatedResult) {
@@ -94,10 +101,10 @@ export default class Calc extends FurudeCommand {
         expressionText,
         MessageCreator.block(evaluatedResult.toString()),
       ]);
-      if (gotVariables && gotVariablesRaw) {
+      if (gotVariables && rawVariables) {
         displayText += `, ${localizer.get(
           FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
-          [MessageCreator.block(gotVariablesRaw.trim())]
+          [MessageCreator.block(rawVariables.trim())]
         )}`;
       }
       displayText = MessageCreator.success(displayText);
@@ -115,7 +122,7 @@ export default class Calc extends FurudeCommand {
   private getAllMissingRequiredVariablesArray(
     allVariables: string[],
     gotVariables: Collection<string, number>
-  ) {
+  ): string[] {
     const missingVariables = [];
 
     for (const variable of allVariables) {
@@ -127,11 +134,11 @@ export default class Calc extends FurudeCommand {
     return missingVariables;
   }
 
-  private getAllRequiredVariablesArray(gotExpression: string) {
+  private getAllRequiredVariablesArray(gotExpression: string): string[] {
     let currentVariableName = '';
     const allVariables: string[] = [];
 
-    const tempAllCharacters = Array.from(gotExpression!).filter((char) => {
+    const tempAllCharacters = Array.from(gotExpression).filter((char) => {
       return char.toLowerCase() != char.toUpperCase();
     });
 
@@ -163,8 +170,8 @@ export default class Calc extends FurudeCommand {
   private getAllInputVariablesCollection(
     gotVariablesRaw: string,
     gotExpression: string
-  ) {
-    let gotVariables: Collection<string, number> | null = new Collection();
+  ): Collection<string, number> {
+    const gotVariables: Collection<string, number> | null = new Collection();
     if (gotVariablesRaw) {
       const split =
         StringUtils.toCollectionSplittedByEqualSignAsString(gotVariablesRaw);
@@ -173,7 +180,9 @@ export default class Calc extends FurudeCommand {
         let value;
         try {
           value = Parser.parse(set[1]).evaluate();
-        } catch {}
+        } catch {
+          // invalid input.
+        }
         if (value) {
           if (gotExpression?.includes(set[0])) {
             gotVariables?.set(set[0], value);

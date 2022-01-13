@@ -1,5 +1,8 @@
+import ICommandContext from '../../interfaces/ICommandContext';
 import CommandPrecondition from '../abstracts/CommandPrecondition';
 
-export default interface IHasPreconditions {
-  preconditions: CommandPrecondition<any>[];
+export default interface IHasPreconditions<
+  CTX extends ICommandContext = ICommandContext
+> {
+  preconditions: CommandPrecondition<CTX>[];
 }

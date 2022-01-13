@@ -8,9 +8,10 @@ import OwnerPrecondition from '../preconditions/OwnerPrecondition';
 import RequiresGuildPrecondition from '../preconditions/RequiresGuildPrecondition';
 import RequiresSubCommandsPrecondition from '../preconditions/RequiresSubCommandsPrecondition';
 import RequiresSubCommandsGroupsPrecondition from '../preconditions/RequiresSubCommandsGroupsPrecondition';
+import ICommandContext from '../interfaces/ICommandContext';
 
 export class SetupPrecondition {
-  public static setup(owner: OwnerPrecondition) {
+  public static setup(owner: OwnerPrecondition): void {
     this.setupOwnerPrecondition(owner);
     this.setupGuildPrecondition();
     this.setupSubCommandPrecondition();
@@ -18,34 +19,34 @@ export class SetupPrecondition {
     this.setupGuildPermissionsPrecondition();
   }
 
-  public static setupOwnerPrecondition(condition: OwnerPrecondition) {
+  public static setupOwnerPrecondition(condition: OwnerPrecondition): void {
     Preconditions.OwnerOnly = condition;
   }
 
   public static setupGuildPrecondition(
     condition = new RequiresGuildPrecondition()
-  ) {
+  ): void {
     Preconditions.GuildOnly = condition;
   }
 
   public static setupSubCommandPrecondition(
     condition = new RequiresSubCommandsPrecondition()
-  ) {
+  ): void {
     Preconditions.RequiresSubCommand = condition;
   }
 
   public static setupSubCommandGroupsPrecondition(
     condition = new RequiresSubCommandsGroupsPrecondition()
-  ) {
+  ): void {
     Preconditions.RequiresSubCommandGroup = condition;
   }
 
   public static setupGuildPermissionsPrecondition(
-    creator: (
+    creator = (
       permissions: PermissionResolvable
-    ) => GuildPermissionsPreconditions = (permissions) =>
+    ): GuildPermissionsPreconditions =>
       new GuildPermissionsPreconditions(permissions)
-  ) {
+  ): void {
     Preconditions.WithPermission = creator;
   }
 }
@@ -62,9 +63,11 @@ export class Preconditions {
   };
 }
 
-function SetPreconditions(...preconditions: CommandPrecondition<any>[]) {
-  return (target: Constructor<[...any], ICommand<any, any>>) => {
-    const prototype = target.prototype as Partial<IHasPreconditions>;
+function SetPreconditions(...preconditions: CommandPrecondition<never>[]) {
+  return (
+    target: Constructor<[...unknown[]], ICommand<ICommandContext>>
+  ): void => {
+    const prototype = target.prototype as Partial<IHasPreconditions<never>>;
     prototype.preconditions ??= [];
 
     const maybeGuildPrecondition = preconditions.find(

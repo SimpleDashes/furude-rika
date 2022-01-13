@@ -1,4 +1,3 @@
-import DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import {
   Preconditions,
@@ -14,7 +13,7 @@ export default class Economy extends FurudeCommand {
     });
   }
 
-  public async trigger(_context: DefaultContext): Promise<void> {
+  public async trigger(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

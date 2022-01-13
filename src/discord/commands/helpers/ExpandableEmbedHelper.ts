@@ -16,19 +16,19 @@ type ButtonCustomizer = (button: MessageButton) => void;
 type ExpandingChangeListener = (button: MessageButton) => Promise<void>;
 
 export default class ExpandableEmbedHelper {
-  static createExpandButton(
+  public static createExpandButton(
     buttonFactory: MessageButtonFactory
   ): MessageButton {
     return buttonFactory.newButton().setStyle('SUCCESS').setLabel('Expand');
   }
 
-  static createMinimizeButton(
+  public static createMinimizeButton(
     buttonFactory: MessageButtonFactory
   ): MessageButton {
     return buttonFactory.newButton().setStyle('SUCCESS').setLabel('Minimize');
   }
 
-  static async createExpandingInteractiveButton(
+  public static async createExpandingInteractiveButton(
     minimizedEmbed: BaseEmbed,
     expandedEmbed: BaseEmbed,
     interaction:
@@ -41,7 +41,7 @@ export default class ExpandableEmbedHelper {
       onExpand?: ExpandingChangeListener;
     },
     ...otherEmbeds: BaseEmbed[]
-  ) {
+  ): Promise<void> {
     return this.createInteractiveButtons(
       minimizedEmbed,
       expandedEmbed,
@@ -57,7 +57,7 @@ export default class ExpandableEmbedHelper {
     );
   }
 
-  static async createMinimizingInteractiveButton(
+  public static async createMinimizingInteractiveButton(
     minimizedEmbed: BaseEmbed,
     expandedEmbed: BaseEmbed,
     interaction:
@@ -70,7 +70,7 @@ export default class ExpandableEmbedHelper {
       onMinimize?: ExpandingChangeListener;
     },
     ...otherEmbeds: BaseEmbed[]
-  ) {
+  ): Promise<void> {
     return this.createInteractiveButtons(
       minimizedEmbed,
       expandedEmbed,
@@ -86,7 +86,7 @@ export default class ExpandableEmbedHelper {
     );
   }
 
-  static async createInteractiveButtons(
+  public static async createInteractiveButtons(
     minimizedEmbed: BaseEmbed,
     expandedEmbed: BaseEmbed,
     interaction:
@@ -108,7 +108,7 @@ export default class ExpandableEmbedHelper {
       onMinimize?: ExpandingChangeListener;
     },
     ...otherEmbeds: BaseEmbed[]
-  ) {
+  ): Promise<void> {
     if (options?.excludeMinimize && options.excludeExpand) {
       throw "You shouldn't exclude all expanding buttons";
     }
@@ -143,7 +143,7 @@ export default class ExpandableEmbedHelper {
         button: expandButton,
         onPress: async (i) => {
           if (listener?.onExpand) {
-            listener.onExpand(expandButton);
+            await listener.onExpand(expandButton);
           }
           await InteractionUtils.safeUpdate(i, {
             embeds: getEmbeds(expandedEmbed),
@@ -157,7 +157,7 @@ export default class ExpandableEmbedHelper {
         button: minimizeButton,
         onPress: async (i) => {
           if (listener?.onMinimize) {
-            listener.onMinimize(minimizeButton);
+            await listener.onMinimize(minimizeButton);
           }
           await InteractionUtils.safeUpdate(i, {
             embeds: getEmbeds(minimizedEmbed),

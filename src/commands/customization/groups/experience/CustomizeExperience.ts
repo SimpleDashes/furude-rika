@@ -1,4 +1,3 @@
-import DefaultContext from '../../../../client/contexts/DefaultContext';
 import FurudeCommandGroup from '../../../../discord/commands/FurudeCommandGroup';
 import {
   Preconditions,
@@ -15,7 +14,7 @@ export default class CustomizeExperience extends FurudeCommandGroup {
     });
   }
 
-  public async trigger(_context: DefaultContext): Promise<void> {
+  public async trigger(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

@@ -6,6 +6,7 @@ import Strings from '../../containers/Strings';
 import FurudeLocales from '../../localization/FurudeLocales';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 import FurudeOperations from '../FurudeOperations';
 import IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
@@ -14,6 +15,12 @@ import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperN
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import DBGuild from './DBGuild';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
+
+export type IncrementLocalUserExperienceInfo = {
+  rawGuild: Guild;
+  dbGuild: DBGuild;
+  channel: GuildChannel;
+};
 
 /**
  * This class contains general information
@@ -31,18 +38,18 @@ export default class DBUser
   public static MIN_SECONDS_FOR_EXPERIENCE_GLOBAL = 30;
 
   @Column()
-  preferred_locale?: SupportedFurudeLocales | undefined;
+  public preferred_locale?: SupportedFurudeLocales | undefined;
 
   @Column('string')
-  username: string = Strings.UNKNOWN;
+  public username: string = Strings.UNKNOWN;
 
-  @Column((_type) => GuildHyperNumber)
-  experience = new GuildHyperNumber();
+  @Column(() => GuildHyperNumber)
+  public experience = new GuildHyperNumber();
 
-  @Column((_type) => GuildHyperDate)
-  lastTimeGotExperience = new GuildHyperDate(null);
+  @Column(() => GuildHyperDate)
+  public lastTimeGotExperience = new GuildHyperDate(null);
 
-  setPreferredLocale(
+  public setPreferredLocale(
     localizer: FurudeLocales,
     locale: SupportedFurudeLocales | null | undefined
   ): IDatabaseOperation {
@@ -54,7 +61,7 @@ export default class DBUser
     );
   }
 
-  public setUsername(username: string) {
+  public setUsername(username: string): void {
     this.username = username.trim();
   }
 
@@ -64,11 +71,7 @@ export default class DBUser
    */
   public incrementExperience(
     user: User,
-    runInfo?: {
-      rawGuild: Guild;
-      dbGuild: DBGuild;
-      channel: GuildChannel;
-    }
+    runInfo?: IncrementLocalUserExperienceInfo
   ): IDatabaseOperation {
     const dateNow = new Date();
     const differenceGlobal = intervalToDuration({
@@ -85,7 +88,7 @@ export default class DBUser
         min: DBUser.MIN_GLOBAL_EXPERIENCE_ADD,
         max: DBUser.MAX_GLOBAL_EXPERIENCE_ADD,
       });
-      this.experience.global! += incrementedGlobalExperience;
+      this.experience.global += incrementedGlobalExperience;
       this.lastTimeGotExperience.global = dateNow;
       success = true;
     }
@@ -113,9 +116,11 @@ export default class DBUser
             max:
               dbGuild.max_rewarded_xp_value ?? DBUser.MAX_GLOBAL_EXPERIENCE_ADD,
           });
+          const localValue = this.experience.currentLocal(rawGuild);
+          assertDefined(localValue);
           this.experience.setLocal(
             rawGuild,
-            this.experience.currentLocal(rawGuild)! + incrementedLocalExperience
+            localValue + incrementedLocalExperience
           );
           this.lastTimeGotExperience.setLocal(rawGuild, dateNow);
           success = true;

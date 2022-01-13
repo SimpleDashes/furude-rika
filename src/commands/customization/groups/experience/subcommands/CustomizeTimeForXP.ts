@@ -1,4 +1,3 @@
-import assert from 'assert';
 import DefaultContext from '../../../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import DBUser from '../../../../../database/entity/DBUser';
@@ -9,6 +8,7 @@ import {
   SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
+import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 
 @SetPreconditions(Preconditions.WithPermission('ADMINISTRATOR'))
 export default class CustomizeTimeForXP extends FurudeSubCommand {
@@ -34,11 +34,12 @@ export default class CustomizeTimeForXP extends FurudeSubCommand {
   public async trigger(context: DefaultContext): Promise<void> {
     const { interaction, localizer, dbGuild } = context;
 
-    assert(dbGuild);
+    assertDefined(dbGuild);
 
-    const secondsForXP = this.secondsOption.apply(interaction)!;
+    const secondsForXP = this.secondsOption.apply(interaction);
+    assertDefined(secondsForXP);
 
-    const operation = dbGuild!.setTimeForXP(localizer, secondsForXP);
+    const operation = dbGuild.setTimeForXP(localizer, secondsForXP);
 
     await FurudeOperations.saveWhenSuccess(dbGuild);
     await FurudeOperations.answerInteraction(interaction, operation);

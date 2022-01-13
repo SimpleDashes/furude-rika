@@ -5,6 +5,7 @@
 
 import { minutesToSeconds, secondsToMilliseconds } from 'date-fns';
 import { Collection } from 'discord.js';
+import { assertDefined } from '../types/TypeAssertions';
 
 /**
  * A collection with limited capacity.
@@ -36,7 +37,7 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
    * @param capacity The capacity of the collection.
    * @param lifetime The lifetime of each cache data in the collection, in seconds.
    */
-  constructor(
+  public constructor(
     capacity: number,
     lifetime: number,
     sweepInterval = minutesToSeconds(10)
@@ -66,6 +67,8 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
     }
 
     this.interval = setInterval(() => {
+      assertDefined(this.interval);
+
       const executionTime: number = Date.now();
 
       this.addedTime.forEach((value, key) => {
@@ -76,7 +79,7 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
       });
 
       if (this.size === 0) {
-        clearInterval(this.interval!);
+        clearInterval(this.interval);
         this.interval = undefined;
       }
     }, secondsToMilliseconds(this.sweepInterval));
@@ -91,10 +94,13 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
    * @param value The value of the element to add.
    * @returns This `LimitedCapacityCollection` object.
    */
-  override set(key: K, value: V): this {
+  public override set(key: K, value: V): this {
     while (this.size >= this.capacity) {
-      this.addedTime.delete(this.firstKey()!);
-      this.delete(this.firstKey()!);
+      const firstKey = this.firstKey();
+      assertDefined(firstKey);
+
+      this.addedTime.delete(firstKey);
+      this.delete(firstKey);
     }
 
     // Reenter to set lastKey() to this key.

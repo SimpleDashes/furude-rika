@@ -3,7 +3,7 @@ import Protocol from './Protocol';
 export default abstract class ContentHost {
   public readonly url: string;
 
-  get Url() {
+  public get Url(): string {
     return `${this.protocol}://${this.url}.${this.domain}`;
   }
 

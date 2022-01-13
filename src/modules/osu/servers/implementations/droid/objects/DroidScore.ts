@@ -25,7 +25,7 @@ export default class DroidScore
     }
   }
 
-  override async fetchBeatmap(): Promise<IAPIOsuBeatmap | undefined> {
+  public override async fetchBeatmap(): Promise<IAPIOsuBeatmap | undefined> {
     let newBeatmap: IAPIOsuBeatmap | undefined;
     if (this.beatmapHash) {
       newBeatmap = (

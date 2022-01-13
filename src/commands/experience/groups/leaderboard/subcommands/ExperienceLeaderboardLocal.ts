@@ -5,6 +5,7 @@ import {
   Preconditions,
   SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 
 @SetPreconditions(Preconditions.GuildOnly)
@@ -21,14 +22,16 @@ export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSub
     context: DefaultContext,
     user: DBUser
   ): number | null {
-    return user.experience.currentLocal(context.interaction.guild!);
+    assertDefined(context.interaction.guild);
+    return user.experience.currentLocal(context.interaction.guild);
   }
 
   public async getUsers(context: DefaultContext): Promise<DBUser[]> {
+    assertDefined(context.interaction.guildId);
     return await context.db.USER.find({
       where: {
         'experience.locals': {
-          $elemMatch: { key: context.interaction.guildId! },
+          $elemMatch: { key: context.interaction.guildId },
         },
       },
     });

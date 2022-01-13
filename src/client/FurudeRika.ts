@@ -19,6 +19,8 @@ import CommandPrecondition from '../modules/framework/commands/preconditions/abs
 import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import GuildPermissionsPrecondition from '../modules/framework/commands/preconditions/GuildPermissionsPreconditions';
 import MessageCreator from '../modules/framework/helpers/MessageCreator';
+import { assertDefined } from '../modules/framework/types/TypeAssertions';
+import { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
 
 export default class FurudeRika extends BaseBot<DefaultContext> {
   public readonly db = new FurudeDB();
@@ -65,10 +67,10 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
     const setupCondition = (
       condition: CommandPrecondition,
       key: FurudeTranslationKeys
-    ) => {
+    ): void => {
       (condition as CommandPrecondition<DefaultContext>).onFailMessage = (
         ctx
-      ) => MessageCreator.error(ctx.localizer.get(key));
+      ): string => MessageCreator.error(ctx.localizer.get(key));
     };
 
     setupCondition(
@@ -86,7 +88,9 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
       FurudeTranslationKeys.SUBCOMMAND_MISSING_REQUIRED
     );
 
-    Preconditions.WithPermission = (permissions) => {
+    Preconditions.WithPermission = (
+      permissions
+    ): GuildPermissionsPrecondition => {
       const condition = new GuildPermissionsPrecondition(permissions);
       setupCondition(
         condition,
@@ -109,7 +113,7 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
     }, secondsToMilliseconds(60));
   }
 
-  override async start(): Promise<void> {
+  public override async start(): Promise<void> {
     await super.start();
     await this.localizer.build();
     await this.db.connect();
@@ -158,11 +162,16 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
       interaction.user,
       interaction.inGuild() &&
         interaction.channel instanceof BaseGuildTextChannel
-        ? {
-            rawGuild: interaction.guild!,
-            dbGuild: dbGuild!,
-            channel: interaction.channel!,
-          }
+        ? ((): IncrementLocalUserExperienceInfo => {
+            assertDefined(interaction.guild);
+            assertDefined(dbGuild);
+            assertDefined(interaction.channel);
+            return {
+              rawGuild: interaction.guild,
+              dbGuild: dbGuild,
+              channel: interaction.channel,
+            };
+          })()
         : undefined
     );
 

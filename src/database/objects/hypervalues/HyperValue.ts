@@ -1,7 +1,7 @@
 import { Snowflake } from 'discord.js';
 import { Column } from 'typeorm';
 import KeySetHelper from '../../../modules/framework/helpers/KeySetHelper';
-import ISnowflakeSet from '../../interfaces/ISnowflakeSet';
+import TSnowflakeSet from '../../interfaces/TSnowflakeSet';
 import { HyperTypes } from './HyperTypes';
 
 /**
@@ -12,7 +12,7 @@ import { HyperTypes } from './HyperTypes';
  */
 export default abstract class GlobalLocalValue<T, K> {
   @Column('array')
-  public locals: ISnowflakeSet<T>[] = [];
+  public locals: TSnowflakeSet<T>[] = [];
 
   @Column('number')
   public global: T | null;
@@ -36,11 +36,11 @@ export default abstract class GlobalLocalValue<T, K> {
     return newValue;
   }
 
-  public setLocal(key: K, value: T | null) {
+  public setLocal(key: K, value: T | null): void {
     KeySetHelper.setValue(this.locals, this.getLocalDecorationKey(key), value);
   }
 
-  public values(key: K) {
+  public values(key: K): (T | null)[] {
     return [this.global, this.currentLocal(key)];
   }
 
@@ -73,7 +73,7 @@ export default abstract class GlobalLocalValue<T, K> {
     key: K | undefined | null,
     type: HyperTypes,
     value: T
-  ) {
+  ): void {
     switch (type) {
       case HyperTypes.global:
         this.global = value;
@@ -82,9 +82,6 @@ export default abstract class GlobalLocalValue<T, K> {
         if (this.assertKeyNotUndefined(key)) {
           this.setLocal(key, value);
         }
-        break;
-      default:
-        this.global = value;
         break;
     }
   }

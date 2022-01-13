@@ -36,7 +36,7 @@ export default class BaseOsuScore implements IOsuScore {
     this.rank = base.rank;
   }
 
-  async fetchBeatmap(): Promise<IAPIOsuBeatmap | undefined> {
+  public async fetchBeatmap(): Promise<IAPIOsuBeatmap | undefined> {
     const beatmap =
       (
         await OsuServers.bancho.beatmaps.get({

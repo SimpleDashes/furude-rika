@@ -22,6 +22,7 @@ import InteractionCollectorCreator from './abstracts/InteractionCollectorCreator
 import OnButtonPageChange from './interfaces/OnButtonPageChange';
 import Symbols from './Symbols';
 import { capitalize } from '@stdlib/string';
+import { assertDefined } from '../types/TypeAssertions';
 
 type Column = {
   name: string;
@@ -65,7 +66,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
    * @param onPageChangeArgs Arguments for `onPageChange` function.
    * @returns The collector that collects the button-pressing event.
    */
-  static async createLimitedButtonBasedPaging<T>(
+  public static async createLimitedButtonBasedPaging<T>(
     interaction: CommandInteraction | MessageComponentInteraction,
     options: InteractionReplyOptions,
     users: Snowflake[],
@@ -103,7 +104,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
    * @param onPageChangeArgs Arguments for `onPageChange` function.
    * @returns The collector that collects the button-pressing event.
    */
-  static async createLimitlessButtonBasedPaging<T>(
+  public static async createLimitlessButtonBasedPaging<T>(
     interaction: CommandInteraction | MessageComponentInteraction,
     options: InteractionReplyOptions,
     users: Snowflake[],
@@ -127,7 +128,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     );
   }
 
-  static async createBaseButtonCollectors(
+  public static async createBaseButtonCollectors(
     buttonListeners: IListenerButton[],
     interaction: CommandInteraction | MessageComponentInteraction,
     options: InteractionReplyOptions,
@@ -150,7 +151,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
       })) as Message;
     };
 
-    const removeButtons = async () => {
+    const removeButtons = async (): Promise<void> => {
       options.components =
         options.components?.filter((c) => c != component) ?? [];
       await reply();
@@ -161,11 +162,13 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     const collector: InteractionCollector<ButtonInteraction> =
       this.createButtonCollector(message, users, duration);
 
-    const replyToEvents = async (buttonInteraction: ButtonInteraction) => {
+    const replyToEvents = async (
+      buttonInteraction: ButtonInteraction
+    ): Promise<void> => {
       const pressedButton = buttonListeners.find(
         (l) => l.button.customId == buttonInteraction.customId
       );
-      pressedButton?.onPress(buttonInteraction);
+      await pressedButton?.onPress(buttonInteraction);
     };
 
     collector.on('collect', async (buttonInteraction) => {
@@ -199,12 +202,12 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
    * @param duration The duration the confirmation button collector will remain active, in seconds.
    * @returns A boolean determining whether the user confirmed.
    */
-  static async createConfirmation(
+  public static async createConfirmation(
     interaction: CommandInteraction | MessageComponentInteraction,
     options: InteractionReplyOptions,
     users: Snowflake[],
     duration: number,
-    collectTime: number = 5
+    collectTime = 5
   ): Promise<boolean> {
     const buttons: MessageButton[] = this.createConfirmationButtons();
 
@@ -214,7 +217,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
         | MessageComponentInteraction<CacheType>
         | CommandInteraction<CacheType>,
       text: string
-    ) => {
+    ): Promise<void> => {
       await InteractionUtils.reply(interaction, {
         content: MessageCreator.error(text),
         components: [],
@@ -224,39 +227,47 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
       }, secondsToMilliseconds(collectTime));
     };
 
-    return new Promise((res) => {
-      this.createBaseButtonCollectors(
-        [
-          {
-            button: buttons.find((b) => b.customId == ConfirmationIDS.yes)!,
-            onPress: async () => {
-              await InteractionUtils.reply(interaction, {
-                content: MessageCreator.error(
-                  `Please wait... ${Symbols.timer}`
-                ),
-                components: [],
-              });
-            },
+    const confirmationButton = buttons.find(
+      (b) => b.customId == ConfirmationIDS.yes
+    );
+
+    assertDefined(confirmationButton);
+
+    const negationButton = buttons.find(
+      (b) => b.customId == ConfirmationIDS.no
+    );
+
+    assertDefined(negationButton);
+
+    const collected = await this.createBaseButtonCollectors(
+      [
+        {
+          button: confirmationButton,
+          onPress: async (): Promise<void> => {
+            await InteractionUtils.reply(interaction, {
+              content: MessageCreator.error(`Please wait... ${Symbols.timer}`),
+              components: [],
+            });
           },
-          {
-            button: buttons.find((b) => b.customId == ConfirmationIDS.no)!,
-            onPress: async (i) => {
-              await cancel(i, 'Action cancelled.');
-            },
+        },
+        {
+          button: negationButton,
+          onPress: async (i): Promise<void> => {
+            await cancel(i, 'Action cancelled.');
           },
-        ],
-        interaction,
-        options,
-        users,
-        duration,
-        true,
-        async () => {
-          await cancel(interaction, 'Timed out.');
-        }
-      ).then((collected) => {
-        res(collected.first()?.customId == ConfirmationIDS.yes);
-      });
-    });
+        },
+      ],
+      interaction,
+      options,
+      users,
+      duration,
+      true,
+      async () => {
+        await cancel(interaction, 'Timed out.');
+      }
+    );
+
+    return collected.first()?.customId === ConfirmationIDS.yes;
   }
 
   /**
@@ -378,7 +389,9 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
       component.components.forEach((component) => component.setDisabled(true));
       try {
         await InteractionUtils.reply(interaction, options);
-      } catch {}
+      } catch {
+        // Maybe timed out?.
+      }
     });
 
     return message;
@@ -463,7 +476,8 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     tableColumns = [...internalColumns, ...tableColumns];
     const filledTables: (string | undefined)[][] = [];
     for (let i = 0; i < contents.length; i++) {
-      const content = contents[i]!;
+      const content = contents[i];
+      assertDefined(content);
       filledTables.push([(i + 1).toString(), ...fillTable(content)]);
     }
     return await this.createLimitedButtonBasedPaging(
@@ -474,10 +488,13 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
       pageOption.itemsPerPage,
       pageOption.apply(interaction, contents),
       duration,
-      async (options, page, _contents) => {
+      async (options, page) => {
         let output = Strings.EMPTY;
 
-        const createColumnItem = (i: number, name: string | undefined) => {
+        const createColumnItem = (
+          i: number,
+          name: string | undefined
+        ): void => {
           const column = tableColumns[i];
 
           if (!column) {
@@ -487,9 +504,10 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
           const columnContents = filledTables.map((table) => table[i]);
           const longest = Math.max(
             StringHelper.getUnicodeStringLength(column.name),
-            ...columnContents.map((v) =>
-              StringHelper.getUnicodeStringLength(v!)
-            )
+            ...columnContents.map((v) => {
+              assertDefined(v);
+              return StringHelper.getUnicodeStringLength(v);
+            })
           );
 
           output += ` | ${(name ?? ' - ').padEnd(
@@ -498,13 +516,16 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
         };
 
         for (let i = 0; i < tableColumns.length; i++) {
-          const column = tableColumns[i]!;
+          const column = tableColumns[i];
+          assertDefined(column);
           createColumnItem(i, column.name);
         }
 
         output += '\n';
         await this.loopPages(pageOption.itemsPerPage, page, async (i) => {
-          const filledTable = filledTables[i]!;
+          const filledTable = filledTables[i];
+
+          assertDefined(filledTable);
 
           for (let j = 0; j < tableColumns.length; j++) {
             const data = filledTable ? filledTable[j] : undefined;
@@ -522,7 +543,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     index: number,
     itemsPerPage: number,
     currentPage: number
-  ) {
+  ): number {
     return (currentPage - 1) * itemsPerPage + index;
   }
 
@@ -530,7 +551,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     itemsPerPage: number,
     currentPage: number,
     run: (i: number) => Promise<void>
-  ) {
+  ): Promise<void> {
     for (
       let i = itemsPerPage * (currentPage - 1);
       i < itemsPerPage + itemsPerPage * (currentPage - 1);

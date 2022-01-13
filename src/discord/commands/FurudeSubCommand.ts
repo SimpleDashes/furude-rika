@@ -1,4 +1,3 @@
-import FurudeRika from '../../client/FurudeRika';
 import DefaultContext from '../../client/contexts/DefaultContext';
 import SubCommand from '../../modules/framework/commands/SubCommand';
 import FurudeCommandWrapper from './FurudeCommandWrapper';
@@ -8,12 +7,12 @@ import ICommandContext from '../../modules/framework/commands/interfaces/IComman
 export default abstract class FurudeSubCommand<
     CTX extends DefaultContext = DefaultContext
   >
-  extends SubCommand<FurudeRika, DefaultContext>
-  implements IFurudeCommand<DefaultContext>
+  extends SubCommand<CTX>
+  implements IFurudeCommand<CTX>
 {
   public abstract override trigger(context: CTX): Promise<void>;
 
-  public createContext(baseContext: ICommandContext<FurudeRika>): CTX {
+  public createContext(baseContext: ICommandContext): CTX {
     return FurudeCommandWrapper.defaultContext(baseContext) as CTX;
   }
 }

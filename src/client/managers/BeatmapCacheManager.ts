@@ -1,4 +1,5 @@
 import { hoursToSeconds } from 'date-fns';
+import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 import IOsuScore from '../../modules/osu/scores/IOsuScore';
 import IAPIOsuBeatmap from '../../modules/osu/servers/beatmaps/IAPIOsuBeatmap';
 import DroidScore from '../../modules/osu/servers/implementations/droid/objects/DroidScore';
@@ -23,7 +24,7 @@ export default class BeatmapCacheManager extends BaseFurudeCacheManager<
 
   public async fetchBeatmap(
     beatmapIDOrHash: string,
-    fetchBeatmaps: () => Promise<IAPIOsuBeatmap[]> = async () => {
+    fetchBeatmaps = async (): Promise<IAPIOsuBeatmap[]> => {
       return await OsuServers.bancho.beatmaps.get({
         b: parseInt(beatmapIDOrHash),
       });
@@ -49,10 +50,15 @@ export default class BeatmapCacheManager extends BaseFurudeCacheManager<
     return beatmap;
   }
 
-  public async fetchFromScore(score: IOsuScore) {
+  public async fetchFromScore(
+    score: IOsuScore
+  ): Promise<IAPIOsuBeatmap | undefined> {
     const beatmap = await this.fetchBeatmap(
       score instanceof DroidScore
-        ? score.beatmapHash!
+        ? ((): string => {
+            assertDefined(score.beatmapHash);
+            return score.beatmapHash;
+          })()
         : score.beatmapID.toString(),
       async () => {
         const beatmap = await score.fetchBeatmap();

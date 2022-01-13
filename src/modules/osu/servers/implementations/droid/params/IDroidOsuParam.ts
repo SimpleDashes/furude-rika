@@ -1,1 +1,3 @@
-export default interface IDroidOsuParam {}
+type IDroidOsuParam = unknown;
+
+export default IDroidOsuParam;

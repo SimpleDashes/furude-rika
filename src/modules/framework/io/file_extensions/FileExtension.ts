@@ -7,11 +7,11 @@ export default class FileExtension implements IHasString {
     this.extensionName = extensionName;
   }
 
-  public toString() {
+  public toString(): string {
     return `.${this.getExtensionName()}`;
   }
 
-  public getExtensionName() {
+  public getExtensionName(): string {
     return this.extensionName;
   }
 }

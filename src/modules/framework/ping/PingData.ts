@@ -6,7 +6,7 @@ export default class PingData<T> {
     this.pingWhat = pingWhat;
   }
 
-  public setPingCallback(ping: (args: T) => Promise<number>) {
+  public setPingCallback(ping: (args: T) => Promise<number>): this {
     this.ping = ping;
     return this;
   }

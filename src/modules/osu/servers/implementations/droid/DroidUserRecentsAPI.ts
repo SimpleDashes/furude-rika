@@ -5,19 +5,20 @@ import IDroidOsuUserRecentsParam from './params/IDroidOsuUserRecentsParams';
 import cheerio from 'cheerio';
 import IBanchoAPIBeatmapResponse from '../bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
 import BaseOsuAPIBeatmap from '../../beatmaps/BaseOsuAPIBeatmap';
+import { assertDefined } from '../../../../framework/types/TypeAssertions';
 
 export default class DroidUserRecentsAPI extends OsuUserRecentRoute<
   DroidScore,
   IBanchoAPIUserRecentScore,
   IDroidOsuUserRecentsParam
 > {
-  async get(
+  public async get(
     params: IDroidOsuUserRecentsParam,
     fetchBeatmaps?: boolean
   ): Promise<DroidScore[]> {
     if (!params.u.html) return [];
 
-    const $ = cheerio.load(params.u.html!);
+    const $ = cheerio.load(params.u.html);
 
     const liListGroupItem = $('li.list-group-item');
     const limit = Math.min(
@@ -36,7 +37,9 @@ export default class DroidUserRecentsAPI extends OsuUserRecentRoute<
 
       const html = liListGroupItem[i];
 
-      const el = $.load(html!);
+      assertDefined(html);
+
+      const el = $.load(html);
       const small = el('small').text().split('/');
       const hiddenStats = el('span.hidden')
         .text()
@@ -49,24 +52,31 @@ export default class DroidUserRecentsAPI extends OsuUserRecentRoute<
         .replaceAll(' ', '')
         .split(',');
 
+      assertDefined(small[0]);
+      assertDefined(small[1]);
+      assertDefined(small[3]);
+
+      assertDefined(hiddenStats[0]);
+      assertDefined(hiddenStats[1]);
+
       const apiScore: IBanchoAPIUserRecentScore = {
         beatmap_id: stringEmpty,
-        score: small[1]!.replaceAll(',', '').replaceAll(' ', ''),
-        maxcombo: small[3]!.replace('x', ''),
+        score: small[1].replaceAll(',', '').replaceAll(' ', ''),
+        maxcombo: small[3].replace('x', ''),
         count50: stringZero,
         count100: stringZero,
         count300: stringZero,
-        countmiss: hiddenStats[0]!,
+        countmiss: hiddenStats[0],
         countkatu: stringZero,
         countgeki: stringZero,
         perfect: stringZero,
         enabled_mods: stringZero, // TODO BITWISE MODS
         user_id: params.u.user_id.toString(),
-        date: small[0]!.slice(0, -1),
+        date: small[0].slice(0, -1),
         rank: $('span.m-b-xs.h4.block').first().text(),
       };
 
-      const md5 = hiddenStats[1]!;
+      const md5 = hiddenStats[1];
 
       const score = new DroidScore(apiScore, {
         beatmapHash: md5,

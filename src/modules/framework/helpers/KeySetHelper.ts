@@ -15,7 +15,11 @@ export default class KeySetHelper {
     return this.getObject(array, key)?.value;
   }
 
-  public static setValue<K, V>(array: IKeyValueSet<K, V>[], key: K, value: V) {
+  public static setValue<K, V>(
+    array: IKeyValueSet<K, V>[],
+    key: K,
+    value: V
+  ): void {
     const current = this.getObject(array, key);
     if (current) {
       current.value = value;

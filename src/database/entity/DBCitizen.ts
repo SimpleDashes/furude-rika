@@ -28,24 +28,21 @@ export default class DBCitizen extends SnowFlakeIDEntity {
   public static readonly WEEKLY_STREAK = 7;
   public static readonly AMOUNT_DAILY = 50;
 
-  @Column((_type) => GuildHyperNumber)
-  capital = new GuildHyperNumber();
+  @Column(() => GuildHyperNumber)
+  public capital = new GuildHyperNumber();
 
-  @Column((_type) => GuildHyperNumber)
-  streak = new GuildHyperNumber();
+  @Column(() => GuildHyperNumber)
+  public streak = new GuildHyperNumber();
 
-  @Column((_type) => GuildHyperDate)
-  lastTimeClaimedDaily = new GuildHyperDate(null);
+  @Column(() => GuildHyperDate)
+  public lastTimeClaimedDaily = new GuildHyperDate(null);
 
   private incrementCapital(
     interaction: CommandInteraction,
     type: HyperTypes,
     amount: number
   ): IDatabaseOperation {
-    let capital = this.capital.getValueSwitchedForType(
-      interaction.guild,
-      type
-    )!;
+    let capital = this.capital.getValueSwitchedForType(interaction.guild, type);
 
     const resultingCapital = capital + amount;
 
@@ -82,7 +79,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     let lostStreak = false;
     let gotMaxStreak = false;
 
-    const makeSuccess = (prefix: string) => {
+    const makeSuccess = (prefix: string): IStreakOperation => {
       let response = `${prefix}${INCREMENT_SUCCESS}$`;
       if (unfortunately != DEFAULT_UNFORTUNATELY) {
         response += unfortunately;
@@ -93,7 +90,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       };
     };
 
-    let streak = this.streak.getValueSwitchedForType(interaction.guild, type)!;
+    let streak = this.streak.getValueSwitchedForType(interaction.guild, type);
 
     if (selectedLastTimeClaimedDaily) {
       if (duration.days && duration.days > 1) {
@@ -170,13 +167,11 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_CLAIM_SUCCESS, [
         MessageCreator.block(amount.toFixed()),
         MessageCreator.block(
-          this.streak
-            .getValueSwitchedForType(interaction.guild, type)!
-            .toFixed()
+          this.streak.getValueSwitchedForType(interaction.guild, type).toFixed()
         ),
         MessageCreator.block(
           this.capital
-            .getValueSwitchedForType(interaction.guild, type)!
+            .getValueSwitchedForType(interaction.guild, type)
             .toFixed()
         ),
       ])

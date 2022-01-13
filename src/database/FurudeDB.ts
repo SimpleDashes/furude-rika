@@ -8,12 +8,14 @@ import {
   FindOneOptions,
 } from 'typeorm';
 import { CacheCollection } from '../client/managers/abstracts/BaseFurudeCacheManager';
+import { assertDefined } from '../modules/framework/types/TypeAssertions';
 import SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBCitizen from './entity/DBCitizen';
 import DBGuild from './entity/DBGuild';
 import DBOsuPlayer from './entity/DBOsuPlayer';
 import DBUser from './entity/DBUser';
+import IHasJustCreatedIdentifier from './interfaces/IHasJustCreatedIdentifier';
 import IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
 import TClassRepository from './types/TClassRepository';
 
@@ -21,7 +23,7 @@ export default class FurudeDB {
   public readonly uri: string;
   private connection?: Connection;
 
-  get Connection() {
+  public get Connection(): Connection | undefined {
     return this.connection;
   }
 
@@ -29,7 +31,7 @@ export default class FurudeDB {
     this.uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@furude.9zjpv.mongodb.net/furude?retryWrites=true&w=majority`;
   }
 
-  public async connect() {
+  public async connect(): Promise<void> {
     this.connection = await createConnection({
       type: 'mongodb',
       url: this.uri,
@@ -65,7 +67,9 @@ export default class FurudeDB {
       if (found) {
         find = found;
       }
-    } catch {}
+    } catch {
+      // We use a new entity if the entity isn't found.
+    }
     return this.assignNewEntityToEntity(constructor, find, onNotFound);
   }
 
@@ -94,9 +98,11 @@ export default class FurudeDB {
     type: TClassRepository<T>,
     query?: FindOneOptions<T>
   ): Promise<T> {
-    const identifyJustCreated = (o: any, justCreated: boolean) => {
-      const asJustCreated = o as IHasJustCreatedIdentifier;
-      asJustCreated.justCreated = justCreated;
+    const identifyJustCreated = (
+      o: IHasJustCreatedIdentifier,
+      justCreated: boolean
+    ): void => {
+      o.justCreated = justCreated;
     };
     return this.identifySnowflake(
       await this.createEntityWhenNotFound(
@@ -107,6 +113,7 @@ export default class FurudeDB {
             ...query,
           };
           const found = await type.findOne(appliedQuery);
+          assertDefined(found);
           identifyJustCreated(found, false);
           return found;
         },
@@ -164,11 +171,11 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
   protected db: FurudeDB;
   protected cache: CacheCollection<Snowflake, T>;
 
-  protected cacheLimit() {
+  protected cacheLimit(): number {
     return 100;
   }
 
-  protected cacheHours() {
+  protected cacheHours(): number {
     return 1;
   }
 
@@ -185,7 +192,7 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
   protected static addCache<T extends SnowFlakeIDEntity>(
     that: BaseDatabaseGetter<T>,
     entity: T
-  ) {
+  ): void {
     that.cache.set(entity.s_id, entity);
   }
 
@@ -193,10 +200,8 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
     K extends IHasSnowFlakeID,
     T extends SnowFlakeIDEntity
   >(that: BaseDatabaseGetter<T>, key: K): Promise<T> {
-    let entity: T;
-    if (that.cache.has(key.id)) {
-      entity = that.cache.get(key.id)!;
-    } else {
+    let entity = that.cache.get(key.id);
+    if (!entity) {
       entity = await that.db.getSnowflake(key, that.typeObjectConst);
       this.addCache(that, entity);
     }
