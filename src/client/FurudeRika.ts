@@ -75,7 +75,7 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
 
     setupCondition(
       Preconditions.OwnerOnly,
-      FurudeTranslationKeys.ERRO_OWNER_ONLY_COMMAND
+      FurudeTranslationKeys.ERROR_OWNER_ONLY_COMMAND
     );
 
     setupCondition(
