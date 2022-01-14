@@ -41,7 +41,7 @@ export default abstract class BaseBot<CTX extends ICommandContext>
   > = new Collection();
 
   public readonly subCommandGroups: Collection<
-    BaseCommand<CTX>,
+    ICommand<CTX>,
     SubCommandGroup[]
   > = new Collection();
 
@@ -198,8 +198,10 @@ export default abstract class BaseBot<CTX extends ICommandContext>
         return;
 
       const command = this.commands.get(interaction.commandName);
-
-      if (!command) return;
+      if (!command) {
+        await this.onCommandNotFound(interaction);
+        return;
+      }
 
       const verifyIsHasPreconditions = (
         command: unknown
@@ -233,21 +235,35 @@ export default abstract class BaseBot<CTX extends ICommandContext>
       let groupToRunSubcommand: ICommand<CTX> | SubCommandGroup = command;
       let runnerCommand: ICommand<CTX> = command;
 
-      if (subCommandGroupOption) {
-        const subCommandGroup = this.subCommandGroups
+      const getCommandOrSubCommand = <
+        C extends ICommand<CTX> | SubCommandGroup
+      >(
+        collection: Collection<ICommand<CTX> | SubCommandGroup, C[]>,
+        command: ICommand<CTX> | SubCommandGroup,
+        option: string
+      ): C | undefined => {
+        return collection
           .get(command)
-          ?.find((group) => group.name === subCommandGroupOption);
-        if (subCommandGroup) {
-          groupToRunSubcommand = subCommandGroup;
-        }
+          ?.find((o) => o.information.name === option);
+      };
+
+      if (subCommandGroupOption) {
+        groupToRunSubcommand =
+          getCommandOrSubCommand(
+            this.subCommandGroups,
+            command,
+            subCommandGroupOption
+          ) ?? groupToRunSubcommand;
       }
 
       if (subCommandOption) {
-        const runnableSubCommand = this.subCommands
-          .get(groupToRunSubcommand)
-          ?.find((sub) => sub.name === subCommandOption);
-        if (runnableSubCommand) {
-          runnerCommand = runnableSubCommand;
+        const subCommand = getCommandOrSubCommand(
+          this.subCommands,
+          groupToRunSubcommand,
+          subCommandOption
+        );
+        if (subCommand) {
+          runnerCommand = subCommand;
         } else {
           await this.onSubCommandNotFound(interaction);
           return;
@@ -303,7 +319,6 @@ export default abstract class BaseBot<CTX extends ICommandContext>
         return false;
       }
     }
-
     return true;
   }
 
@@ -319,6 +334,13 @@ export default abstract class BaseBot<CTX extends ICommandContext>
     consola.log(
       `Couldn't find subcommand: ${interaction.options.getSubcommand()}`
     );
+  }
+
+  public async onCommandNotFound(
+    interaction: CommandInteraction
+  ): Promise<void> {
+    assertDefined(interaction.command);
+    consola.log(`Couldn't find command: ${interaction.command.name}`);
   }
 
   public async beforeCommandRun(
