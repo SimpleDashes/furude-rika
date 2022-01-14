@@ -1,5 +1,5 @@
-import type { ClientOptions } from 'discord.js';
-import { Client, Collection, CommandInteraction } from 'discord.js';
+import type { ClientOptions, CommandInteraction } from 'discord.js';
+import { Client, Collection } from 'discord.js';
 import DirectoryMapper from '../io/DirectoryMapper';
 import CommandResolver from '../commands/loaders/CommandResolver';
 import type { resolvedClass } from '../io/ClassResolver';
@@ -190,12 +190,7 @@ export default abstract class BaseBot<CTX extends ICommandContext>
     });
 
     this.on('interactionCreate', async (interaction) => {
-      if (
-        !interaction.isCommand ||
-        !(interaction instanceof CommandInteraction) ||
-        !this.commands.has(interaction.commandName)
-      )
-        return;
+      if (!interaction.isCommand()) return;
 
       const command = this.commands.get(interaction.commandName);
       if (!command) {

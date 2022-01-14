@@ -126,7 +126,7 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
         !message.guild ||
         !message.member ||
         message.member.user.bot ||
-        !message.inGuild ||
+        !message.inGuild() ||
         !(message.channel instanceof BaseGuildTextChannel)
       )
         return;

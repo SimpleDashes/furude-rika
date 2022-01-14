@@ -1,5 +1,4 @@
 import assert from 'assert';
-import type Constructor from '../interfaces/Constructor';
 
 export function assertDefined<T>(object: T): asserts object is NonNullable<T> {
   assert(
@@ -13,11 +12,4 @@ export function assertDefinedGet<T>(
 ): NonNullable<T> {
   assertDefined(object);
   return object as NonNullable<T>;
-}
-
-export function assertInstanceOf<T>(
-  object: unknown,
-  type: Constructor<[...never], T>
-): asserts object is T {
-  assert(object instanceof type);
 }
