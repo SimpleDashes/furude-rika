@@ -14,10 +14,5 @@ export default abstract class BaseContext implements ICommandContext {
     this.db = this.client.db;
   }
 
-  public async get(): Promise<this> {
-    await this.build();
-    return this;
-  }
-
   public abstract build(): Promise<void>;
 }

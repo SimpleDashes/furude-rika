@@ -1,10 +1,12 @@
-import type { Guild, GuildChannel, User } from 'discord.js';
+import { GuildChannel } from 'discord.js';
+import type { Guild, User } from 'discord.js';
 import type DBChannel from '../../database/entity/DBChannel';
 import type DBGuild from '../../database/entity/DBGuild';
 import type DBUser from '../../database/entity/DBUser';
 import FurudeLocales from '../../localization/FurudeLocales';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 import BaseContext from './BaseContext';
+import { assert } from 'console';
 
 export abstract class ContextCreator<C extends DefaultContext, P, T> {
   protected context: C;
@@ -74,6 +76,8 @@ export class ChannelCreator extends DefaultContextCreator<
 
   public async default(arg: GuildChannel): Promise<DBChannel> {
     assertDefined(this.context.dbChannel);
+    assertDefined(this.context.interaction.channel);
+    assert(this.context.interaction.channel instanceof GuildChannel);
     return this.baseDefault(
       arg,
       this.context.interaction.channel as GuildChannel,
@@ -91,12 +95,12 @@ export default class DefaultContext extends BaseContext {
   public async build(): Promise<void> {
     this.localizer = this.createLocalizer();
     this.dbUser = await this.USERS.create(this.interaction.user);
-    if (this.interaction.inGuild()) {
-      assertDefined(this.interaction.guild);
+    if (
+      this.interaction.guild &&
+      this.interaction.channel instanceof GuildChannel
+    ) {
       this.dbGuild = await this.GUILDS.create(this.interaction.guild);
-      this.dbChannel = await this.CHANNELS.create(
-        this.interaction.channel as GuildChannel
-      );
+      this.dbChannel = await this.CHANNELS.create(this.interaction.channel);
     }
   }
 
