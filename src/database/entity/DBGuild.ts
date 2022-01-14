@@ -75,7 +75,6 @@ export default class DBGuild
   @Column('array')
   public blocked_xp_channels: Snowflake[] = [];
 
-  @Column()
   // TODO CHECK IF THAT SAVES TO THE DB LIKE WHAT?
   private extension = new DBGuildExtension(this);
 

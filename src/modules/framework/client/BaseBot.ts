@@ -1,9 +1,9 @@
 import type { ClientOptions } from 'discord.js';
 import { Client, Collection, CommandInteraction } from 'discord.js';
 import DirectoryMapper from '../io/DirectoryMapper';
-import CommandResolver from '../io/object_resolvers/command_resolvers/CommandResolver';
-import type { resolvedClass } from '../io/object_resolvers/ClassResolver';
-import type ClassResolver from '../io/object_resolvers/ClassResolver';
+import CommandResolver from '../commands/loaders/CommandResolver';
+import type { resolvedClass } from '../io/ClassResolver';
+import type ClassResolver from '../io/ClassResolver';
 import type IBot from './IBot';
 import type BaseCommand from '../commands/BaseCommand';
 import type ICommandRunResponse from './ICommandRunResponse';
@@ -12,13 +12,13 @@ import type IBotDevInformation from './IBotDevInformation';
 import type DirectoryMapperFactory from '../io/DirectoryMapperFactory';
 import path from 'path';
 import fsSync from 'fs';
-import SubCommandResolver from '../io/object_resolvers/command_resolvers/SubCommandResolver';
+import SubCommandResolver from '../commands/loaders/SubCommandResolver';
 import type SubCommand from '../commands/SubCommand';
 import OwnerPrecondition from '../commands/preconditions/OwnerPrecondition';
 import type IHasPreconditions from '../commands/preconditions/interfaces/IHasPreconditions';
 import type ICommand from '../commands/interfaces/ICommand';
 import type SubCommandGroup from '../commands/SubCommandGroup';
-import SubCommandGroupResolver from '../io/object_resolvers/command_resolvers/SubCommandGroupResolver';
+import SubCommandGroupResolver from '../commands/loaders/SubCommandGroupResolver';
 import fs from 'fs/promises';
 import { SetupPrecondition } from '../commands/decorators/PreconditionDecorators';
 import RequiresSubCommandsPrecondition from '../commands/preconditions/RequiresSubCommandsPrecondition';
@@ -26,6 +26,7 @@ import RequiresSubCommandsGroupsPrecondition from '../commands/preconditions/Req
 import type ICommandContext from '../commands/interfaces/ICommandContext';
 import type IDevOptions from './IBotDevOptions';
 import { assertDefined } from '../types/TypeAssertions';
+import type Constructor from '../interfaces/Constructor';
 
 export default abstract class BaseBot<CTX extends ICommandContext>
   extends Client
@@ -200,23 +201,33 @@ export default abstract class BaseBot<CTX extends ICommandContext>
 
       if (!command) return;
 
-      const commandWithPreconditions = command as unknown as IHasPreconditions &
-        BaseCommand<CTX>;
+      const verifyIsHasPreconditions = (
+        command: unknown
+      ): command is IHasPreconditions<CTX> => {
+        return (command as IHasPreconditions).preconditions !== undefined;
+      };
+
+      const baseCommandHasPreconditions = verifyIsHasPreconditions(command);
+      const verifyNeedsSubCommandOrGroup = (
+        preconditionClass: Constructor<
+          [],
+          | RequiresSubCommandsPrecondition
+          | RequiresSubCommandsGroupsPrecondition
+        >
+      ): boolean => {
+        return baseCommandHasPreconditions
+          ? Boolean(
+              command.preconditions.find((p) => p instanceof preconditionClass)
+            )
+          : false;
+      };
 
       const subCommandOption = interaction.options.getSubcommand(
-        Boolean(
-          commandWithPreconditions.preconditions?.find(
-            (p) => p instanceof RequiresSubCommandsPrecondition
-          )
-        )
+        verifyNeedsSubCommandOrGroup(RequiresSubCommandsPrecondition)
       );
 
       const subCommandGroupOption = interaction.options.getSubcommandGroup(
-        Boolean(
-          commandWithPreconditions.preconditions?.find(
-            (p) => p instanceof RequiresSubCommandsGroupsPrecondition
-          )
-        )
+        verifyNeedsSubCommandOrGroup(RequiresSubCommandsGroupsPrecondition)
       );
 
       let groupToRunSubcommand: ICommand<CTX> | SubCommandGroup = command;
@@ -251,26 +262,20 @@ export default abstract class BaseBot<CTX extends ICommandContext>
       await context.build();
 
       const canRunCommand = async (
-        command:
-          | ICommand<CTX>
-          | (ICommand<CTX> & IHasPreconditions)
-          | SubCommandGroup
+        command: ICommand<CTX> | SubCommandGroup
       ): Promise<boolean> => {
-        return await this.verifyPreconditions(
-          command as IHasPreconditions,
-          context
-        );
+        return verifyIsHasPreconditions(command)
+          ? await this.verifyPreconditions(command, context)
+          : true;
       };
 
       const canRunSubCommandOrGroup = async (
         inner: ICommand<CTX> | SubCommandGroup
       ): Promise<boolean> => {
-        return inner === commandWithPreconditions
-          ? true
-          : await canRunCommand(inner);
+        return inner === command ? true : await canRunCommand(inner);
       };
 
-      if (!(await canRunCommand(commandWithPreconditions))) return;
+      if (!(await canRunCommand(command))) return;
 
       if (!(await canRunSubCommandOrGroup(groupToRunSubcommand))) return;
 
@@ -290,11 +295,9 @@ export default abstract class BaseBot<CTX extends ICommandContext>
   }
 
   private async verifyPreconditions(
-    preconditioned: IHasPreconditions,
+    preconditioned: IHasPreconditions<CTX>,
     context: CTX
   ): Promise<boolean> {
-    if (!preconditioned.preconditions) return true;
-
     for (const precondition of preconditioned.preconditions) {
       if (!(await precondition.validate(context))) {
         return false;

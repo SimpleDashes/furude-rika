@@ -15,17 +15,17 @@ export default class DirectoryMapperFactory {
   public async buildMappers(
     root: string = this.root
   ): Promise<DirectoryMapper[]> {
-    const files = (await fs.readdir(root, { withFileTypes: true })).filter(
-      (file) => !this.excludes.includes(file.name)
-    );
     const mappers: DirectoryMapper[] = [];
+    const files = await fs.readdir(root, { withFileTypes: true });
+
     for (const file of files) {
+      if (this.excludes.includes(file.name)) continue;
       if (file.isDirectory()) {
         const directoryPath = path.join(root, file.name);
         const mapper = new DirectoryMapper(directoryPath);
-        const subMaps = await this.buildMappers(directoryPath);
-        if (subMaps) {
-          mappers.push(...subMaps);
+        const subMappers = await this.buildMappers(directoryPath);
+        if (subMappers.length > 0) {
+          mappers.push(...subMappers);
         }
         mappers.push(mapper);
       }

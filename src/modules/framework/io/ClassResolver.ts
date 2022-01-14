@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
-import type DirectoryMapper from '../DirectoryMapper';
-import BaseFileExtensions from '../file_extensions/BaseFileExtensions';
+import type DirectoryMapper from './DirectoryMapper';
+import BaseFileExtensions from './file_extensions/BaseFileExtensions';
 import path from 'path';
 import consola from 'consola';
-import type Constructor from '../../interfaces/Constructor';
+import type Constructor from '../interfaces/Constructor';
 
 export type resolvedClass<T> = {
   directory: DirectoryMapper;

@@ -1,6 +1,6 @@
-import type ICommandContext from '../../../commands/interfaces/ICommandContext';
-import SubCommand from '../../../commands/SubCommand';
-import ClassResolver from '../ClassResolver';
+import type ICommandContext from '../interfaces/ICommandContext';
+import SubCommand from '../SubCommand';
+import ClassResolver from '../../io/ClassResolver';
 
 export default class SubCommandResolver<
   CTX extends ICommandContext
