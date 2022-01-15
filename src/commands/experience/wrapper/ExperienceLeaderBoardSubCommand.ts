@@ -25,7 +25,8 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
   public async trigger(
     context: DefaultContext<TypedArgs<LeaderboardArgs>>
   ): Promise<void> {
-    const { interaction } = context;
+    const { interaction, args } = context;
+    const { page } = args;
 
     const users = ArrayHelper.greatestToLowest(
       await this.getUsers(context),
@@ -37,7 +38,7 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
       {},
       [interaction.user.id],
       users,
-      this.args.page,
+      page,
       60,
       [{ name: 'Username' }, { name: 'Experience' }],
       (item) => {

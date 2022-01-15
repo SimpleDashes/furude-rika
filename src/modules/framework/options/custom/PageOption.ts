@@ -2,8 +2,10 @@ import type { CommandInteraction } from 'discord.js';
 import CommandOptions from '../../../../containers/CommandOptions';
 import IntegerOption from '../classes/IntegerOption';
 import { clamp } from '@stdlib/math/base/special';
+import type { ILazyApply } from '../interfaces/ILazyApply';
 
-export default class PageOption extends IntegerOption {
+export default class PageOption extends IntegerOption implements ILazyApply {
+  public lazyApply: true = true;
   public readonly itemsPerPage: number;
 
   public constructor(itemsPerPage: number) {

@@ -1,4 +1,5 @@
 import type IDiscordOption from './interfaces/IDiscordOption';
+import type { ILazyApply } from './interfaces/ILazyApply';
 
 export default class DiscordOptionHelper {
   public static isObjectOption(
@@ -10,6 +11,13 @@ export default class DiscordOptionHelper {
       typeof tObject.required === 'boolean' &&
       typeof tObject.description === 'string' &&
       typeof tObject.apiType !== undefined
+    );
+  }
+
+  public static isLazyApplyOption(object: unknown): object is ILazyApply {
+    const tObject = object as ILazyApply;
+    return (
+      this.isObjectOption(tObject) && typeof tObject.lazyApply === 'boolean'
     );
   }
 }

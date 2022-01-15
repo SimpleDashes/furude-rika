@@ -14,6 +14,8 @@ export default class EntityWithLocaleHelper {
     keyElse?: FurudeTranslationKeys
   ): IDatabaseOperation {
     that.preferred_locale = locale;
+    localizer.Language = locale;
+
     let response = '';
     if (locale) {
       response = localizer.get(keyIfPresent);

@@ -350,7 +350,11 @@ export default abstract class BaseBot<
       this.#loopCommandArgs(
         runnerCommand,
         (k, o) => {
-          recordArgs[k] = o.apply(context.interaction);
+          if (DiscordOptionHelper.isLazyApplyOption(o)) {
+            recordArgs[k] = o;
+          } else {
+            recordArgs[k] = o.apply(context.interaction);
+          }
         },
         (k, o) => {
           recordArgs[k] = o;

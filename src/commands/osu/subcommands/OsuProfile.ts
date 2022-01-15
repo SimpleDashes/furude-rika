@@ -83,7 +83,7 @@ export default class OsuProfile
       )}%`} • Level: ${MessageCreator.block(
         osuUser.level.toFixed(2)
       )}\nPlaycount: ${MessageCreator.block(
-        osuUser.counts.plays.toLocaleString(localizer.language)
+        osuUser.counts.plays.toLocaleString(localizer.Language)
       )} (${secondsToHours(osuUser.total_seconds_played)} hrs)`
     );
   }
@@ -98,7 +98,7 @@ export default class OsuProfile
       .addFields([
         {
           name: 'Ranked score',
-          value: osuUser.scores.ranked.toLocaleString(localizer.language),
+          value: osuUser.scores.ranked.toLocaleString(localizer.Language),
         },
         {
           name: 'Accuracy',
@@ -106,13 +106,13 @@ export default class OsuProfile
         },
         {
           name: 'Total score',
-          value: osuUser.scores.total.toLocaleString(localizer.language),
+          value: osuUser.scores.total.toLocaleString(localizer.Language),
         },
         { name: 'Level', value: osuUser.level.toFixed(2) },
         {
           name: 'Play count / Time',
           value: `${osuUser.counts.plays.toLocaleString(
-            localizer.language
+            localizer.Language
           )} / ${secondsToHours(osuUser.total_seconds_played)}`,
         },
       ]);

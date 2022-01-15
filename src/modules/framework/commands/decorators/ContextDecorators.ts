@@ -10,6 +10,7 @@ import type RoleOption from '../../options/classes/RoleOption';
 import type StringOption from '../../options/classes/StringOption';
 import type UserOption from '../../options/classes/UserOption';
 import type IDiscordOption from '../../options/interfaces/IDiscordOption';
+import type { ILazyApply } from '../../options/interfaces/ILazyApply';
 
 export type MapCommandOption<
   R,
@@ -17,7 +18,9 @@ export type MapCommandOption<
 > = T['required'] extends true ? R : R | undefined;
 
 export type TypedArgs<A> = {
-  [K in keyof A]: A[K] extends BooleanOption
+  [K in keyof A]: A[K] extends ILazyApply
+    ? A[K]
+    : A[K] extends BooleanOption
     ? MapCommandOption<boolean, A[K]>
     : A[K] extends ChannelOption
     ? MapCommandOption<Channel, A[K]>

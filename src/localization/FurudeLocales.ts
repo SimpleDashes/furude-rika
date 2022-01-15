@@ -13,45 +13,66 @@ import type DefaultContext from '../client/contexts/DefaultContext';
 import Strings from '../containers/Strings';
 import { assertDefined } from '../modules/framework/types/TypeAssertions';
 
-const resourceResolver = new ResourceResolver(
-  new DirectoryMapper(path.join(__dirname, 'resources'))
-);
-
-const defaultFurudeLocale = SupportedFurudeLocales.english;
-
-const translations: FurudeResource[] = [];
-const stringWithVariablesManager = new StringWithVariablesManager();
-
-let builtGlobals = false;
-
 export default class FurudeLocales extends Localizer<IFurudeResource> {
+  static #resourceResolver = new ResourceResolver(
+    new DirectoryMapper(path.join(__dirname, 'resources'))
+  );
+
+  static #defaultLocale = SupportedFurudeLocales.english;
+
+  static #translations: FurudeResource[] = [];
+
+  static #variablesManager = new StringWithVariablesManager();
+
+  static #built = false;
+
   #context?: DefaultContext<unknown>;
-  public language: SupportedFurudeLocales;
+
+  #language: SupportedFurudeLocales;
+
+  public get Language(): SupportedFurudeLocales {
+    return this.#language;
+  }
+
+  public set Language(value: SupportedFurudeLocales | undefined | null) {
+    this.#language = value
+      ? value
+      : this.#context
+      ? this.#context.dbGuild?.preferred_locale ??
+        this.#context.dbChannel?.preferred_locale ??
+        this.#context.dbGuild?.preferred_locale ??
+        this.#context.dbUser.preferred_locale ??
+        FurudeLocales.#defaultLocale
+      : FurudeLocales.#defaultLocale;
+  }
 
   public constructor(options?: {
     language?: SupportedFurudeLocales;
     context?: DefaultContext<unknown>;
   }) {
     super({
-      defaultLocale: defaultFurudeLocale,
-      locales: translations,
+      defaultLocale: FurudeLocales.#defaultLocale,
+      locales: FurudeLocales.#translations,
     });
     this.#context = options?.context;
-    this.language = options?.language ?? defaultFurudeLocale;
+    this.#language = FurudeLocales.#defaultLocale;
+    this.Language = options?.language;
   }
 
   public async build(): Promise<void> {
-    if (!builtGlobals) {
-      translations.push(
-        ...(await resourceResolver.getAllObjects()).map((r) => r.object)
+    if (!FurudeLocales.#built) {
+      FurudeLocales.#translations.push(
+        ...(await FurudeLocales.#resourceResolver.getAllObjects()).map(
+          (r) => r.object
+        )
       );
-      for (const value of translations) {
+      for (const value of FurudeLocales.#translations) {
         for (const key in value.structure) {
           const template = (
             value.structure as unknown as Record<string, string>
           )[key];
           if (template && template.includes(variablePrefix)) {
-            stringWithVariablesManager.addString(
+            FurudeLocales.#variablesManager.addString(
               template,
               this.#getKey(SupportedFurudeLocales[value.furudeLocale], key)
             );
@@ -59,7 +80,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
         }
       }
     }
-    builtGlobals = true;
+    FurudeLocales.#built = true;
     await this.onReady();
   }
 
@@ -78,23 +99,16 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
       key,
       args: vars ?? [],
     };
-    if (this.#context) {
-      this.language =
-        this.#context.dbChannel?.preferred_locale ??
-        this.#context.dbGuild?.preferred_locale ??
-        this.#context.dbUser.preferred_locale ??
-        this.language;
-    }
-    const find = translations.find((translation) => {
-      return translation.locale === this.language;
+    const find = FurudeLocales.#translations.find((translation) => {
+      return translation.locale === this.Language;
     })?.structure[key];
     if (!find) return Strings.EMPTY;
     if (values.args) {
-      values.key = this.#getKey(this.language, values.key);
+      values.key = this.#getKey(this.Language, values.key);
       values.args = values.args ?? [];
-      if (stringWithVariablesManager.stringsWithVariables[values.key]) {
+      if (FurudeLocales.#variablesManager.stringsWithVariables[values.key]) {
         const replacedPlaceHolders =
-          stringWithVariablesManager.getString(values);
+          FurudeLocales.#variablesManager.getString(values);
 
         assertDefined(replacedPlaceHolders);
 

@@ -186,7 +186,7 @@ export default class OsuRecentScore
   ): string {
     const { apiBeatmap } = score;
     const { localizer } = context;
-    const { language } = localizer;
+    const { Language } = localizer;
 
     let string = Strings.EMPTY;
     let canHyperLink = false;
@@ -209,7 +209,7 @@ export default class OsuRecentScore
 
     string = MessageCreator.breakLine(string);
 
-    string += `▸ ${score.score.toLocaleString(language)} ▸ x${
+    string += `▸ ${score.score.toLocaleString(Language)} ▸ x${
       score.counts.combo
     } ▸ [${score.counts[300]}/${score.counts[100]}/${score.counts[50]}/${
       score.counts.misses

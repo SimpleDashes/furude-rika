@@ -93,7 +93,6 @@ export default class DefaultContext<A> extends BaseContext<A> {
   public dbChannel?: DBChannel;
 
   public async build(): Promise<void> {
-    this.localizer = this.createLocalizer();
     this.dbUser = await this.USERS.create(this.interaction.user);
     if (
       this.interaction.guild &&
@@ -102,6 +101,11 @@ export default class DefaultContext<A> extends BaseContext<A> {
       this.dbGuild = await this.GUILDS.create(this.interaction.guild);
       this.dbChannel = await this.CHANNELS.create(this.interaction.channel);
     }
+    /**
+     * We set the localizer at last simply because we need the previous
+     * variables for it to work properly.
+     */
+    this.localizer = this.createLocalizer();
   }
 
   public USERS: UsersCreator = new UsersCreator(this);

@@ -47,21 +47,19 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
   }
 
   protected getOsuServerUserOptions(): OsuServerUserOptions {
-    const options: OsuServerUserOptions = {
+    return {
       username: this.getOsuUserOption(),
       server: this.getServerOptions(),
     };
-    return options;
   }
 
   protected getOsuServerOptionsWithDiscordUser(): OsuServerUserOptionWithDiscord {
-    const options = {
+    return {
       ...this.getOsuServerUserOptions(),
       ...{
         discordUser: new UserOption(true).setName(CommandOptions.user),
       },
     };
-    return options;
   }
 
   protected applyToServerOption(
@@ -179,7 +177,7 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
     const { localizer } = context;
     const author: MessageEmbedAuthor = {
       name: `${osuUser.username}: ${osuUser.pps.raw.toLocaleString(
-        localizer.language,
+        localizer.Language,
         {
           maximumFractionDigits: 2,
         }
