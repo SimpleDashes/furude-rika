@@ -3,7 +3,7 @@ import type DBCitizen from '../../../database/entity/DBCitizen';
 import DefaultContext, { UserBasedContextCreator } from '../DefaultContext';
 
 class CitizenCreator extends UserBasedContextCreator<
-  CurrencyContext,
+  CurrencyContext<unknown>,
   DBCitizen
 > {
   public async create(arg: User): Promise<DBCitizen> {
@@ -13,7 +13,7 @@ class CitizenCreator extends UserBasedContextCreator<
     return this.userDefault(arg, this.context.citizen);
   }
 }
-export default class CurrencyContext extends DefaultContext {
+export default class CurrencyContext<A> extends DefaultContext<A> {
   public citizen!: DBCitizen;
 
   public override async build(): Promise<void> {
@@ -21,5 +21,5 @@ export default class CurrencyContext extends DefaultContext {
     this.citizen = await this.CITIZENS.create(this.interaction.user);
   }
 
-  public CITIZENS = new CitizenCreator(this);
+  public CITIZENS: CitizenCreator = new CitizenCreator(this);
 }

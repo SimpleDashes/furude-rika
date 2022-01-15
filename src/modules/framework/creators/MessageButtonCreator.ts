@@ -9,11 +9,9 @@ import type {
   Message,
   MessageComponentInteraction,
   MessageEmbed,
-  Snowflake} from 'discord.js';
-import {
-  MessageActionRow,
-  MessageButton
+  Snowflake,
 } from 'discord.js';
+import { MessageActionRow, MessageButton } from 'discord.js';
 import Strings from '../../../containers/Strings';
 import MessageCreator from '../helpers/MessageCreator';
 import StringHelper from '../helpers/StringHelper';
@@ -78,7 +76,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     onPageChange: OnButtonPageChange<T>,
     ...onPageChangeArgs: unknown[]
   ): Promise<Message> {
-    return await this.createButtonBasedPaging(
+    return await this.#createButtonBasedPaging(
       interaction,
       options,
       users,
@@ -115,7 +113,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     onPageChange: OnButtonPageChange<T>,
     ...onPageChangeArgs: unknown[]
   ): Promise<Message> {
-    return await this.createButtonBasedPaging(
+    return await this.#createButtonBasedPaging(
       interaction,
       options,
       users,
@@ -210,7 +208,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     duration: number,
     collectTime = 5
   ): Promise<boolean> {
-    const buttons: MessageButton[] = this.createConfirmationButtons();
+    const buttons: MessageButton[] = this.#createConfirmationButtons();
 
     const cancel = async (
       interaction:
@@ -288,7 +286,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
    * @param onPageChangeArgs Arguments for `onPageChange` function.
    * @returns The collector that collects the button-pressing event.
    */
-  private static async createButtonBasedPaging<T>(
+  static async #createButtonBasedPaging<T>(
     interaction: CommandInteraction | MessageComponentInteraction,
     options: InteractionReplyOptions,
     users: Snowflake[],
@@ -306,7 +304,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
 
     let currentPage: number = startPage;
 
-    const buttons: MessageButton[] = this.createPagingButtons(
+    const buttons: MessageButton[] = this.#createPagingButtons(
       currentPage,
       pages
     );
@@ -377,7 +375,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
 
       component
         .spliceComponents(0, component.components.length)
-        .addComponents(this.createPagingButtons(currentPage, pages));
+        .addComponents(this.#createPagingButtons(currentPage, pages));
 
       onPageChangeEmbedEdit();
 
@@ -406,7 +404,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
    * @param currentPage The current page to be used for button label.
    * @param maxPage The maximum page possible to be used for button label.
    */
-  private static createPagingButtons(
+  static #createPagingButtons(
     currentPage: number,
     maxPage: number
   ): MessageButton[] {
@@ -448,7 +446,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
    *
    * ID order: `[yes, no]`
    */
-  private static createConfirmationButtons(): MessageButton[] {
+  static #createConfirmationButtons(): MessageButton[] {
     return [
       new MessageButton()
         .setCustomId(ConfirmationIDS.yes)
@@ -523,19 +521,24 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
         }
 
         output += '\n';
-        await this.loopPages(pageOption.itemsPerPage, page, async (i) => {
-          const filledTable = filledTables[i];
+        await this.loopPages(
+          pageOption.itemsPerPage,
+          page,
+          contents,
+          async (i) => {
+            const filledTable = filledTables[i];
 
-          assertDefined(filledTable);
+            assertDefined(filledTable);
 
-          for (let j = 0; j < tableColumns.length; j++) {
-            const data = filledTable ? filledTable[j] : undefined;
-            createColumnItem(j, data);
+            for (let j = 0; j < tableColumns.length; j++) {
+              const data = filledTable ? filledTable[j] : undefined;
+              createColumnItem(j, data);
+            }
+
+            output += '\n';
+            options.content = '```c\n' + output + '```';
           }
-
-          output += '\n';
-          options.content = '```c\n' + output + '```';
-        });
+        );
       }
     );
   }
@@ -551,6 +554,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
   public static async loopPages(
     itemsPerPage: number,
     currentPage: number,
+    items: unknown[],
     run: (i: number) => Promise<void>
   ): Promise<void> {
     for (
@@ -558,7 +562,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
       i < itemsPerPage + itemsPerPage * (currentPage - 1);
       ++i
     ) {
-      await run(i);
+      if (items[i]) await run(i);
     }
   }
 }

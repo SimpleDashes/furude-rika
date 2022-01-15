@@ -7,7 +7,7 @@ export default class UserOption
   extends SlashCommandUserOption
   implements IDiscordOption<User>
 {
-  private readonly defaultToSelf: boolean;
+  public readonly defaultToSelf: boolean;
   public constructor(defaultToSelf = false) {
     super();
     this.defaultToSelf = defaultToSelf;

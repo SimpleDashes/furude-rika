@@ -3,28 +3,34 @@ import CommandOptions from '../../../../../containers/CommandOptions';
 import DBUser from '../../../../../database/entity/DBUser';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
+import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
 import {
   Preconditions,
   SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
-import {
-  assertDefined,
-  assertDefinedGet,
-} from '../../../../../modules/framework/types/TypeAssertions';
+import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 
-@SetPreconditions<DefaultContext>(Preconditions.WithPermission('ADMINISTRATOR'))
-export default class CustomizeTimeForXP extends FurudeSubCommand {
-  private secondsOption = this.registerOption(
-    new IntegerOption()
-      .setRequired(true)
-      .setName(CommandOptions.seconds)
-      .setMinValue(DBUser.MIN_MIN_SECONDS_FOR_EXPERIENCE)
-      .setMaxValue(DBUser.MAX_MIN_SECONDS_FOR_EXPERIENCE)
-      .setDescription(
-        'The number of seconds required for a user to be rewarded with experience on the guild.'
-      )
-  );
+type Args = {
+  seconds: IntegerOption;
+};
+@SetPreconditions(Preconditions.WithPermission('ADMINISTRATOR'))
+export default class CustomizeTimeForXP extends FurudeSubCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  public createArgs(): Args {
+    return {
+      seconds: new IntegerOption()
+        .setRequired(true)
+        .setName(CommandOptions.seconds)
+        .setMinValue(DBUser.MIN_MIN_SECONDS_FOR_EXPERIENCE)
+        .setMaxValue(DBUser.MAX_MIN_SECONDS_FOR_EXPERIENCE)
+        .setDescription(
+          'The number of seconds required for a user to be rewarded with experience on the guild.'
+        ),
+    };
+  }
 
   public constructor() {
     super({
@@ -34,16 +40,16 @@ export default class CustomizeTimeForXP extends FurudeSubCommand {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { interaction, localizer, dbGuild } = context;
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { interaction, localizer, dbGuild, args } = context;
+    const { seconds } = args;
 
     assertDefined(dbGuild);
+    assertDefined(seconds);
 
-    const secondsForXP = assertDefinedGet(
-      this.secondsOption.apply(interaction)
-    );
-
-    const operation = dbGuild.setTimeForXP(localizer, secondsForXP);
+    const operation = dbGuild.setTimeForXP(localizer, seconds);
 
     await FurudeOperations.saveWhenSuccess(dbGuild);
     await FurudeOperations.answerInteraction(interaction, operation);

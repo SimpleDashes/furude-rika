@@ -11,7 +11,7 @@ export default class SnowFlakeIDEntity
   extends GeneratedIDEntity
   implements IHasJustCreatedIdentifier
 {
-  private onSaveListeners: IOnSaveListener[] | null = [];
+  #onSaveListeners: IOnSaveListener[] | null = [];
 
   /**
    * Secondary ID
@@ -23,8 +23,8 @@ export default class SnowFlakeIDEntity
   public justCreated: boolean | null = null;
 
   public registerSaveListener<T extends IOnSaveListener>(listener: T): T {
-    if (this.onSaveListeners) {
-      this.onSaveListeners.push(listener);
+    if (this.#onSaveListeners) {
+      this.#onSaveListeners.push(listener);
     }
     return listener;
   }
@@ -35,12 +35,11 @@ export default class SnowFlakeIDEntity
 
   public override async save(options?: SaveOptions): Promise<this> {
     this.justCreated = null;
-    if (this.onSaveListeners) {
-      for (const listener of this.onSaveListeners) {
+    if (this.#onSaveListeners) {
+      for (const listener of this.#onSaveListeners) {
         listener.beforeSaving();
       }
     }
-    this.onSaveListeners = null;
     return await super.save(options);
   }
 }

@@ -15,15 +15,15 @@ interface IValueChangeListener<T> {
 }
 
 export default class BindableValue<T> implements IValueChangeListener<T> {
-  private current!: T;
+  #current!: T;
 
   public get Current(): T {
-    return this.current;
+    return this.#current;
   }
 
   public set Current(value: T) {
     const ruledNewCurrent = this.applyValueChangeRules(value);
-    const changeEvent = new ValueChangeEvent(this.current, ruledNewCurrent);
+    const changeEvent = new ValueChangeEvent(this.#current, ruledNewCurrent);
 
     /**
      * We fire it before actually assigning it because of some nuances on how "set" actually works.
@@ -31,17 +31,17 @@ export default class BindableValue<T> implements IValueChangeListener<T> {
      */
     this.triggerValueChange(this, changeEvent);
 
-    this.current = ruledNewCurrent;
+    this.#current = ruledNewCurrent;
   }
 
-  private default!: T;
+  #default!: T;
 
   public get Default(): T {
-    return this.default;
+    return this.#default;
   }
 
   public set Default(value: T) {
-    this.default = this.applyValueChangeRules(value);
+    this.#default = this.applyValueChangeRules(value);
   }
 
   public constructor(value?: T, defaultValue: T | undefined = value) {
@@ -60,7 +60,7 @@ export default class BindableValue<T> implements IValueChangeListener<T> {
   }
 
   public changeToDefaultValue(): void {
-    this.Current = this.default;
+    this.Current = this.#default;
   }
 
   protected onValueChangeListeners: IValueChangeListener<T>[] = [];

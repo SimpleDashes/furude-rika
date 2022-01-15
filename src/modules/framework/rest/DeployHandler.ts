@@ -11,7 +11,8 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { assertDefined } from '../types/TypeAssertions';
 import type IWithTaskCompletionListener from '../interfaces/IWithTaskCompletionListener';
-import type ICommandContext from '../commands/interfaces/ICommandContext';
+import type ICommandContext from '../commands/contexts/ICommandContext';
+import type { TypedArgs } from '../commands/decorators/ContextDecorators';
 
 type resFunctions = Partial<IWithTaskCompletionListener> & {
   onCommandNotFound?: () => void;
@@ -22,7 +23,9 @@ const rest = new REST({ version: '9' });
 let putToken = false;
 
 export default class DeployHandler {
-  public static async deployCommand<CTX extends ICommandContext>(options: {
+  public static async deployCommand<
+    CTX extends ICommandContext<TypedArgs<unknown>>
+  >(options: {
     client: BaseBot<CTX>;
     commandName: string;
     isDebug: boolean;
@@ -64,7 +67,9 @@ export default class DeployHandler {
     if (onSuccess) onSuccess();
   }
 
-  public static async deployAll<CTX extends ICommandContext>(
+  public static async deployAll<
+    CTX extends ICommandContext<TypedArgs<unknown>>
+  >(
     client: BaseBot<CTX>,
     isDebug: boolean,
     resFunctions?: IWithTaskCompletionListener

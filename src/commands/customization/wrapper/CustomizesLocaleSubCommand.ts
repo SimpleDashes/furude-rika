@@ -5,22 +5,29 @@ import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales
 import type IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
 import type SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
 import FurudeOperations from '../../../database/FurudeOperations';
-import { assertDefinedGet } from '../../../modules/framework/types/TypeAssertions';
+import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import assert from 'assert';
 
-export default abstract class CustomizesLocaleSubCommand extends FurudeSubCommand {
-  protected abstract readonly localeOption: StringOption;
-
+export type BaseLanguageChangeArgs = {
+  locale: Omit<StringOption, 'setAutocomplete'>;
+};
+export default abstract class CustomizesLocaleSubCommand extends FurudeSubCommand<
+  DefaultContext<TypedArgs<BaseLanguageChangeArgs>>,
+  BaseLanguageChangeArgs
+> {
   protected static readonly LOCALE_NAME = 'language';
+
+  public createArgs(): BaseLanguageChangeArgs {
+    return {
+      locale: new StringOption()
+        .setRequired(true)
+        .setName(CustomizesLocaleSubCommand.LOCALE_NAME)
+        .addChoices(this.getAllFurudeLocales()),
+    };
+  }
 
   protected getAllFurudeLocales(): [name: string, value: string][] {
     return Object.keys(SupportedFurudeLocales).map((l) => [l, l]);
-  }
-
-  protected getLocaleOption(): Omit<StringOption, 'setAutocomplete'> {
-    return new StringOption()
-      .setRequired(true)
-      .setName(CustomizesLocaleSubCommand.LOCALE_NAME)
-      .addChoices(this.getAllFurudeLocales());
   }
 
   public constructor(description: string) {
@@ -30,13 +37,18 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { interaction, localizer } = context;
+  public async trigger(
+    context: DefaultContext<TypedArgs<BaseLanguageChangeArgs>>
+  ): Promise<void> {
+    const { interaction, localizer, args } = context;
+    const { locale } = args;
 
-    const rawLocale = assertDefinedGet(this.localeOption.apply(interaction));
-
-    const preferredLocale =
-      SupportedFurudeLocales[rawLocale as SupportedFurudeLocales] ?? null;
+    const preferredLocale = locale
+      ? ((): SupportedFurudeLocales => {
+          assert(typeof locale === 'string');
+          return SupportedFurudeLocales[locale as SupportedFurudeLocales];
+        })()
+      : null;
 
     const entityToLocalize = this.entityToLocalize(context);
 
@@ -50,6 +62,6 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
   }
 
   public abstract entityToLocalize(
-    context: DefaultContext
+    context: DefaultContext<TypedArgs<BaseLanguageChangeArgs>>
   ): IHasPreferredLocale & SnowFlakeIDEntity;
 }

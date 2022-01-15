@@ -6,7 +6,7 @@ export default class ArrayHelper {
     return array[Math.floor(Math.random() * array.length)] as T;
   }
 
-  private static applyDeterministicFieldSort<T>(
+  static #applyDeterministicFieldSort<T>(
     item: T,
     deterministicField?: (item: T) => SortType
   ): SortType {
@@ -25,8 +25,8 @@ export default class ArrayHelper {
   ): T[] {
     return array.sort(
       (a, b) =>
-        this.applyDeterministicFieldSort(b, deterministicField) -
-        this.applyDeterministicFieldSort(a, deterministicField)
+        this.#applyDeterministicFieldSort(b, deterministicField) -
+        this.#applyDeterministicFieldSort(a, deterministicField)
     );
   }
 
@@ -42,8 +42,8 @@ export default class ArrayHelper {
   ): T[] {
     return array.sort(
       (a, b) =>
-        this.applyDeterministicFieldSort(a, deterministicField) -
-        this.applyDeterministicFieldSort(b, deterministicField)
+        this.#applyDeterministicFieldSort(a, deterministicField) -
+        this.#applyDeterministicFieldSort(b, deterministicField)
     );
   }
 }

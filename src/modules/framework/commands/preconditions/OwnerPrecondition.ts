@@ -1,5 +1,5 @@
 import type { Snowflake } from 'discord.js';
-import type ICommandContext from '../interfaces/ICommandContext';
+import type ICommandContext from '../contexts/ICommandContext';
 import CommandPrecondition from './abstracts/CommandPrecondition';
 
 export default class OwnerPrecondition extends CommandPrecondition {

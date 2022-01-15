@@ -7,17 +7,27 @@ import IntegerOption from '../../../../modules/framework/options/classes/Integer
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
 import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
+import type { TypedArgs } from '../../../../modules/framework/commands/decorators/ContextDecorators';
 
-export default class ReminderRemove extends FurudeSubCommand {
-  public indexOption = this.registerOption(
-    new IntegerOption()
-      .setRequired(true)
-      .setName(CommandOptions.index)
-      .setDescription(
-        'The index of the reminder you want to remove. Check it through `/reminder check`.'
-      )
-      .setMaxValue(DBReminder.MAX_NUMBER_OF_REMINDERS)
-  );
+type Args = {
+  index: IntegerOption;
+};
+
+export default class ReminderRemove extends FurudeSubCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  public createArgs(): Args {
+    return {
+      index: new IntegerOption()
+        .setRequired(true)
+        .setName(CommandOptions.index)
+        .setDescription(
+          'The index of the reminder you want to remove. Check it through `/reminder check`.'
+        )
+        .setMaxValue(DBReminder.MAX_NUMBER_OF_REMINDERS),
+    };
+  }
 
   public constructor() {
     super({
@@ -26,10 +36,11 @@ export default class ReminderRemove extends FurudeSubCommand {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { client, interaction, localizer } = context;
-
-    const index = this.indexOption.apply(context.interaction);
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { client, interaction, localizer, args } = context;
+    const { index } = args;
 
     assertDefined(index);
 

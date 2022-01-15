@@ -8,19 +8,25 @@ import MessageCreator from '../../../../modules/framework/helpers/MessageCreator
 import UserOption from '../../../../modules/framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
-import {
-  assertDefined,
-  assertDefinedGet,
-} from '../../../../modules/framework/types/TypeAssertions';
+import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
+import type { TypedArgs } from '../../../../modules/framework/commands/decorators/ContextDecorators';
 
-export default class ReminderCheck extends FurudeSubCommand {
+type Args = {
+  user: UserOption;
+};
+export default class ReminderCheck extends FurudeSubCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
   public static MAX_REMINDER_LENGTH = 16;
 
-  private readonly userOption: UserOption = this.registerOption(
-    new UserOption(true)
-      .setName(CommandOptions.user)
-      .setDescription('The user you want to check the reminders.')
-  );
+  public createArgs(): Args {
+    return {
+      user: new UserOption(true)
+        .setName(CommandOptions.user)
+        .setDescription('The user you want to check the reminders.'),
+    };
+  }
 
   public constructor() {
     super({
@@ -29,10 +35,13 @@ export default class ReminderCheck extends FurudeSubCommand {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { interaction, localizer, client } = context;
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { interaction, localizer, client, args } = context;
+    const { user } = args;
 
-    const user = assertDefinedGet(this.userOption.apply(interaction));
+    assertDefined(user);
 
     const reminders = DBReminder.getAllRemindersForUser(client, user);
 

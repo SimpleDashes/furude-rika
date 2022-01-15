@@ -1,10 +1,10 @@
 import type IHasString from '../../interfaces/IHasString';
 
 export default class FileExtension implements IHasString {
-  private extensionName: string;
+  #extensionName: string;
 
   public constructor(extensionName: string) {
-    this.extensionName = extensionName;
+    this.#extensionName = extensionName;
   }
 
   public toString(): string {
@@ -12,6 +12,6 @@ export default class FileExtension implements IHasString {
   }
 
   public getExtensionName(): string {
-    return this.extensionName;
+    return this.#extensionName;
   }
 }

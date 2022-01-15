@@ -1,15 +1,13 @@
+import ManagesInternalArray from '../../containers/ManagesInternalArray';
 import FileExtension from './FileExtension';
 
-export default abstract class FileExtensionContainer {
-  private fileExtensions: FileExtension[] = [];
-
+export default class FileExtensionContainer extends ManagesInternalArray<FileExtension> {
   public get FileExtensions(): FileExtension[] {
-    return this.fileExtensions;
+    return this.InternalArray;
   }
 
   protected createFileExtension(fileExtensionName: string): FileExtension {
     const fileExtension = new FileExtension(fileExtensionName);
-    this.fileExtensions.push(fileExtension);
-    return fileExtension;
+    return this.pushGet(fileExtension);
   }
 }

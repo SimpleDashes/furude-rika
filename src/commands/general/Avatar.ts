@@ -5,17 +5,24 @@ import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
 import UserOption from '../../modules/framework/options/classes/UserOption';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import {
-  assertDefined,
-  assertDefinedGet,
-} from '../../modules/framework/types/TypeAssertions';
+import { assertDefined } from '../../modules/framework/types/TypeAssertions';
+import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
 
-export default class Avatar extends FurudeCommand<DefaultContext> {
-  private readonly userOption: UserOption = this.registerOption(
-    new UserOption(true)
-      .setName(CommandOptions.user)
-      .setDescription('The user you want the avatar from.')
-  );
+type Args = {
+  user: UserOption;
+};
+
+export default class Avatar extends FurudeCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  public createArgs(): Args {
+    return {
+      user: new UserOption(true)
+        .setName(CommandOptions.user)
+        .setDescription('The user you want the avatar from.'),
+    };
+  }
 
   public constructor() {
     super({
@@ -24,10 +31,13 @@ export default class Avatar extends FurudeCommand<DefaultContext> {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { interaction, localizer } = context;
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { interaction, localizer, args } = context;
+    const { user } = args;
 
-    const user = assertDefinedGet(this.userOption.apply(interaction));
+    assertDefined(user);
 
     const avatar = user.avatarURL({ dynamic: true, size: 1024 });
     assertDefined(avatar);

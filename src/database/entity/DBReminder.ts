@@ -100,7 +100,7 @@ export default class DBReminder extends GeneratedIDEntity {
     );
   }
 
-  private static getAllRemindersForID(
+  public static getAllRemindersForID(
     rika: FurudeRika,
     uid: Snowflake
   ): DBReminder[] {
@@ -113,6 +113,8 @@ export default class DBReminder extends GeneratedIDEntity {
     rika: FurudeRika,
     user: User
   ): DBReminder[] {
-    return this.getAllRemindersForID(rika, user.id);
+    return rika.reminderManager.reminders.filter(
+      (r) => r.reminder_owner == user.id
+    );
   }
 }

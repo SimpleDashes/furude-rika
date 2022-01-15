@@ -8,7 +8,7 @@ import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 import BaseContext from './BaseContext';
 import { assert } from 'console';
 
-export abstract class ContextCreator<C extends DefaultContext, P, T> {
+export abstract class ContextCreator<C extends DefaultContext<unknown>, P, T> {
   protected context: C;
 
   public constructor(context: C) {
@@ -24,13 +24,13 @@ export abstract class ContextCreator<C extends DefaultContext, P, T> {
 }
 
 abstract class DefaultContextCreator<P, T> extends ContextCreator<
-  DefaultContext,
+  DefaultContext<unknown>,
   P,
   T
 > {}
 
 export abstract class UserBasedContextCreator<
-  C extends DefaultContext,
+  C extends DefaultContext<unknown>,
   T
 > extends ContextCreator<C, User, T> {
   protected userDefault(arg: User, defaultValue: T): Promise<T> {
@@ -86,7 +86,7 @@ export class ChannelCreator extends DefaultContextCreator<
   }
 }
 
-export default class DefaultContext extends BaseContext {
+export default class DefaultContext<A> extends BaseContext<A> {
   public localizer!: FurudeLocales;
   public dbUser!: DBUser;
   public dbGuild?: DBGuild;
@@ -104,11 +104,11 @@ export default class DefaultContext extends BaseContext {
     }
   }
 
-  public USERS = new UsersCreator(this);
+  public USERS: UsersCreator = new UsersCreator(this);
 
-  public GUILDS = new GuildCreator(this);
+  public GUILDS: GuildCreator = new GuildCreator(this);
 
-  public CHANNELS = new ChannelCreator(this);
+  public CHANNELS: ChannelCreator = new ChannelCreator(this);
 
   protected createLocalizer(): FurudeLocales {
     return new FurudeLocales({ context: this });

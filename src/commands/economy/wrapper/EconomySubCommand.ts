@@ -4,9 +4,12 @@ import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import CommandPrecondition from '../../../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
 import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
-import type { OmittedCommandContext } from '../../../modules/framework/commands/interfaces/ICommandContext';
+import type { OmittedCommandContext } from '../../../modules/framework/commands/contexts/ICommandContext';
+import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
 
-class MustHaveOpenAccountPrecondition extends CommandPrecondition<CurrencyContext> {
+class MustHaveOpenAccountPrecondition extends CommandPrecondition<
+  CurrencyContext<TypedArgs<unknown>>
+> {
   public constructor() {
     super();
     this.onFailMessage = (context): string => {
@@ -18,7 +21,7 @@ class MustHaveOpenAccountPrecondition extends CommandPrecondition<CurrencyContex
   }
 
   protected async validateInternally(
-    context: CurrencyContext
+    context: CurrencyContext<TypedArgs<unknown>>
   ): Promise<boolean> {
     const { citizen } = context;
     if (citizen.justCreated) {
@@ -30,9 +33,12 @@ class MustHaveOpenAccountPrecondition extends CommandPrecondition<CurrencyContex
 
 export const MustHaveOpenAccount = new MustHaveOpenAccountPrecondition();
 
-export default abstract class EconomySubCommand extends FurudeSubCommand<CurrencyContext> {
+export default abstract class EconomySubCommand<A> extends FurudeSubCommand<
+  CurrencyContext<TypedArgs<A>>,
+  A
+> {
   public getResultMessage(
-    context: CurrencyContext,
+    context: CurrencyContext<TypedArgs<A>>,
     key: FurudeTranslationKeys
   ): string {
     const { localizer } = context;
@@ -41,7 +47,7 @@ export default abstract class EconomySubCommand extends FurudeSubCommand<Currenc
 
   public override createContext(
     baseContext: OmittedCommandContext
-  ): CurrencyContext {
+  ): CurrencyContext<TypedArgs<A>> {
     return new CurrencyContext(baseContext);
   }
 }

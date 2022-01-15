@@ -10,15 +10,15 @@ export type resolvedClass<T> = {
   object: T;
 };
 export default abstract class ClassResolver<T> {
-  private directoryMaps: DirectoryMapper[];
+  #directoryMaps: DirectoryMapper[];
 
   public constructor(...directoryMaps: DirectoryMapper[]) {
-    this.directoryMaps = directoryMaps;
+    this.#directoryMaps = directoryMaps;
   }
 
   public async getAllObjects(): Promise<resolvedClass<T>[]> {
     const objects: resolvedClass<T>[] = [];
-    for (const commandMapper of this.directoryMaps) {
+    for (const commandMapper of this.#directoryMaps) {
       const mapCommands = await this.getObjectForMapperLoop(commandMapper);
       objects.push(...mapCommands);
     }

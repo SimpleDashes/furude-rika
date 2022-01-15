@@ -1,10 +1,11 @@
-import type { CommandInteraction, User, MessageEmbedAuthor } from 'discord.js';
+import type { User, MessageEmbedAuthor } from 'discord.js';
 import OsuContext from '../../../client/contexts/osu/OsuContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import Strings from '../../../containers/Strings';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
-import type ICommandContext from '../../../modules/framework/commands/interfaces/ICommandContext';
+import type ICommandContext from '../../../modules/framework/commands/contexts/ICommandContext';
+import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import StringOption from '../../../modules/framework/options/classes/StringOption';
@@ -22,12 +23,19 @@ import OsuServerUtils from '../../../utils/OsuServerUtils';
 
 type OsuServerOption = Omit<StringOption, 'setAutocomplete'>;
 
-export interface OsuServerUserOptions {
-  user: StringOption;
+export type OsuServerUserOptions = {
+  username: StringOption;
   server: OsuServerOption;
-}
+};
 
-export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext> {
+export type OsuServerUserOptionWithDiscord = OsuServerUserOptions & {
+  discordUser: UserOption;
+};
+
+export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
+  OsuContext<TypedArgs<A>>,
+  A
+> {
   protected getServerOptions(): OsuServerOption {
     return new StringOption()
       .setName(CommandOptions.server)
@@ -38,51 +46,39 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
     return new StringOption().setName(CommandOptions.username);
   }
 
-  protected registerDiscordUserOption(command: OsuSubCommand): UserOption {
-    return command.registerOption(
-      new UserOption(true).setName(CommandOptions.user)
-    );
+  protected getOsuServerUserOptions(): OsuServerUserOptions {
+    const options: OsuServerUserOptions = {
+      username: this.registerOption(this.getOsuUserOption()),
+      server: this.registerOption(this.getServerOptions()),
+    };
+    return options;
   }
 
-  protected registerServerUserOptions(
-    command: OsuSubCommand,
-    setup: (o: OsuServerUserOptions) => void
-  ): OsuServerUserOptions {
+  protected getOsuServerOptionsWithDiscordUser(): OsuServerUserOptionWithDiscord {
     const options = {
-      user: command.registerOption(this.getOsuUserOption()),
-      server: command.registerOption(this.getServerOptions()),
+      ...this.getOsuServerUserOptions(),
+      ...{
+        discordUser: new UserOption(true).setName(CommandOptions.user),
+      },
     };
-    setup(options);
     return options;
   }
 
   protected applyToServerOption(
-    option: OsuServerOption,
-    interaction: CommandInteraction
+    context: OsuContext<TypedArgs<A & OsuServerUserOptions>>
   ): AnyServer {
-    const name = option.apply(interaction);
-    return name
-      ? (OsuServers as unknown as Record<string, AnyServer>)[name] ??
-          OsuServers.bancho
+    const { args } = context;
+    const { server } = args;
+    return server
+      ? (OsuServers as unknown as Record<string, AnyServer>)[
+          server.toString()
+        ] ?? OsuServers.bancho
       : OsuServers.bancho;
   }
 
-  protected async getUserFromServerUserOptions(
-    options: OsuServerUserOptions,
-    context: OsuContext,
-    user?: User | null
-  ): Promise<IOsuUser<unknown> | undefined> {
-    const { interaction } = context;
-
-    const server = this.applyToServerOption(options.server, interaction);
-
-    user ??= interaction.user;
-    const username = options.user.apply(interaction);
-
-    return await this.getUserFromServer(server, context, username, user);
-  }
-
-  protected async sendOsuUserNotFound(context: OsuContext): Promise<void> {
+  protected async sendOsuUserNotFound(
+    context: OsuContext<TypedArgs<A>>
+  ): Promise<void> {
     const { interaction, localizer } = context;
     await InteractionUtils.reply(
       interaction,
@@ -93,10 +89,10 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
   }
 
   protected async getUserFromServer(
-    server: AnyServer,
-    context: OsuContext,
-    username?: string | null,
-    user: User = context.interaction.user
+    context: OsuContext<TypedArgs<A & OsuServerUserOptions>>,
+    user: User = context.interaction.user,
+    server: AnyServer = this.applyToServerOption(context),
+    username: string | null = context.args.username as string
   ): Promise<IOsuUser<unknown> | undefined> {
     if (!username) {
       const dbOsuPlayer = await context.OSU_PLAYER.default(user);
@@ -178,7 +174,7 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
 
   protected getUserInfoAuthor(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext
+    context: OsuContext<TypedArgs<A>>
   ): MessageEmbedAuthor {
     const { localizer } = context;
     const author: MessageEmbedAuthor = {
@@ -195,7 +191,9 @@ export default abstract class OsuSubCommand extends FurudeSubCommand<OsuContext>
     return author;
   }
 
-  public override createContext(baseContext: ICommandContext): OsuContext {
+  public override createContext(
+    baseContext: ICommandContext
+  ): OsuContext<TypedArgs<A>> {
     return new OsuContext(baseContext);
   }
 }

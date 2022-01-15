@@ -4,7 +4,7 @@ import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOpera
 import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
 export default class DailyHelper {
   public static async trigger(
-    context: CurrencyContext,
+    context: CurrencyContext<unknown>,
     type: HyperTypes
   ): Promise<void> {
     const { citizen, localizer, interaction } = context;

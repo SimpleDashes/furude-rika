@@ -1,16 +1,28 @@
 import type OsuContext from '../../../../../client/contexts/osu/OsuContext';
 import FurudeOperations from '../../../../../database/FurudeOperations';
+import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
 import { assertDefinedGet } from '../../../../../modules/framework/types/TypeAssertions';
+import type { OsuServerUserOptions } from '../../../wrapper/OsuSubCommand';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
 
-export default class OsuSetUser extends OsuSubCommand {
-  private serverUserOptions = this.registerServerUserOptions(this, (o) => {
-    o.server.setDescription('The server you want to bind your account to.');
-    o.user.setRequired(true);
-    o.user.setDescription(
-      'The user you want to bind your account on the specified server.'
-    );
-  });
+type Args = unknown & OsuServerUserOptions;
+
+export default class OsuSetUser extends OsuSubCommand<Args> {
+  public createArgs(): Args {
+    return {
+      ...((): OsuServerUserOptions => {
+        const args = this.getOsuServerUserOptions();
+        args.server.setDescription(
+          'The server you want to bind your account to.'
+        );
+        args.username.setRequired(true);
+        args.username.setDescription(
+          'The user you want to bind your account on the specified server.'
+        );
+        return args;
+      })(),
+    };
+  }
 
   public constructor() {
     super({
@@ -19,19 +31,14 @@ export default class OsuSetUser extends OsuSubCommand {
     });
   }
 
-  public async trigger(context: OsuContext): Promise<void> {
-    const { interaction, osuPlayer, localizer } = context;
+  public async trigger(context: OsuContext<TypedArgs<Args>>): Promise<void> {
+    const { interaction, osuPlayer, localizer, args } = context;
+    const { username } = args;
 
-    const server = this.applyToServerOption(
-      this.serverUserOptions.server,
-      interaction
-    );
+    assertDefinedGet(username);
 
-    const username = assertDefinedGet(
-      this.serverUserOptions.user.apply(interaction)
-    );
-
-    const osuUser = await this.getUserFromServer(server, context, username);
+    const server = this.applyToServerOption(context);
+    const osuUser = await this.getUserFromServer(context);
 
     if (!osuUser) {
       await this.sendOsuUserNotFound(context);

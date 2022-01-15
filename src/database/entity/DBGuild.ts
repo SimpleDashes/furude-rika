@@ -14,16 +14,16 @@ import DBUser from './DBUser';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 
 class DBGuildExtension extends EntityExtension<DBGuild> {
-  private getBindableRewardedXP(): BindableInteger {
+  #getBindableRewardedXP(): BindableInteger {
     return new BindableInteger(undefined, undefined, {
       minValue: DBGuild.MIN_XP_CHANGE_VALUE,
       maxValue: DBGuild.MAX_XP_CHANGE_VALUE,
     });
   }
 
-  public min_rewarded_xp: BindableInteger = this.getBindableRewardedXP();
+  public min_rewarded_xp: BindableInteger = this.#getBindableRewardedXP();
 
-  public max_rewarded_xp: BindableInteger = this.getBindableRewardedXP();
+  public max_rewarded_xp: BindableInteger = this.#getBindableRewardedXP();
 
   public time_for_xp: BindableInteger = new BindableInteger(
     undefined,
@@ -75,8 +75,7 @@ export default class DBGuild
   @Column('array')
   public blocked_xp_channels: Snowflake[] = [];
 
-  // TODO CHECK IF THAT SAVES TO THE DB LIKE WHAT?
-  private extension = new DBGuildExtension(this);
+  #extension = new DBGuildExtension(this);
 
   public constructor() {
     super();
@@ -137,14 +136,16 @@ export default class DBGuild
   }
 
   public setMinXPValue(value: number): IDatabaseOperation {
-    this.min_rewarded_xp_value = this.extension.min_rewarded_xp.Current = value;
+    this.min_rewarded_xp_value = this.#extension.min_rewarded_xp.Current =
+      value;
     return FurudeOperations.success(
       'Changed minimal rewarded xp successfully!'
     );
   }
 
   public setMaxXPValue(value: number): IDatabaseOperation {
-    this.max_rewarded_xp_value = this.extension.max_rewarded_xp.Current = value;
+    this.max_rewarded_xp_value = this.#extension.max_rewarded_xp.Current =
+      value;
     return FurudeOperations.success(
       'Changed maximal rewarded xp successfully!'
     );
@@ -154,7 +155,7 @@ export default class DBGuild
     localizer: FurudeLocales,
     time: number
   ): IDatabaseOperation {
-    this.time_for_xp = this.extension.time_for_xp.Current = time;
+    this.time_for_xp = this.#extension.time_for_xp.Current = time;
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.DATABASE_GUILD_CHANGED_TIME_FOR_XP, [
         MessageCreator.block(time.toFixed()),

@@ -4,14 +4,24 @@ import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
+import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
 
 enum COIN {
   HEAD = FurudeTranslationKeys.COIN_FLIP_HEADS,
   TAILS = FurudeTranslationKeys.COIN_FLIP_TAILS,
 }
 
-export default class CoinFlip extends FurudeCommand<DefaultContext> {
-  private readonly coinsArray = [COIN.HEAD, COIN.TAILS];
+type Args = unknown;
+
+export default class CoinFlip extends FurudeCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  readonly #coinsArray = [COIN.HEAD, COIN.TAILS];
+
+  public createArgs(): Args {
+    return {};
+  }
 
   public constructor() {
     super({
@@ -20,10 +30,12 @@ export default class CoinFlip extends FurudeCommand<DefaultContext> {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
     const { interaction, localizer } = context;
 
-    const selectedCoin = ArrayHelper.getRandomArrayElement(this.coinsArray);
+    const selectedCoin = ArrayHelper.getRandomArrayElement(this.#coinsArray);
     await InteractionUtils.reply(
       interaction,
       MessageCreator.success(

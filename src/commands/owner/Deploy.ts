@@ -11,21 +11,31 @@ import {
   Preconditions,
   SetPreconditions,
 } from '../../modules/framework/commands/decorators/PreconditionDecorators';
+import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
+import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 
-@SetPreconditions<DefaultContext>(Preconditions.OwnerOnly)
-export default class Deploy extends FurudeCommand<DefaultContext> {
-  private readonly commandName = this.registerOption(
-    new StringOption()
-      .setRequired(true)
-      .setName(CommandOptions.name)
-      .setDescription('Name of the command to be deployed')
-  );
-
-  private readonly debug = this.registerOption(
-    new BooleanOption()
-      .setName(CommandOptions.debug)
-      .setDescription('Deploys the command only in development server if true.')
-  );
+type Args = {
+  commandName: StringOption;
+  isDebug: BooleanOption;
+};
+@SetPreconditions(Preconditions.OwnerOnly)
+export default class Deploy extends FurudeCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  public createArgs(): Args {
+    return {
+      commandName: new StringOption()
+        .setRequired(true)
+        .setName(CommandOptions.name)
+        .setDescription('Name of the command to be deployed'),
+      isDebug: new BooleanOption()
+        .setName(CommandOptions.debug)
+        .setDescription(
+          'Deploys the command only in development server if true.'
+        ),
+    };
+  }
 
   public constructor() {
     super({
@@ -34,13 +44,18 @@ export default class Deploy extends FurudeCommand<DefaultContext> {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { interaction, client, localizer } = context;
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { interaction, client, localizer, args } = context;
 
-    const isDebug = this.debug.apply(interaction);
-    const commandName = this.commandName.apply(interaction) as string;
+    const { commandName } = args;
+    let { isDebug } = args;
 
-    await DeployHandler.deployCommand({
+    assertDefined(commandName);
+    isDebug = Boolean(isDebug);
+
+    await DeployHandler.deployCommand<DefaultContext<TypedArgs<unknown>>>({
       client,
       commandName,
       isDebug,

@@ -8,6 +8,7 @@ import PingData from '../../modules/framework/ping/PingData';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
+import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
 
 interface IPingCallbackArguments {
   interaction: CommandInteraction;
@@ -35,8 +36,16 @@ class PingContainerType extends PingContainer<
   }
 }
 
-export default class Ping extends FurudeCommand<DefaultContext> {
-  private readonly pingContainer: PingContainerType = new PingContainerType();
+type Args = unknown;
+export default class Ping extends FurudeCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  public createArgs(): Args {
+    return {};
+  }
+
+  readonly #pingContainer: PingContainerType = new PingContainerType();
 
   public constructor() {
     super({
@@ -45,7 +54,9 @@ export default class Ping extends FurudeCommand<DefaultContext> {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
     const { interaction, localizer } = context;
 
     const embed = new BaseEmbed({}, interaction, {
@@ -57,7 +68,7 @@ export default class Ping extends FurudeCommand<DefaultContext> {
       interaction,
     };
 
-    for (const pingData of this.pingContainer.InternalArray) {
+    for (const pingData of this.#pingContainer.InternalArray) {
       const ping = await pingData.ping?.call(pingData, pingArgs);
 
       const text = ping

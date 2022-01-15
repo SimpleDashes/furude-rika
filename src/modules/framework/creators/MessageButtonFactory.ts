@@ -3,7 +3,7 @@ import type { MessageButtonOptions } from 'discord.js';
 import { MessageButton } from 'discord.js';
 
 export default class MessageButtonFactory {
-  private static currentID = 0;
+  static #currentID = 0;
   public readonly createdButtons: MessageButton[] = [];
 
   public newButton(
@@ -11,7 +11,7 @@ export default class MessageButtonFactory {
   ): MessageButton {
     const button = new MessageButton(data);
     if (!button.customId) {
-      button.customId = (MessageButtonFactory.currentID++).toString();
+      button.customId = (MessageButtonFactory.#currentID++).toString();
     }
     this.createdButtons.push(button);
     return button;

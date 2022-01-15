@@ -7,16 +7,22 @@ import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
-import { assertDefinedGet } from '../../../modules/framework/types/TypeAssertions';
+import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
+import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
 
-export default class EconomyOpen extends EconomySubCommand {
-  private readonly userOption = this.registerOption(
-    new UserOption(true)
-      .setName(CommandOptions.user)
-      .setDescription(
-        'The user you want to obtain the balance information from.'
-      )
-  );
+type Args = {
+  user: UserOption;
+};
+export default class EconomyOpen extends EconomySubCommand<Args> {
+  public createArgs(): Args {
+    return {
+      user: new UserOption(true)
+        .setName(CommandOptions.user)
+        .setDescription(
+          'The user you want to obtain the balance information from.'
+        ),
+    };
+  }
 
   public constructor() {
     super({
@@ -25,10 +31,14 @@ export default class EconomyOpen extends EconomySubCommand {
     });
   }
 
-  public async trigger(context: CurrencyContext): Promise<void> {
-    const { interaction, localizer } = context;
+  public async trigger(
+    context: CurrencyContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { interaction, localizer, args } = context;
+    const { user } = args;
 
-    const user = assertDefinedGet(this.userOption.apply(interaction));
+    assertDefined(user);
+
     const citizen = await context.CITIZENS.default(user);
 
     if (citizen.justCreated) {

@@ -19,19 +19,19 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
   /**
    * The epoch time at which a cache data is added, in milliseconds.
    */
-  private readonly addedTime: Collection<K, number> = new Collection();
+  readonly #addedTime: Collection<K, number> = new Collection();
 
   /**
    * The interval at which this limited collection will be sweeped, in seconds.
    */
-  private readonly sweepInterval: number;
+  readonly #sweepInterval: number;
 
   /**
    * The lifetime of each cache data in this limited collection.
    */
-  private readonly lifetime: number;
+  readonly #lifetime: number;
 
-  private interval?: NodeJS.Timeout;
+  #interval?: NodeJS.Timeout;
 
   /**
    * @param capacity The capacity of the collection.
@@ -45,8 +45,8 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
     super();
 
     this.capacity = capacity;
-    this.lifetime = lifetime;
-    this.sweepInterval = sweepInterval;
+    this.#lifetime = lifetime;
+    this.#sweepInterval = sweepInterval;
 
     if (capacity <= 0) {
       throw new Error(`Invalid limited collection capacity: ${capacity}`);
@@ -61,28 +61,28 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
    * Starts an interval to periodically sweep cache data that
    * were unused for the specified duration.
    */
-  private startInterval(): void {
-    if (this.interval) {
+  #startInterval(): void {
+    if (this.#interval) {
       return;
     }
 
-    this.interval = setInterval(() => {
-      assertDefined(this.interval);
+    this.#interval = setInterval(() => {
+      assertDefined(this.#interval);
 
       const executionTime: number = Date.now();
 
-      this.addedTime.forEach((value, key) => {
-        if (executionTime - value > secondsToMilliseconds(this.lifetime)) {
-          this.addedTime.delete(key);
+      this.#addedTime.forEach((value, key) => {
+        if (executionTime - value > secondsToMilliseconds(this.#lifetime)) {
+          this.#addedTime.delete(key);
           this.delete(key);
         }
       });
 
       if (this.size === 0) {
-        clearInterval(this.interval);
-        this.interval = undefined;
+        clearInterval(this.#interval);
+        this.#interval = undefined;
       }
-    }, secondsToMilliseconds(this.sweepInterval));
+    }, secondsToMilliseconds(this.#sweepInterval));
   }
 
   /**
@@ -99,7 +99,7 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
       const firstKey = this.firstKey();
       assertDefined(firstKey);
 
-      this.addedTime.delete(firstKey);
+      this.#addedTime.delete(firstKey);
       this.delete(firstKey);
     }
 
@@ -108,9 +108,9 @@ export class LimitedCapacityCollection<K, V> extends Collection<K, V> {
 
     super.set(key, value);
 
-    this.startInterval();
+    this.#startInterval();
 
-    this.addedTime.set(key, Date.now());
+    this.#addedTime.set(key, Date.now());
 
     return this;
   }

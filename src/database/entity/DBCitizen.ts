@@ -37,7 +37,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
   @Column(() => GuildHyperDate)
   public lastTimeClaimedDaily = new GuildHyperDate(null);
 
-  private incrementCapital(
+  #incrementCapital(
     interaction: CommandInteraction,
     type: HyperTypes,
     amount: number
@@ -64,7 +64,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
    * @param amount Amount of days to be incremented (usually will always be 1)
    * @returns wether we reached the max streak.
    */
-  private incrementStreak(
+  #incrementStreak(
     interaction: CommandInteraction,
     type: HyperTypes,
     duration: Duration,
@@ -150,7 +150,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       );
     }
 
-    const streakOperation = this.incrementStreak(
+    const streakOperation = this.#incrementStreak(
       interaction,
       type,
       duration,
@@ -161,7 +161,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
       amount *= 2;
     }
 
-    this.incrementCapital(interaction, type, amount);
+    this.#incrementCapital(interaction, type, amount);
 
     return FurudeOperations.success(
       localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_CLAIM_SUCCESS, [

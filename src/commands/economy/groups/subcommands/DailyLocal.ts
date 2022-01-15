@@ -1,4 +1,3 @@
-import type CurrencyContext from '../../../../client/contexts/currency/CurrencyContext';
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
 import {
@@ -8,7 +7,7 @@ import {
 import DailySubCommand from '../../wrapper/DailySubCommand';
 import { MustHaveOpenAccount } from '../../wrapper/EconomySubCommand';
 
-@SetPreconditions<CurrencyContext>(Preconditions.GuildOnly, MustHaveOpenAccount)
+@SetPreconditions(Preconditions.GuildOnly, MustHaveOpenAccount)
 export default class DailyLocal extends DailySubCommand {
   public constructor() {
     super({

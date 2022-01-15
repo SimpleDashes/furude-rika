@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { PermissionResolvable } from 'discord.js';
 import type Constructor from '../../interfaces/Constructor';
 import type ICommand from '../interfaces/ICommand';
@@ -8,7 +10,6 @@ import type OwnerPrecondition from '../preconditions/OwnerPrecondition';
 import RequiresGuildPrecondition from '../preconditions/RequiresGuildPrecondition';
 import RequiresSubCommandsPrecondition from '../preconditions/RequiresSubCommandsPrecondition';
 import RequiresSubCommandsGroupsPrecondition from '../preconditions/RequiresSubCommandsGroupsPrecondition';
-import type ICommandContext from '../interfaces/ICommandContext';
 import type SubCommandGroup from '../SubCommandGroup';
 
 export class SetupPrecondition {
@@ -64,13 +65,11 @@ export class Preconditions {
   };
 }
 
-function SetPreconditions<CTX extends ICommandContext>(
-  ...preconditions: CommandPrecondition<CTX>[]
-) {
+function SetPreconditions(...preconditions: CommandPrecondition<any>[]) {
   return (
-    target: Constructor<[...unknown[]], ICommand<CTX> | SubCommandGroup>
+    target: Constructor<[...unknown[]], ICommand<any, any> | SubCommandGroup>
   ): void => {
-    const prototype = target.prototype as IHasPreconditions<CTX>;
+    const prototype = target.prototype as IHasPreconditions<any>;
     prototype.preconditions ??= [];
 
     const maybeGuildPrecondition = preconditions.find(

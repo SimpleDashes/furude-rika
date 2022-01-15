@@ -21,10 +21,10 @@ import type { ClassRepository } from './types/ClassRepository';
 
 export default class FurudeDB {
   public readonly uri: string;
-  private connection?: Connection;
+  #connection?: Connection;
 
   public get Connection(): Connection | undefined {
-    return this.connection;
+    return this.#connection;
   }
 
   public constructor() {
@@ -32,7 +32,7 @@ export default class FurudeDB {
   }
 
   public async connect(): Promise<void> {
-    this.connection = await createConnection({
+    this.#connection = await createConnection({
       type: 'mongodb',
       url: this.uri,
       useNewUrlParser: true,
@@ -43,7 +43,7 @@ export default class FurudeDB {
     });
   }
 
-  private assignNewEntityToEntity<T extends BaseEntity>(
+  #assignNewEntityToEntity<T extends BaseEntity>(
     constructor: ClassRepository<T>,
     findEntity: T | null,
     onNotFound?: (o: T) => void
@@ -56,7 +56,7 @@ export default class FurudeDB {
     return entity;
   }
 
-  private async createEntityWhenNotFound<T extends BaseEntity>(
+  async #createEntityWhenNotFound<T extends BaseEntity>(
     constructor: ClassRepository<T>,
     findEntity: () => Promise<T | undefined>,
     onNotFound?: (o: T) => void
@@ -70,7 +70,7 @@ export default class FurudeDB {
     } catch {
       // We use a new entity if the entity isn't found.
     }
-    return this.assignNewEntityToEntity(constructor, find, onNotFound);
+    return this.#assignNewEntityToEntity(constructor, find, onNotFound);
   }
 
   public getSnowFlakeQuery(
@@ -83,7 +83,7 @@ export default class FurudeDB {
     };
   }
 
-  private identifySnowflake<T extends SnowFlakeIDEntity>(
+  #identifySnowflake<T extends SnowFlakeIDEntity>(
     entity: T,
     snowflakeable: IHasSnowFlakeID
   ): T {
@@ -104,8 +104,8 @@ export default class FurudeDB {
     ): void => {
       o.justCreated = justCreated;
     };
-    return this.identifySnowflake(
-      await this.createEntityWhenNotFound(
+    return this.#identifySnowflake(
+      await this.#createEntityWhenNotFound(
         type,
         async () => {
           const appliedQuery = {
@@ -131,7 +131,7 @@ export default class FurudeDB {
   ): Promise<T[]> {
     const snowFlakes: T[] = await type.find(query);
     for (const snowFlake of snowFlakes) {
-      this.assignNewEntityToEntity(type, snowFlake);
+      this.#assignNewEntityToEntity(type, snowFlake);
     }
     return snowFlakes;
   }

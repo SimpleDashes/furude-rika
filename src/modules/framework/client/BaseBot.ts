@@ -5,7 +5,6 @@ import CommandResolver from '../commands/loaders/CommandResolver';
 import type { resolvedClass } from '../io/ClassResolver';
 import type ClassResolver from '../io/ClassResolver';
 import type IBot from './IBot';
-import type BaseCommand from '../commands/BaseCommand';
 import type ICommandRunResponse from './ICommandRunResponse';
 import consola from 'consola';
 import type IBotDevInformation from './IBotDevInformation';
@@ -23,34 +22,42 @@ import fs from 'fs/promises';
 import { SetupPrecondition } from '../commands/decorators/PreconditionDecorators';
 import RequiresSubCommandsPrecondition from '../commands/preconditions/RequiresSubCommandsPrecondition';
 import RequiresSubCommandsGroupsPrecondition from '../commands/preconditions/RequiresSubCommandsGroupsPrecondition';
-import type ICommandContext from '../commands/interfaces/ICommandContext';
+import type ICommandContext from '../commands/contexts/ICommandContext';
 import type IDevOptions from './IBotDevOptions';
 import { assertDefined } from '../types/TypeAssertions';
 import type Constructor from '../interfaces/Constructor';
+import type { TypedArgs } from '../commands/decorators/ContextDecorators';
+import type BaseCommand from '../commands/BaseCommand';
+import DiscordOptionHelper from '../options/DiscordOptionHelper';
+import type IDiscordOption from '../options/interfaces/IDiscordOption';
 
-export default abstract class BaseBot<CTX extends ICommandContext>
+type argsLoopListener<O> = (key: string, object: O) => void;
+export default abstract class BaseBot<
+    CTX extends ICommandContext<TypedArgs<unknown>>
+  >
   extends Client
   implements IBot
 {
-  public readonly commands: Collection<string, BaseCommand<CTX>> =
+  public readonly commands: Collection<string, BaseCommand<CTX, unknown>> =
     new Collection();
 
   public readonly subCommands: Collection<
-    ICommand<CTX> | SubCommandGroup,
-    SubCommand<CTX>[]
+    ICommand<CTX, unknown> | SubCommandGroup,
+    SubCommand<CTX, unknown>[]
   > = new Collection();
 
   public readonly subCommandGroups: Collection<
-    ICommand<CTX>,
+    ICommand<CTX, unknown>,
     SubCommandGroup[]
   > = new Collection();
 
   public readonly commandMappers: DirectoryMapper[] = [];
   public readonly devInfo: IBotDevInformation;
-  public readonly devOptions: IDevOptions;
-  private readonly commandMapperFactory?: DirectoryMapperFactory;
-  private readonly subCommandsDirectory: string;
-  private readonly subCommandGroupsDirectory: string;
+
+  readonly #devOptions: IDevOptions;
+  readonly #commandMapperFactory?: DirectoryMapperFactory;
+  readonly #subCommandsDirectory: string;
+  readonly #subCommandGroupsDirectory: string;
 
   public constructor(
     options: ClientOptions,
@@ -61,46 +68,48 @@ export default abstract class BaseBot<CTX extends ICommandContext>
     ...commandMappers: DirectoryMapper[]
   ) {
     super(options);
-    this.subCommandsDirectory = subCommandsDirectory;
-    this.subCommandGroupsDirectory = subCommandGroupsDirectory;
-    this.devOptions = devOptions;
+    this.#subCommandsDirectory = subCommandsDirectory;
+    this.#subCommandGroupsDirectory = subCommandGroupsDirectory;
+    this.#devOptions = devOptions;
     this.commandMappers = commandMappers;
-    this.commandMapperFactory = commandMapperFactory;
+    this.#commandMapperFactory = commandMapperFactory;
     this.devInfo = {
-      ownerIds: this.devOptions.OWNER_IDS,
-      token: process.env[this.devOptions.ENV_TOKEN_VAR],
+      ownerIds: this.#devOptions.OWNER_IDS,
+      token: process.env[this.#devOptions.ENV_TOKEN_VAR],
     };
     SetupPrecondition.setup(new OwnerPrecondition(this.devInfo.ownerIds));
   }
 
-  private async loadCommands(): Promise<void> {
-    if (this.commandMapperFactory) {
-      const newMappers = await this.commandMapperFactory.buildMappers();
+  async #loadCommands(): Promise<void> {
+    if (this.#commandMapperFactory) {
+      const newMappers = await this.#commandMapperFactory.buildMappers();
       this.commandMappers.push(...newMappers);
     }
-    const commandResolver = new CommandResolver<CTX>(...this.commandMappers);
+    const commandResolver = new CommandResolver<CTX, unknown>(
+      ...this.commandMappers
+    );
     const resolvedCommands = await commandResolver.getAllObjects();
     for (const commandRes of resolvedCommands) {
       this.commands.set(commandRes.object.name, commandRes.object);
-      await this.registerSubOrGroup(
+      await this.#registerSubOrGroup(
         commandRes,
-        this.subCommandsDirectory,
+        this.#subCommandsDirectory,
         this.subCommands,
         (mapper: DirectoryMapper) => new SubCommandResolver(mapper),
         async (_res, command, sub) => {
           command.addSubcommand(sub);
         }
       );
-      await this.registerSubOrGroup(
+      await this.#registerSubOrGroup(
         commandRes,
-        this.subCommandGroupsDirectory,
+        this.#subCommandGroupsDirectory,
         this.subCommandGroups,
         (mapper: DirectoryMapper) => new SubCommandGroupResolver(mapper),
         async (res, command, group) => {
           command.addSubcommandGroup(group);
-          await this.registerSubOrGroup(
+          await this.#registerSubOrGroup(
             res,
-            this.subCommandsDirectory,
+            this.#subCommandsDirectory,
             this.subCommands,
             (mapper: DirectoryMapper) => new SubCommandResolver(mapper),
             async (_res, command, sub) => {
@@ -110,16 +119,58 @@ export default abstract class BaseBot<CTX extends ICommandContext>
         }
       );
     }
+    for (const command of [
+      ...this.commands.values(),
+      ...[...this.subCommands.values()].flat(),
+    ]) {
+      this.#loopCommandArgs(command, (_k, o) => {
+        command.registerOption(o);
+      });
+    }
     await this.onCommandsLoaded();
   }
 
-  private async registerSubOrGroup<
-    C extends ICommand<CTX> | SubCommandGroup,
-    S extends ICommand<CTX> | SubCommandGroup
+  #loopCommandArgs(
+    command: ICommand<CTX, unknown>,
+    onOption?: argsLoopListener<IDiscordOption<unknown>>,
+    onDefault?: argsLoopListener<unknown>
+  ): void {
+    const verifyIsOption = (
+      o: unknown,
+      k: string
+    ): o is IDiscordOption<unknown> => {
+      let isOption = false;
+      try {
+        isOption = DiscordOptionHelper.isObjectOption(o);
+      } catch (e) {
+        if (k !== 'defaultPermission') {
+          consola.warn(
+            `Undefined object at command: ${command.information.name} [k: ${k}].`
+          );
+        }
+      }
+      return isOption;
+    };
+
+    const tArgs = command as unknown as Record<string, unknown>;
+    for (const k in tArgs) {
+      const o = tArgs[k];
+
+      if (verifyIsOption(o, k) && onOption) {
+        onOption(k, o);
+      } else if (onDefault) {
+        onDefault(k, o);
+      }
+    }
+  }
+
+  async #registerSubOrGroup<
+    C extends ICommand<CTX, unknown> | SubCommandGroup,
+    S extends ICommand<CTX, unknown> | SubCommandGroup
   >(
     commandRes: resolvedClass<C>,
     pathName: string,
-    collection: Collection<ICommand<CTX> | SubCommandGroup, S[]>,
+    collection: Collection<ICommand<CTX, unknown> | SubCommandGroup, S[]>,
     resolver: (mapper: DirectoryMapper) => ClassResolver<S>,
     manipulator?: (
       res: resolvedClass<S>,
@@ -138,11 +189,11 @@ export default abstract class BaseBot<CTX extends ICommandContext>
         if (file.isDirectory()) {
           const dirPathName = path.join(pathName, file.name);
           if (
-            (selectedDirectoryBase === this.subCommandGroupsDirectory &&
-              !dirPathName.endsWith(this.subCommandsDirectory)) ||
-            selectedDirectoryBase === this.subCommandsDirectory
+            (selectedDirectoryBase === this.#subCommandGroupsDirectory &&
+              !dirPathName.endsWith(this.#subCommandsDirectory)) ||
+            selectedDirectoryBase === this.#subCommandsDirectory
           ) {
-            await this.registerSubOrGroup(
+            await this.#registerSubOrGroup(
               commandRes,
               dirPathName,
               collection,
@@ -177,7 +228,7 @@ export default abstract class BaseBot<CTX extends ICommandContext>
     await this.login(this.devInfo.token);
 
     const developmentGuildID =
-      process.env[this.devOptions.ENV_DEVELOPMENT_SERVER];
+      process.env[this.#devOptions.ENV_DEVELOPMENT_SERVER];
 
     this.on('ready', async () => {
       if (developmentGuildID) {
@@ -186,7 +237,7 @@ export default abstract class BaseBot<CTX extends ICommandContext>
         );
         consola.success(`Development Guild: ${this.devInfo.developmentGuild}`);
       }
-      await this.loadCommands();
+      await this.#loadCommands();
     });
 
     this.on('interactionCreate', async (interaction) => {
@@ -227,14 +278,15 @@ export default abstract class BaseBot<CTX extends ICommandContext>
         verifyNeedsSubCommandOrGroup(RequiresSubCommandsGroupsPrecondition)
       );
 
-      let groupToRunSubcommand: ICommand<CTX> | SubCommandGroup = command;
-      let runnerCommand: ICommand<CTX> = command;
+      let groupToRunSubcommand: ICommand<CTX, unknown> | SubCommandGroup =
+        command;
+      let runnerCommand: ICommand<CTX, unknown> = command;
 
       const getCommandOrSubCommand = <
-        C extends ICommand<CTX> | SubCommandGroup
+        C extends ICommand<CTX, unknown> | SubCommandGroup
       >(
-        collection: Collection<ICommand<CTX> | SubCommandGroup, C[]>,
-        command: ICommand<CTX> | SubCommandGroup,
+        collection: Collection<ICommand<CTX, unknown> | SubCommandGroup, C[]>,
+        command: ICommand<CTX, unknown> | SubCommandGroup,
         option: string
       ): C | undefined => {
         return collection
@@ -273,15 +325,15 @@ export default abstract class BaseBot<CTX extends ICommandContext>
       await context.build();
 
       const canRunCommand = async (
-        command: ICommand<CTX> | SubCommandGroup
+        command: ICommand<CTX, unknown> | SubCommandGroup
       ): Promise<boolean> => {
         return verifyIsHasPreconditions(command)
-          ? await this.verifyPreconditions(command, context)
+          ? await this.#verifyPreconditions(command, context)
           : true;
       };
 
       const canRunSubCommandOrGroup = async (
-        inner: ICommand<CTX> | SubCommandGroup
+        inner: ICommand<CTX, unknown> | SubCommandGroup
       ): Promise<boolean> => {
         return inner === command ? true : await canRunCommand(inner);
       };
@@ -291,6 +343,20 @@ export default abstract class BaseBot<CTX extends ICommandContext>
       if (!(await canRunSubCommandOrGroup(groupToRunSubcommand))) return;
 
       if (!(await canRunSubCommandOrGroup(runnerCommand))) return;
+
+      const recordArgs = (context.args ?? {}) as Record<string, unknown>;
+
+      this.#loopCommandArgs(
+        command,
+        (k, o) => {
+          recordArgs[k] = o.apply(context.interaction);
+        },
+        (k, o) => {
+          recordArgs[k] = o;
+        }
+      );
+
+      context.args = recordArgs;
 
       const response: ICommandRunResponse<CTX> = {
         context,
@@ -305,7 +371,7 @@ export default abstract class BaseBot<CTX extends ICommandContext>
     });
   }
 
-  private async verifyPreconditions(
+  async #verifyPreconditions(
     preconditioned: IHasPreconditions<CTX>,
     context: CTX
   ): Promise<boolean> {

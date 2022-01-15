@@ -25,18 +25,18 @@ const stringWithVariablesManager = new StringWithVariablesManager();
 let builtGlobals = false;
 
 export default class FurudeLocales extends Localizer<IFurudeResource> {
-  private readonly context?: DefaultContext;
+  #context?: DefaultContext<unknown>;
   public language: SupportedFurudeLocales;
 
   public constructor(options?: {
     language?: SupportedFurudeLocales;
-    context?: DefaultContext;
+    context?: DefaultContext<unknown>;
   }) {
     super({
       defaultLocale: defaultFurudeLocale,
       locales: translations,
     });
-    this.context = options?.context;
+    this.#context = options?.context;
     this.language = options?.language ?? defaultFurudeLocale;
   }
 
@@ -53,7 +53,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
           if (template && template.includes(variablePrefix)) {
             stringWithVariablesManager.addString(
               template,
-              this.getKey(SupportedFurudeLocales[value.furudeLocale], key)
+              this.#getKey(SupportedFurudeLocales[value.furudeLocale], key)
             );
           }
         }
@@ -63,7 +63,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
     await this.onReady();
   }
 
-  private getKey(locale: SupportedFurudeLocales, key: string): string {
+  #getKey(locale: SupportedFurudeLocales, key: string): string {
     return `${locale}-${key}`;
   }
 
@@ -78,11 +78,11 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
       key,
       args: vars ?? [],
     };
-    if (this.context) {
+    if (this.#context) {
       this.language =
-        this.context.dbChannel?.preferred_locale ??
-        this.context.dbGuild?.preferred_locale ??
-        this.context.dbUser.preferred_locale ??
+        this.#context.dbChannel?.preferred_locale ??
+        this.#context.dbGuild?.preferred_locale ??
+        this.#context.dbUser.preferred_locale ??
         this.language;
     }
     const find = translations.find((translation) => {
@@ -90,7 +90,7 @@ export default class FurudeLocales extends Localizer<IFurudeResource> {
     })?.structure[key];
     if (!find) return Strings.EMPTY;
     if (values.args) {
-      values.key = this.getKey(this.language, values.key);
+      values.key = this.#getKey(this.language, values.key);
       values.args = values.args ?? [];
       if (stringWithVariablesManager.stringsWithVariables[values.key]) {
         const replacedPlaceHolders =

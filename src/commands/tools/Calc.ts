@@ -9,24 +9,31 @@ import StringOption from '../../modules/framework/options/classes/StringOption';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import { assertDefinedGet } from '../../modules/framework/types/TypeAssertions';
-import Strings from '../../containers/Strings';
+import { assertDefined } from '../../modules/framework/types/TypeAssertions';
+import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
 
-export default class Calc extends FurudeCommand<DefaultContext> {
-  private readonly expressionOption = this.registerOption(
-    new StringOption()
-      .setRequired(true)
-      .setName('expression')
-      .setDescription('The expression for my lazy mind to evaluate')
-  );
-
-  private readonly variablesOption = this.registerOption(
-    new StringOption()
-      .setName('variables')
-      .setDescription(
-        'The variables to be used for the expression. e.g: "x=1, y=2"'
-      )
-  );
+type Args = {
+  expression: StringOption;
+  rawVariables: StringOption;
+};
+export default class Calc extends FurudeCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  public createArgs(): Args {
+    return {
+      expression: new StringOption()
+        .setName('variables')
+        .setDescription(
+          'The variables to be used for the expression. e.g: "x=1, y=2"'
+        ),
+      rawVariables: new StringOption()
+        .setName('variables')
+        .setDescription(
+          'The variables to be used for the expression. e.g: "x=1, y=2"'
+        ),
+    };
+  }
 
   public constructor() {
     super({
@@ -35,27 +42,27 @@ export default class Calc extends FurudeCommand<DefaultContext> {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { interaction, localizer } = context;
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { interaction, localizer, args } = context;
 
-    const expression = assertDefinedGet(
-      this.expressionOption.apply(interaction)
-    ).replace(' ', '');
+    let { expression } = args;
+    const { rawVariables } = args;
 
-    const rawVariables =
-      this.variablesOption.apply(interaction) ?? Strings.EMPTY;
+    assertDefined(expression);
 
-    const gotVariables = this.getAllInputVariablesCollection(
-      rawVariables,
-      expression
-    );
+    expression = expression.replace(' ', '');
 
-    const allVariables = this.getAllRequiredVariablesArray(expression);
+    const gotVariables = rawVariables
+      ? this.#getAllInputVariablesCollection(rawVariables, expression)
+      : undefined;
 
-    const missingVariables = this.getAllMissingRequiredVariablesArray(
-      allVariables,
-      gotVariables
-    );
+    const allVariables = this.#getAllRequiredVariablesArray(expression);
+
+    const missingVariables = gotVariables
+      ? this.#getAllMissingRequiredVariablesArray(allVariables, gotVariables)
+      : [];
 
     const expressionText = MessageCreator.block(expression.trim());
 
@@ -90,7 +97,7 @@ export default class Calc extends FurudeCommand<DefaultContext> {
     let evaluatedResult: number | null = null;
     try {
       evaluatedResult = parsedExpression.evaluate(
-        CollectionHelper.collectionToRecord(gotVariables)
+        gotVariables ? CollectionHelper.collectionToRecord(gotVariables) : {}
       );
     } catch {
       // invalid input.
@@ -120,7 +127,7 @@ export default class Calc extends FurudeCommand<DefaultContext> {
     await InteractionUtils.reply(interaction, displayText);
   }
 
-  private getAllMissingRequiredVariablesArray(
+  #getAllMissingRequiredVariablesArray(
     allVariables: string[],
     gotVariables: Collection<string, number>
   ): string[] {
@@ -135,7 +142,7 @@ export default class Calc extends FurudeCommand<DefaultContext> {
     return missingVariables;
   }
 
-  private getAllRequiredVariablesArray(gotExpression: string): string[] {
+  #getAllRequiredVariablesArray(gotExpression: string): string[] {
     let currentVariableName = '';
     const allVariables: string[] = [];
 
@@ -168,7 +175,7 @@ export default class Calc extends FurudeCommand<DefaultContext> {
     return allVariables;
   }
 
-  private getAllInputVariablesCollection(
+  #getAllInputVariablesCollection(
     gotVariablesRaw: string,
     gotExpression: string
   ): Collection<string, number> {

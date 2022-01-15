@@ -2,23 +2,35 @@ import { secondsToHours } from 'date-fns';
 import type OsuContext from '../../../client/contexts/osu/OsuContext';
 import ExpandableEmbedHelper from '../../../discord/commands/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';
+import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import type IOsuUser from '../../../modules/osu/users/IOsuUser';
+import type { OsuServerUserOptionWithDiscord } from '../wrapper/OsuSubCommand';
 import OsuSubCommand from '../wrapper/OsuSubCommand';
 
+type Args = unknown & OsuServerUserOptionWithDiscord;
 export default class OsuProfile
-  extends OsuSubCommand
+  extends OsuSubCommand<Args>
   implements IHasExpandableEmbed
 {
-  private serverUserOptions = this.registerServerUserOptions(this, (o) => {
-    o.server.setDescription('The server of the account you want to view.');
-    o.user.setDescription('The username of the account you want to view.');
-  });
-
-  private discordUserOption = this.registerDiscordUserOption(
-    this
-  ).setDescription('The user who owns the account you want to view.');
+  public createArgs(): Args {
+    return {
+      ...((): OsuServerUserOptionWithDiscord => {
+        const args = this.getOsuServerOptionsWithDiscordUser();
+        args.server.setDescription(
+          'The server of the account you want to view.'
+        );
+        args.username.setDescription(
+          'The username of the account you want to view.'
+        );
+        args.discordUser.setDescription(
+          'The user who owns the account you want to view.'
+        );
+        return args;
+      })(),
+    };
+  }
 
   public constructor() {
     super({
@@ -27,14 +39,11 @@ export default class OsuProfile
     });
   }
 
-  public async trigger(context: OsuContext): Promise<void> {
-    const { interaction } = context;
+  public async trigger(context: OsuContext<TypedArgs<Args>>): Promise<void> {
+    const { interaction, args } = context;
+    const { discordUser } = args;
 
-    const osuUser = await this.getUserFromServerUserOptions(
-      this.serverUserOptions,
-      context,
-      this.discordUserOption.apply(interaction)
-    );
+    const osuUser = await this.getUserFromServer(context, discordUser);
 
     if (!osuUser) {
       await this.sendOsuUserNotFound(context);
@@ -53,7 +62,7 @@ export default class OsuProfile
 
   public createBaseEmbed(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext
+    context: OsuContext<TypedArgs<Args>>
   ): BaseEmbed {
     return new BaseEmbed(
       {
@@ -65,7 +74,7 @@ export default class OsuProfile
 
   public createMinimizedEmbed(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext
+    context: OsuContext<TypedArgs<Args>>
   ): BaseEmbed {
     const { localizer } = context;
     return this.createBaseEmbed(osuUser, context).setDescription(
@@ -81,7 +90,7 @@ export default class OsuProfile
 
   public createExpandedEmbed(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext
+    context: OsuContext<TypedArgs<Args>>
   ): BaseEmbed {
     const { localizer } = context;
     return this.createBaseEmbed(osuUser, context)

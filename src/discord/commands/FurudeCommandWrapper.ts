@@ -1,10 +1,10 @@
 import DefaultContext from '../../client/contexts/DefaultContext';
-import type { OmittedCommandContext } from '../../modules/framework/commands/interfaces/ICommandContext';
+import type { OmittedCommandContext } from '../../modules/framework/commands/contexts/ICommandContext';
 
 export default class FurudeCommandWrapper {
   public static defaultContext(
     baseContext: OmittedCommandContext
-  ): DefaultContext {
+  ): DefaultContext<unknown> {
     return new DefaultContext(baseContext);
   }
 }

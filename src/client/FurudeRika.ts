@@ -21,16 +21,19 @@ import GuildPermissionsPrecondition from '../modules/framework/commands/precondi
 import MessageCreator from '../modules/framework/helpers/MessageCreator';
 import { assertDefined } from '../modules/framework/types/TypeAssertions';
 import type { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
+import type { TypedArgs } from '../modules/framework/commands/decorators/ContextDecorators';
 
-export default class FurudeRika extends BaseBot<DefaultContext> {
+export default class FurudeRika extends BaseBot<
+  DefaultContext<TypedArgs<unknown>>
+> {
   public readonly db = new FurudeDB();
   public readonly localizer = new FurudeLocales();
   public readonly reminderManager = new ReminderManager(this);
   public readonly userScanner = new UserScanner(this);
   public readonly beatmapCache = new BeatmapCacheManager(this);
 
-  private readonly forceDeploy = true;
-  private readonly isDebug = true;
+  readonly #forceDeploy = true;
+  readonly #isDebug = true;
 
   public constructor() {
     FurudeRika.init();
@@ -50,8 +53,8 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
       ])
     );
 
-    this.setupMemoryLogger();
-    this.setupPreconditions();
+    this.#setupMemoryLogger();
+    this.#setupPreconditions();
   }
 
   /**
@@ -63,14 +66,15 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
     });
   }
 
-  private setupPreconditions(): void {
+  #setupPreconditions(): void {
     const setupCondition = (
       condition: CommandPrecondition,
       key: FurudeTranslationKeys
     ): void => {
-      (condition as CommandPrecondition<DefaultContext>).onFailMessage = (
-        ctx
-      ): string => MessageCreator.error(ctx.localizer.get(key));
+      (
+        condition as CommandPrecondition<DefaultContext<unknown>>
+      ).onFailMessage = (ctx): string =>
+        MessageCreator.error(ctx.localizer.get(key));
     };
 
     setupCondition(
@@ -100,7 +104,7 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
     };
   }
 
-  private setupMemoryLogger(): void {
+  #setupMemoryLogger(): void {
     setInterval(() => {
       const bytesToMegabytes = (bytes: number): number => {
         return bytes / 1024 / 1024;
@@ -145,7 +149,7 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
   }
 
   public override async beforeCommandRun(
-    response: ICommandRunResponse<DefaultContext>
+    response: ICommandRunResponse<DefaultContext<TypedArgs<unknown>>>
   ): Promise<void> {
     const { context } = response;
     const { interaction } = context;
@@ -153,7 +157,7 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
   }
 
   public override async onCommandRun(
-    response: ICommandRunResponse<DefaultContext>
+    response: ICommandRunResponse<DefaultContext<TypedArgs<unknown>>>
   ): Promise<void> {
     const { command, context } = response;
     const { interaction, dbUser, dbGuild } = context;
@@ -186,14 +190,18 @@ export default class FurudeRika extends BaseBot<DefaultContext> {
 
   public override async onCommandsLoaded(): Promise<void> {
     consola.log(this.commands.size + ' commands were loaded');
-    if (!this.forceDeploy) return;
-    await DeployHandler.deployAll(this, this.isDebug, {
-      onError: () => {
-        consola.error(`Error deploying all commands`);
-      },
-      onSuccess: () => {
-        consola.success(`Deployed all commands`);
-      },
-    });
+    if (!this.#forceDeploy) return;
+    await DeployHandler.deployAll<DefaultContext<TypedArgs<unknown>>>(
+      this,
+      this.#isDebug,
+      {
+        onError: () => {
+          consola.error(`Error deploying all commands`);
+        },
+        onSuccess: () => {
+          consola.success(`Deployed all commands`);
+        },
+      }
+    );
   }
 }

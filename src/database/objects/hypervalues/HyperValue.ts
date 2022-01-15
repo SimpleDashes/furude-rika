@@ -1,6 +1,7 @@
 import type { Snowflake } from 'discord.js';
 import { Column } from 'typeorm';
 import KeySetHelper from '../../../modules/framework/helpers/KeySetHelper';
+import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
 import type { SnowflakeSet } from '../../types/TSnowflakeSet';
 import { HyperTypes } from './HyperTypes';
 
@@ -17,21 +18,21 @@ export default abstract class GlobalLocalValue<T, K> {
   @Column('number')
   public global: T | null;
 
-  private forceDefaultValue: T | null;
+  #forceDefaultValue: T | null;
 
   public constructor(forceDefaultValue?: T | null) {
     if (forceDefaultValue !== null || forceDefaultValue === undefined) {
       forceDefaultValue = this.defaultValue();
     }
-    this.forceDefaultValue = forceDefaultValue;
-    this.global = this.forceDefaultValue;
+    this.#forceDefaultValue = forceDefaultValue;
+    this.global = this.#forceDefaultValue;
   }
 
   public currentLocal(key: K): T | null {
     const realKey = this.getLocalDecorationKey(key);
     const current = KeySetHelper.getValue(this.locals, realKey);
     if (current) return current;
-    const newValue = this.forceDefaultValue;
+    const newValue = this.#forceDefaultValue;
     this.setLocal(key, newValue);
     return newValue;
   }
@@ -44,13 +45,6 @@ export default abstract class GlobalLocalValue<T, K> {
     return [this.global, this.currentLocal(key)];
   }
 
-  private assertKeyNotUndefined(key: K | undefined | null): key is K {
-    if (key === undefined) {
-      throw 'Key should be present when getting or setting a local value!';
-    }
-    return true;
-  }
-
   public getValueSwitchedForType(
     key: K | undefined | null,
     type: HyperTypes
@@ -59,14 +53,11 @@ export default abstract class GlobalLocalValue<T, K> {
       case HyperTypes.global:
         return this.global;
       case HyperTypes.local:
-        if (this.assertKeyNotUndefined(key)) {
-          return this.currentLocal(key);
-        }
-        break;
+        assertDefined(key);
+        return this.currentLocal(key);
       default:
         return this.global;
     }
-    return null;
   }
 
   public setValueSwitchedForType(
@@ -79,9 +70,8 @@ export default abstract class GlobalLocalValue<T, K> {
         this.global = value;
         break;
       case HyperTypes.local:
-        if (this.assertKeyNotUndefined(key)) {
-          this.setLocal(key, value);
-        }
+        assertDefined(key);
+        this.setLocal(key, value);
         break;
     }
   }

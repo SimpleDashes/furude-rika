@@ -11,7 +11,9 @@ import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
-import assert from 'assert';
+import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
+import type IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
+import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 
 class XPChangeOption extends IntegerOption {
   public constructor() {
@@ -22,22 +24,29 @@ class XPChangeOption extends IntegerOption {
   }
 }
 
-@SetPreconditions<DefaultContext>(
+type Args = {
+  min: XPChangeOption;
+  max: XPChangeOption;
+};
+
+@SetPreconditions(
   Preconditions.GuildOnly,
   Preconditions.WithPermission('ADMINISTRATOR')
 )
-export default class CustomizeMinXP extends FurudeSubCommand {
-  private minOption = this.registerOption(
-    new XPChangeOption()
-      .setName(CommandOptions.min)
-      .setDescription('The minimal rewarded experience for this guild.')
-  );
-
-  private maxOption = this.registerOption(
-    new XPChangeOption()
-      .setName(CommandOptions.max)
-      .setDescription('The maximum rewarded experience for this guild.')
-  );
+export default class CustomizeMinXP extends FurudeSubCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  public createArgs(): Args {
+    return {
+      min: new XPChangeOption()
+        .setName(CommandOptions.min)
+        .setDescription('The minimal rewarded experience for this guild.'),
+      max: new XPChangeOption()
+        .setName(CommandOptions.max)
+        .setDescription('The maximum rewarded experience for this guild.'),
+    };
+  }
 
   public constructor() {
     super({
@@ -47,23 +56,26 @@ export default class CustomizeMinXP extends FurudeSubCommand {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { interaction, dbGuild } = context;
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { interaction, dbGuild, args } = context;
+    const { min, max } = args;
 
-    assert(dbGuild);
+    assertDefined(dbGuild);
 
-    const minValue = this.minOption.apply(interaction);
-    const maxValue = this.maxOption.apply(interaction);
+    const operations: IDatabaseOperation[] = [];
+    const addXPChangeOperation = (
+      value: number | undefined,
+      operationFunction: (value: number) => IDatabaseOperation
+    ): void => {
+      if (value) {
+        operations.push(operationFunction(value));
+      }
+    };
 
-    const operations = [];
-
-    if (minValue) {
-      operations.push(dbGuild.setMinXPValue(minValue));
-    }
-
-    if (maxValue) {
-      operations.push(dbGuild.setMaxXPValue(maxValue));
-    }
+    addXPChangeOperation(min, dbGuild.setMinXPValue);
+    addXPChangeOperation(max, dbGuild.setMaxXPValue);
 
     await FurudeOperations.saveWhenSuccess(dbGuild, ...operations);
 

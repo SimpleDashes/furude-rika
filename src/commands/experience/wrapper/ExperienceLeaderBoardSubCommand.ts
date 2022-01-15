@@ -2,18 +2,29 @@ import type DefaultContext from '../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import type DBUser from '../../../database/entity/DBUser';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
+import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
 import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
 import ArrayHelper from '../../../modules/framework/helpers/ArrayHelper';
 import PageOption from '../../../modules/framework/options/custom/PageOption';
 
-export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubCommand {
-  private pageOption = this.registerOption(
-    new PageOption(10)
-      .setName(CommandOptions.page)
-      .setDescription('The page you want to start the leaderboard from.')
-  );
+export type LeaderboardArgs = {
+  page: PageOption;
+};
+export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubCommand<
+  DefaultContext<TypedArgs<LeaderboardArgs>>,
+  LeaderboardArgs
+> {
+  public createArgs(): LeaderboardArgs {
+    return {
+      page: new PageOption(10)
+        .setName(CommandOptions.page)
+        .setDescription('The page you want to start the leaderboard from.'),
+    };
+  }
 
-  public async trigger(context: DefaultContext): Promise<void> {
+  public async trigger(
+    context: DefaultContext<TypedArgs<LeaderboardArgs>>
+  ): Promise<void> {
     const { interaction } = context;
 
     const users = ArrayHelper.greatestToLowest(
@@ -26,7 +37,7 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
       {},
       [interaction.user.id],
       users,
-      this.pageOption,
+      this.args.page,
       60,
       [{ name: 'Username' }, { name: 'Experience' }],
       (item) => {
@@ -38,10 +49,12 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
     );
   }
 
-  public abstract getUsers(context: DefaultContext): Promise<DBUser[]>;
+  public abstract getUsers(
+    context: DefaultContext<TypedArgs<LeaderboardArgs>>
+  ): Promise<DBUser[]>;
 
   public abstract getAppliedExperienceFromUser(
-    context: DefaultContext,
+    context: DefaultContext<TypedArgs<LeaderboardArgs>>,
     user: DBUser
   ): number | null;
 }

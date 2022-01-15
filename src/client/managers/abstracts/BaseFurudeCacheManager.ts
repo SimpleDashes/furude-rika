@@ -4,9 +4,9 @@ import BaseFurudeManager from './BaseFurudeManager';
 import consola from 'consola';
 
 export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
-  private name: string;
-  private logPercentIncrease;
-  private previousLogSize = 0;
+  public readonly name: string;
+  #logPercentIncrease;
+  #previousLogSize = 0;
 
   /**
    *
@@ -24,7 +24,7 @@ export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
   ) {
     super(capacity, lifetime);
     this.name = name;
-    this.logPercentIncrease = logPercentIncrease;
+    this.#logPercentIncrease = logPercentIncrease;
   }
 
   public override set(key: K, value: V): this {
@@ -32,9 +32,9 @@ export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
 
     if (
       this.size ==
-      this.previousLogSize + this.capacity / this.logPercentIncrease
+      this.#previousLogSize + this.capacity / this.#logPercentIncrease
     ) {
-      this.previousLogSize = this.size;
+      this.#previousLogSize = this.size;
       consola.log(
         `[${this.name.toUpperCase()} CACHE]: reached ${this.size} items.`
       );

@@ -4,9 +4,10 @@ import TimeFrames from '../../../../containers/TimeFrames';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeOperations from '../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
+import type { TypedArgs } from '../../../../modules/framework/commands/decorators/ContextDecorators';
 import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
 import StringOption from '../../../../modules/framework/options/classes/StringOption';
-import { assertDefinedGet } from '../../../../modules/framework/types/TypeAssertions';
+import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
 
 class ReminderTimeOption extends IntegerOption {
   public constructor(name: CommandOptions) {
@@ -18,43 +19,42 @@ class ReminderTimeOption extends IntegerOption {
   }
 }
 
-export default class ReminderReminderMe extends FurudeSubCommand {
-  private remindWhatOption = this.registerOption(
-    new StringOption()
-      .setRequired(true)
-      .setName(CommandOptions.reminder)
-      .setDescription('The reminder you want to be reminded on.')
-  );
+type Args = {
+  what: StringOption;
+  seconds: ReminderTimeOption;
+  minutes: ReminderTimeOption;
+  hours: ReminderTimeOption;
+  days: ReminderTimeOption;
+  weeks: ReminderTimeOption;
+};
 
-  private secondsOption = this.registerOption(
-    new ReminderTimeOption(CommandOptions.seconds).setMaxValue(
-      TimeFrames.SECONDS_ON_MINUTE
-    )
-  );
-
-  private minutesOption = this.registerOption(
-    new ReminderTimeOption(CommandOptions.minutes).setMaxValue(
-      TimeFrames.MINUTES_ON_HOUR
-    )
-  );
-
-  private hoursOption = this.registerOption(
-    new ReminderTimeOption(CommandOptions.hours).setMaxValue(
-      TimeFrames.HOURS_ON_DAY
-    )
-  );
-
-  private daysOption = this.registerOption(
-    new ReminderTimeOption(CommandOptions.days).setMaxValue(
-      TimeFrames.DAYS_ON_WEEK
-    )
-  );
-
-  private weeksOption = this.registerOption(
-    new ReminderTimeOption(CommandOptions.weeks).setMaxValue(
-      TimeFrames.WEEKS_ON_MONTH
-    )
-  );
+export default class ReminderReminderMe extends FurudeSubCommand<
+  DefaultContext<TypedArgs<Args>>,
+  Args
+> {
+  public createArgs(): Args {
+    return {
+      what: new StringOption()
+        .setRequired(true)
+        .setName(CommandOptions.reminder)
+        .setDescription('The reminder you want to be reminded on.'),
+      seconds: new ReminderTimeOption(CommandOptions.seconds).setMaxValue(
+        TimeFrames.SECONDS_ON_MINUTE
+      ),
+      minutes: new ReminderTimeOption(CommandOptions.minutes).setMaxValue(
+        TimeFrames.MINUTES_ON_HOUR
+      ),
+      hours: new ReminderTimeOption(CommandOptions.hours).setMaxValue(
+        TimeFrames.HOURS_ON_DAY
+      ),
+      days: new ReminderTimeOption(CommandOptions.days).setMaxValue(
+        TimeFrames.DAYS_ON_WEEK
+      ),
+      weeks: new ReminderTimeOption(CommandOptions.weeks).setMaxValue(
+        TimeFrames.WEEKS_ON_MONTH
+      ),
+    };
+  }
 
   public constructor() {
     super({
@@ -64,21 +64,15 @@ export default class ReminderReminderMe extends FurudeSubCommand {
     });
   }
 
-  public async trigger(context: DefaultContext): Promise<void> {
-    const { interaction, client, localizer } = context;
+  public async trigger(
+    context: DefaultContext<TypedArgs<Args>>
+  ): Promise<void> {
+    const { interaction, client, localizer, args } = context;
+    const { what, seconds, minutes, hours, days, weeks } = args;
 
-    const remindWhat = assertDefinedGet(
-      this.remindWhatOption.apply(interaction)
-    );
+    assertDefined(what);
 
-    const seconds = this.secondsOption.apply(interaction);
-    const minutes = this.minutesOption.apply(interaction);
-    const hours = this.hoursOption.apply(interaction);
-    const days = this.daysOption.apply(interaction);
-    const weeks = this.weeksOption.apply(interaction);
-
-    const reminder = DBReminder.create().build(interaction.user, remindWhat);
-
+    const reminder = DBReminder.create().build(interaction.user, what);
     const operation = reminder.fireReminderWhen(client, localizer, {
       seconds,
       minutes,

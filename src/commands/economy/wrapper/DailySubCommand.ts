@@ -2,23 +2,33 @@ import type CurrencyContext from '../../../client/contexts/currency/CurrencyCont
 import FurudeOperations from '../../../database/FurudeOperations';
 import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
 import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
+import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
 import type ICommandInformation from '../../../modules/framework/commands/interfaces/ICommandInformation';
 import type IHasPreconditions from '../../../modules/framework/commands/preconditions/interfaces/IHasPreconditions';
 import EconomySubCommand, { MustHaveOpenAccount } from './EconomySubCommand';
 
-export default abstract class DailySubCommand extends EconomySubCommand {
+export type DailyArgs = unknown;
+export default abstract class DailySubCommand extends EconomySubCommand<DailyArgs> {
+  public createArgs(): DailyArgs {
+    return {};
+  }
+
   public constructor(information: ICommandInformation) {
     super(information);
     if (
       !(
-        this as unknown as IHasPreconditions<CurrencyContext>
+        this as unknown as IHasPreconditions<
+          CurrencyContext<TypedArgs<DailyArgs>>
+        >
       ).preconditions.includes(MustHaveOpenAccount)
     ) {
       throw 'DailySubCommand implementations should include MustHaveOpenAccount precondition.';
     }
   }
 
-  public async trigger(context: CurrencyContext): Promise<void> {
+  public async trigger(
+    context: CurrencyContext<TypedArgs<DailyArgs>>
+  ): Promise<void> {
     const { citizen, interaction, localizer } = context;
 
     const scope = this.dailyScope();

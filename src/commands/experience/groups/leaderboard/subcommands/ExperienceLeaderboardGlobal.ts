@@ -1,6 +1,8 @@
 import type DefaultContext from '../../../../../client/contexts/DefaultContext';
 import GenericNames from '../../../../../containers/GenericNames';
 import type DBUser from '../../../../../database/entity/DBUser';
+import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { LeaderboardArgs } from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 
 export default class ExperienceLeaderboardGlobal extends ExperienceLeaderboardSubCommand {
@@ -13,13 +15,15 @@ export default class ExperienceLeaderboardGlobal extends ExperienceLeaderboardSu
   }
 
   public getAppliedExperienceFromUser(
-    _context: DefaultContext,
+    _context: DefaultContext<TypedArgs<LeaderboardArgs>>,
     user: DBUser
   ): number | null {
     return user.experience.global;
   }
 
-  public async getUsers(context: DefaultContext): Promise<DBUser[]> {
+  public async getUsers(
+    context: DefaultContext<TypedArgs<LeaderboardArgs>>
+  ): Promise<DBUser[]> {
     return await context.db.USER.find();
   }
 }

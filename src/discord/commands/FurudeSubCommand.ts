@@ -2,13 +2,15 @@ import type DefaultContext from '../../client/contexts/DefaultContext';
 import SubCommand from '../../modules/framework/commands/SubCommand';
 import FurudeCommandWrapper from './FurudeCommandWrapper';
 import type IFurudeCommand from './interfaces/IFurudeCommand';
-import type { OmittedCommandContext } from '../../modules/framework/commands/interfaces/ICommandContext';
+import type { OmittedCommandContext } from '../../modules/framework/commands/contexts/ICommandContext';
+import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
 
 export default abstract class FurudeSubCommand<
-    CTX extends DefaultContext = DefaultContext
+    CTX extends DefaultContext<TypedArgs<A>>,
+    A
   >
-  extends SubCommand<CTX>
-  implements IFurudeCommand<CTX>
+  extends SubCommand<CTX, A>
+  implements IFurudeCommand<CTX, A>
 {
   public abstract override trigger(context: CTX): Promise<void>;
 

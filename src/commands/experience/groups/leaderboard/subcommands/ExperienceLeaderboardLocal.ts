@@ -1,14 +1,16 @@
 import type DefaultContext from '../../../../../client/contexts/DefaultContext';
 import GenericNames from '../../../../../containers/GenericNames';
 import type DBUser from '../../../../../database/entity/DBUser';
+import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
 import {
   Preconditions,
   SetPreconditions,
 } from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
 import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
+import type { LeaderboardArgs } from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 
-@SetPreconditions<DefaultContext>(Preconditions.GuildOnly)
+@SetPreconditions(Preconditions.GuildOnly)
 export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSubCommand {
   public constructor() {
     super({
@@ -19,14 +21,16 @@ export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSub
   }
 
   public getAppliedExperienceFromUser(
-    context: DefaultContext,
+    context: DefaultContext<TypedArgs<LeaderboardArgs>>,
     user: DBUser
   ): number | null {
     assertDefined(context.interaction.guild);
     return user.experience.currentLocal(context.interaction.guild);
   }
 
-  public async getUsers(context: DefaultContext): Promise<DBUser[]> {
+  public async getUsers(
+    context: DefaultContext<TypedArgs<LeaderboardArgs>>
+  ): Promise<DBUser[]> {
     assertDefined(context.interaction.guildId);
     return await context.db.USER.find({
       where: {
