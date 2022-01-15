@@ -46,7 +46,7 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
     const preferredLocale = locale
       ? ((): SupportedFurudeLocales => {
           assert(typeof locale === 'string');
-          return SupportedFurudeLocales[locale as SupportedFurudeLocales];
+          return SupportedFurudeLocales[locale];
         })()
       : null;
 

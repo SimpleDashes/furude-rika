@@ -48,8 +48,8 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
 
   protected getOsuServerUserOptions(): OsuServerUserOptions {
     const options: OsuServerUserOptions = {
-      username: this.registerOption(this.getOsuUserOption()),
-      server: this.registerOption(this.getServerOptions()),
+      username: this.getOsuUserOption(),
+      server: this.getServerOptions(),
     };
     return options;
   }

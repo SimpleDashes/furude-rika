@@ -140,6 +140,7 @@ export default abstract class BaseBot<
       k: string
     ): o is IDiscordOption<unknown> => {
       let isOption = false;
+
       try {
         isOption = DiscordOptionHelper.isObjectOption(o);
       } catch (e) {
@@ -149,13 +150,13 @@ export default abstract class BaseBot<
           );
         }
       }
+
       return isOption;
     };
 
-    const tArgs = command as unknown as Record<string, unknown>;
+    const tArgs = command.args as Record<string, unknown>;
     for (const k in tArgs) {
       const o = tArgs[k];
-
       if (verifyIsOption(o, k) && onOption) {
         onOption(k, o);
       } else if (onDefault) {
@@ -347,7 +348,7 @@ export default abstract class BaseBot<
       const recordArgs = (context.args ?? {}) as Record<string, unknown>;
 
       this.#loopCommandArgs(
-        command,
+        runnerCommand,
         (k, o) => {
           recordArgs[k] = o.apply(context.interaction);
         },

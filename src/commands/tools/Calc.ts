@@ -23,10 +23,9 @@ export default class Calc extends FurudeCommand<
   public createArgs(): Args {
     return {
       expression: new StringOption()
-        .setName('variables')
-        .setDescription(
-          'The variables to be used for the expression. e.g: "x=1, y=2"'
-        ),
+        .setRequired(true)
+        .setName('expression')
+        .setDescription('The expression you want my lazy mind to evaluate'),
       rawVariables: new StringOption()
         .setName('variables')
         .setDescription(
