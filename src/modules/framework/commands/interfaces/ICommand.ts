@@ -2,7 +2,7 @@ import type { ToAPIApplicationCommandOptions } from '@discordjs/builders';
 import type ICommandInformation from './ICommandInformation';
 import type ICommandContext from '../contexts/ICommandContext';
 import type { OmittedCommandContext } from '../contexts/ICommandContext';
-import type { TypedArgs } from '../decorators/ContextDecorators';
+import type { TypedArgs } from '../contexts/types';
 
 export default interface ICommand<
   CTX extends ICommandContext<TypedArgs<A>>,

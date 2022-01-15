@@ -12,7 +12,7 @@ import { Routes } from 'discord-api-types/v9';
 import { assertDefined } from '../types/TypeAssertions';
 import type IWithTaskCompletionListener from '../interfaces/IWithTaskCompletionListener';
 import type ICommandContext from '../commands/contexts/ICommandContext';
-import type { TypedArgs } from '../commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../commands/contexts/types';
 
 type resFunctions = Partial<IWithTaskCompletionListener> & {
   onCommandNotFound?: () => void;

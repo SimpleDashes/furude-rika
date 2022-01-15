@@ -2,7 +2,7 @@ import type OsuContext from '../../../../../client/contexts/osu/OsuContext';
 import Strings from '../../../../../containers/Strings';
 import ExpandableEmbedHelper from '../../../../../discord/commands/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../../../discord/commands/interfaces/IHasExpandableEmbed';
-import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
 import { MessageButtonCreator } from '../../../../../modules/framework/creators/MessageButtonCreator';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
@@ -59,9 +59,7 @@ export default class OsuRecentScore
     if (!recentScore) {
       await InteractionUtils.reply(
         interaction,
-        MessageCreator.error(
-          "I couldn't find any recent scores from said user."
-        )
+        MessageCreator.fail("I couldn't find any recent scores from said user.")
       );
       return;
     }

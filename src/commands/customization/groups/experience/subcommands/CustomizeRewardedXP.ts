@@ -6,12 +6,12 @@ import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import {
   Preconditions,
   SetPreconditions,
-} from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
-import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
 import type IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
 import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 

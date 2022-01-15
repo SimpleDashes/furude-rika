@@ -2,7 +2,7 @@ import type { ToAPIApplicationCommandOptions } from '@discordjs/builders';
 import type ICommand from './interfaces/ICommand';
 import type ICommandContext from './contexts/ICommandContext';
 import type ICommandInformation from './interfaces/ICommandInformation';
-import type { TypedArgs } from './decorators/ContextDecorators';
+import type { TypedArgs } from './contexts/types';
 
 export default class CommandHelper {
   public static setInformation(

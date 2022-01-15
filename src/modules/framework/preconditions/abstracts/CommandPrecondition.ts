@@ -1,5 +1,5 @@
-import InteractionUtils from '../../../interactions/InteractionUtils';
-import type ICommandContext from '../../contexts/ICommandContext';
+import InteractionUtils from '../../interactions/InteractionUtils';
+import type ICommandContext from '../../commands/contexts/ICommandContext';
 
 export default abstract class CommandPrecondition<
   CTX extends ICommandContext = ICommandContext

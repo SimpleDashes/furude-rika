@@ -2,10 +2,10 @@ import CurrencyContainer from '../../../containers/CurrencyContainer';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
-import CommandPrecondition from '../../../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
+import CommandPrecondition from '../../../modules/framework/preconditions/abstracts/CommandPrecondition';
 import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import type { OmittedCommandContext } from '../../../modules/framework/commands/contexts/ICommandContext';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 
 class MustHaveOpenAccountPrecondition extends CommandPrecondition<
   CurrencyContext<TypedArgs<unknown>>
@@ -14,7 +14,7 @@ class MustHaveOpenAccountPrecondition extends CommandPrecondition<
     super();
     this.onFailMessage = (context): string => {
       const { localizer } = context;
-      return MessageCreator.error(
+      return MessageCreator.fail(
         localizer.get(FurudeTranslationKeys.ECONOMY_MUST_HAVE_ACCOUNT)
       );
     };

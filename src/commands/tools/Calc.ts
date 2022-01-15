@@ -10,7 +10,7 @@ import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
 
 type Args = {
   expression: StringOption;
@@ -68,7 +68,7 @@ export default class Calc extends FurudeCommand<
     if (missingVariables.length != 0) {
       await InteractionUtils.reply(
         interaction,
-        MessageCreator.error(
+        MessageCreator.fail(
           localizer.get(FurudeTranslationKeys.CALC_MISSING_VARIABLES, [
             MessageCreator.block(missingVariables.toString()),
             expressionText,
@@ -84,7 +84,7 @@ export default class Calc extends FurudeCommand<
     } catch {
       await InteractionUtils.reply(
         interaction,
-        MessageCreator.error(
+        MessageCreator.fail(
           localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, [
             expressionText,
           ])
@@ -116,7 +116,7 @@ export default class Calc extends FurudeCommand<
       }
       displayText = MessageCreator.success(displayText);
     } else {
-      displayText = MessageCreator.error(
+      displayText = MessageCreator.fail(
         localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, [
           expressionText,
         ])

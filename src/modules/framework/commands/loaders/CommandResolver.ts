@@ -1,7 +1,7 @@
 import BaseCommand from '../BaseCommand';
 import type ICommandContext from '../contexts/ICommandContext';
 import ClassResolver from '../../io/ClassResolver';
-import type { TypedArgs } from '../decorators/ContextDecorators';
+import type { TypedArgs } from '../contexts/types';
 
 export default class CommandResolver<
   CTX extends ICommandContext<TypedArgs<A>>,

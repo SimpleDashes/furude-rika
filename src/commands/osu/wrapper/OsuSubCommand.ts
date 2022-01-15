@@ -5,7 +5,7 @@ import Strings from '../../../containers/Strings';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import type ICommandContext from '../../../modules/framework/commands/contexts/ICommandContext';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import StringOption from '../../../modules/framework/options/classes/StringOption';
@@ -80,7 +80,7 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
     const { interaction, localizer } = context;
     await InteractionUtils.reply(
       interaction,
-      MessageCreator.error(
+      MessageCreator.fail(
         localizer.get(FurudeTranslationKeys.OSU_ACCOUNT_NOT_FOUND)
       )
     );

@@ -1,6 +1,6 @@
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
-import { SetPreconditions } from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
+import { SetPreconditions } from '../../../../modules/framework/preconditions/PreconditionDecorators';
 import DailySubCommand from '../../wrapper/DailySubCommand';
 import { MustHaveOpenAccount } from '../../wrapper/EconomySubCommand';
 

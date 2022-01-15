@@ -3,7 +3,7 @@ import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes'
 import {
   Preconditions,
   SetPreconditions,
-} from '../../../../modules/framework/commands/decorators/PreconditionDecorators';
+} from '../../../../modules/framework/preconditions/PreconditionDecorators';
 import DailySubCommand from '../../wrapper/DailySubCommand';
 import { MustHaveOpenAccount } from '../../wrapper/EconomySubCommand';
 

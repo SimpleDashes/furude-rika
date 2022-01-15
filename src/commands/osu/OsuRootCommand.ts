@@ -1,6 +1,6 @@
 import type OsuContext from '../../client/contexts/osu/OsuContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
 
 export default class OsuRootCommand extends FurudeCommand<
   OsuContext<TypedArgs<unknown>>,

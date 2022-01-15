@@ -4,7 +4,7 @@ import TimeFrames from '../../../../containers/TimeFrames';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeOperations from '../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
-import type { TypedArgs } from '../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../../modules/framework/commands/contexts/types';
 import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
 import StringOption from '../../../../modules/framework/options/classes/StringOption';
 import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';

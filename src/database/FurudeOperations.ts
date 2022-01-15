@@ -41,7 +41,7 @@ export default class FurudeOperations {
   ): Promise<void | Message<boolean> | APIMessage> {
     const displayString = operation.successfully
       ? MessageCreator.success(operation.response)
-      : MessageCreator.error(operation.response);
+      : MessageCreator.fail(operation.response);
 
     Object.assign(options, { content: displayString });
 

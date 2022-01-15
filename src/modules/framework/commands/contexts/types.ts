@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { Channel, GuildMember, Role, User } from 'discord.js';
 import type BooleanOption from '../../options/classes/BooleanOption';
 import type ChannelOption from '../../options/classes/ChannelOption';

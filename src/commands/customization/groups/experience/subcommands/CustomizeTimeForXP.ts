@@ -3,11 +3,11 @@ import CommandOptions from '../../../../../containers/CommandOptions';
 import DBUser from '../../../../../database/entity/DBUser';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
-import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
 import {
   Preconditions,
   SetPreconditions,
-} from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
 import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
 import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 

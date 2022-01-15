@@ -10,8 +10,8 @@ import InteractionUtils from '../../modules/framework/interactions/InteractionUt
 import {
   Preconditions,
   SetPreconditions,
-} from '../../modules/framework/commands/decorators/PreconditionDecorators';
-import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
+} from '../../modules/framework/preconditions/PreconditionDecorators';
+import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 
 type Args = {
@@ -64,7 +64,7 @@ export default class Deploy extends FurudeCommand<
         onCommandNotFound: async () => {
           await InteractionUtils.reply(
             interaction,
-            MessageCreator.error(
+            MessageCreator.fail(
               localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND)
             )
           );
@@ -72,7 +72,7 @@ export default class Deploy extends FurudeCommand<
         onInvalidCommand: async () => {
           await InteractionUtils.reply(
             interaction,
-            MessageCreator.error(
+            MessageCreator.fail(
               localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED)
             )
           );
@@ -80,7 +80,7 @@ export default class Deploy extends FurudeCommand<
         onError: async () => {
           await InteractionUtils.reply(
             interaction,
-            MessageCreator.error(
+            MessageCreator.fail(
               localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_ERROR)
             )
           );

@@ -4,7 +4,7 @@ import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
 
 enum COIN {
   HEAD = FurudeTranslationKeys.COIN_FLIP_HEADS,

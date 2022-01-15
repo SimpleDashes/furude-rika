@@ -2,9 +2,9 @@ import type CurrencyContext from '../../../client/contexts/currency/CurrencyCont
 import FurudeOperations from '../../../database/FurudeOperations';
 import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
 import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import type ICommandInformation from '../../../modules/framework/commands/interfaces/ICommandInformation';
-import type IHasPreconditions from '../../../modules/framework/commands/preconditions/interfaces/IHasPreconditions';
+import type IHasPreconditions from '../../../modules/framework/preconditions/interfaces/IHasPreconditions';
 import EconomySubCommand, { MustHaveOpenAccount } from './EconomySubCommand';
 
 export type DailyArgs = unknown;

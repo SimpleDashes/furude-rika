@@ -1,7 +1,7 @@
 import type DefaultContext from '../../../client/contexts/DefaultContext';
 import type SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
 import type IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import type { BaseLanguageChangeArgs } from '../wrapper/CustomizesLocaleSubCommand';
 import CustomizesLocaleSubCommand from '../wrapper/CustomizesLocaleSubCommand';
 

@@ -5,7 +5,7 @@ import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales
 import type IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
 import type SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
 import FurudeOperations from '../../../database/FurudeOperations';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import assert from 'assert';
 
 export type BaseLanguageChangeArgs = {

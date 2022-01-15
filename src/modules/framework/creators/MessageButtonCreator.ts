@@ -218,7 +218,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
       text: string
     ): Promise<void> => {
       await InteractionUtils.reply(interaction, {
-        content: MessageCreator.error(text),
+        content: MessageCreator.fail(text),
         components: [],
       });
       setTimeout(async () => {
@@ -244,7 +244,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
           button: confirmationButton,
           onPress: async (): Promise<void> => {
             await InteractionUtils.reply(interaction, {
-              content: MessageCreator.error(`Please wait... ${Symbols.timer}`),
+              content: MessageCreator.fail(`Please wait... ${Symbols.timer}`),
               components: [],
             });
           },

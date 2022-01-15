@@ -1,7 +1,7 @@
 import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import FurudeOperations from '../../../database/FurudeOperations';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 
 type Args = unknown;

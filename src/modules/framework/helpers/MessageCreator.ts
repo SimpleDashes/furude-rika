@@ -6,7 +6,7 @@ export default abstract class MessageCreator {
     return `${prefix} | ${value}`;
   }
 
-  public static error(value: string): string {
+  public static fail(value: string): string {
     return this.bold(this.prefixedString(ClientEmojis.negate, value));
   }
 

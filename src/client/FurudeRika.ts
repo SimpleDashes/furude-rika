@@ -14,14 +14,14 @@ import UserScanner from './managers/UserScanner';
 import OsuServers from '../modules/osu/servers/OsuServers';
 import { secondsToMilliseconds } from 'date-fns';
 import BeatmapCacheManager from './managers/BeatmapCacheManager';
-import { Preconditions } from '../modules/framework/commands/decorators/PreconditionDecorators';
-import type CommandPrecondition from '../modules/framework/commands/preconditions/abstracts/CommandPrecondition';
+import { Preconditions } from '../modules/framework/preconditions/PreconditionDecorators';
+import type CommandPrecondition from '../modules/framework/preconditions/abstracts/CommandPrecondition';
 import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
-import GuildPermissionsPrecondition from '../modules/framework/commands/preconditions/GuildPermissionsPreconditions';
+import GuildPermissionsPrecondition from '../modules/framework/preconditions/GuildPermissionsPreconditions';
 import MessageCreator from '../modules/framework/helpers/MessageCreator';
 import { assertDefined } from '../modules/framework/types/TypeAssertions';
 import type { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
-import type { TypedArgs } from '../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../modules/framework/commands/contexts/types';
 
 export default class FurudeRika extends BaseBot<
   DefaultContext<TypedArgs<unknown>>
@@ -74,7 +74,7 @@ export default class FurudeRika extends BaseBot<
       (
         condition as CommandPrecondition<DefaultContext<unknown>>
       ).onFailMessage = (ctx): string =>
-        MessageCreator.error(ctx.localizer.get(key));
+        MessageCreator.fail(ctx.localizer.get(key));
     };
 
     setupCondition(

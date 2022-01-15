@@ -6,11 +6,11 @@ import CommandOptions from '../../../../../containers/CommandOptions';
 import Strings from '../../../../../containers/Strings';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
-import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
 import {
   Preconditions,
   SetPreconditions,
-} from '../../../../../modules/framework/commands/decorators/PreconditionDecorators';
+} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 import BooleanOption from '../../../../../modules/framework/options/classes/BooleanOption';

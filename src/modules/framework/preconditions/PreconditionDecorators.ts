@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { PermissionResolvable } from 'discord.js';
-import type Constructor from '../../interfaces/Constructor';
-import type ICommand from '../interfaces/ICommand';
-import type CommandPrecondition from '../preconditions/abstracts/CommandPrecondition';
-import GuildPermissionsPreconditions from '../preconditions/GuildPermissionsPreconditions';
-import type IHasPreconditions from '../preconditions/interfaces/IHasPreconditions';
-import type OwnerPrecondition from '../preconditions/OwnerPrecondition';
-import RequiresGuildPrecondition from '../preconditions/RequiresGuildPrecondition';
-import RequiresSubCommandsPrecondition from '../preconditions/RequiresSubCommandsPrecondition';
-import RequiresSubCommandsGroupsPrecondition from '../preconditions/RequiresSubCommandsGroupsPrecondition';
-import type SubCommandGroup from '../SubCommandGroup';
+import type Constructor from '../interfaces/Constructor';
+import type ICommand from '../commands/interfaces/ICommand';
+import type CommandPrecondition from './abstracts/CommandPrecondition';
+import GuildPermissionsPreconditions from './GuildPermissionsPreconditions';
+import type IHasPreconditions from './interfaces/IHasPreconditions';
+import type OwnerPrecondition from './OwnerPrecondition';
+import RequiresGuildPrecondition from './RequiresGuildPrecondition';
+import RequiresSubCommandsPrecondition from './RequiresSubCommandsPrecondition';
+import RequiresSubCommandsGroupsPrecondition from './RequiresSubCommandsGroupsPrecondition';
+import type SubCommandGroup from '../commands/SubCommandGroup';
 
 export class SetupPrecondition {
   public static setup(owner: OwnerPrecondition): void {

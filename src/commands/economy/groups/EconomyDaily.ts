@@ -4,7 +4,7 @@ import FurudeCommandGroup from '../../../discord/commands/FurudeCommandGroup';
 import {
   Preconditions,
   SetPreconditions,
-} from '../../../modules/framework/commands/decorators/PreconditionDecorators';
+} from '../../../modules/framework/preconditions/PreconditionDecorators';
 
 @SetPreconditions(Preconditions.RequiresSubCommand)
 export default class EconomyDaily extends FurudeCommandGroup {

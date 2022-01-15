@@ -8,7 +8,7 @@ import EconomySubCommand from '../wrapper/EconomySubCommand';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
 import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 
 type Args = {
   user: UserOption;
@@ -44,7 +44,7 @@ export default class EconomyOpen extends EconomySubCommand<Args> {
     if (citizen.justCreated) {
       await InteractionUtils.reply(
         interaction,
-        MessageCreator.error(
+        MessageCreator.fail(
           localizer.get(FurudeTranslationKeys.ECONOMY_BALANCE_FAIL)
         )
       );

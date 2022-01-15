@@ -3,7 +3,7 @@ import SubCommand from '../../modules/framework/commands/SubCommand';
 import FurudeCommandWrapper from './FurudeCommandWrapper';
 import type IFurudeCommand from './interfaces/IFurudeCommand';
 import type { OmittedCommandContext } from '../../modules/framework/commands/contexts/ICommandContext';
-import type { TypedArgs } from '../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
 
 export default abstract class FurudeSubCommand<
     CTX extends DefaultContext<TypedArgs<A>>,

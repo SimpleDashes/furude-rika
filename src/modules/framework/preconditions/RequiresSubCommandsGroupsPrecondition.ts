@@ -1,4 +1,4 @@
-import type ICommandContext from '../contexts/ICommandContext';
+import type ICommandContext from '../commands/contexts/ICommandContext';
 import CommandPrecondition from './abstracts/CommandPrecondition';
 
 export default class RequiresSubCommandsGroupsPrecondition extends CommandPrecondition {

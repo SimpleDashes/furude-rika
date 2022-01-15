@@ -7,7 +7,7 @@ import IntegerOption from '../../../../modules/framework/options/classes/Integer
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
 import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../../modules/framework/commands/contexts/types';
 
 type Args = {
   index: IntegerOption;
@@ -52,7 +52,7 @@ export default class ReminderRemove extends FurudeSubCommand<
     if (!reminder) {
       await InteractionUtils.reply(
         interaction,
-        MessageCreator.error(
+        MessageCreator.fail(
           localizer.get(FurudeTranslationKeys.REMINDER_REMOVE_FAIL, [
             MessageCreator.block(index.toString()),
           ])

@@ -4,7 +4,7 @@ import type ICommandInformation from './interfaces/ICommandInformation';
 import CommandHelper from './CommandHelper';
 import type ICommandContext from './contexts/ICommandContext';
 import type { OmittedCommandContext } from './contexts/ICommandContext';
-import type { TypedArgs } from './decorators/ContextDecorators';
+import type { TypedArgs } from './contexts/types';
 
 export default abstract class BaseCommand<
     CTX extends ICommandContext<TypedArgs<A>>,

@@ -2,7 +2,7 @@ import type DefaultContext from '../../../client/contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import type DBUser from '../../../database/entity/DBUser';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
 import ArrayHelper from '../../../modules/framework/helpers/ArrayHelper';
 import PageOption from '../../../modules/framework/options/custom/PageOption';

@@ -9,7 +9,7 @@ import UserOption from '../../../../modules/framework/options/classes/UserOption
 import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
 import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../../modules/framework/commands/contexts/types';
 
 type Args = {
   user: UserOption;

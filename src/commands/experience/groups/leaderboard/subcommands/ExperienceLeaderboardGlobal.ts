@@ -1,7 +1,7 @@
 import type DefaultContext from '../../../../../client/contexts/DefaultContext';
 import GenericNames from '../../../../../containers/GenericNames';
 import type DBUser from '../../../../../database/entity/DBUser';
-import type { TypedArgs } from '../../../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
 import type { LeaderboardArgs } from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 

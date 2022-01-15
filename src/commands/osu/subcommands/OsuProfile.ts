@@ -2,7 +2,7 @@ import { secondsToHours } from 'date-fns';
 import type OsuContext from '../../../client/contexts/osu/OsuContext';
 import ExpandableEmbedHelper from '../../../discord/commands/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import type IOsuUser from '../../../modules/osu/users/IOsuUser';

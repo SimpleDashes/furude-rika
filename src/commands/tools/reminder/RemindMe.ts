@@ -1,10 +1,10 @@
 import type DefaultContext from '../../../client/contexts/DefaultContext';
 import FurudeCommand from '../../../discord/commands/FurudeCommand';
-import type { TypedArgs } from '../../../modules/framework/commands/decorators/ContextDecorators';
+import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import {
   Preconditions,
   SetPreconditions,
-} from '../../../modules/framework/commands/decorators/PreconditionDecorators';
+} from '../../../modules/framework/preconditions/PreconditionDecorators';
 
 @SetPreconditions(Preconditions.RequiresSubCommand)
 export default class RemindMe extends FurudeCommand<
