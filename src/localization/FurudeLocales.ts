@@ -1,9 +1,9 @@
-import Localizer from '../modules/framework/localization/Localizer';
-import StringWithVariablesManager from '../modules/framework/localization/StringWithVariablesManager';
+import Localizer from '../modules/framework/localization/v1/Localizer';
+import StringWithVariablesManager from '../modules/framework/localization/v1/StringWithVariablesManager';
 import type IFurudeResource from './IFurudeResource';
 import SupportedFurudeLocales from './SupportedFurudeLocales';
-import { variablePrefix } from '../modules/framework/localization/StringWithVariablesManager';
-import type IVariableManagerGetter from '../modules/framework/localization/IVariableManagerGetter';
+import { variablePrefix } from '../modules/framework/localization/v1/StringWithVariablesManager';
+import type IVariableManagerGetter from '../modules/framework/localization/v1/IVariableManagerGetter';
 import type FurudeResource from './FurudeResource';
 import type FurudeTranslationKeys from './FurudeTranslationKeys';
 import ResourceResolver from './ResourceResolver';
