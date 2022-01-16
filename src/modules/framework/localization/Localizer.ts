@@ -1,39 +1,48 @@
 import consola from 'consola';
 import { Collection } from 'discord.js';
-import type ClassResolver from '../../io/ClassResolver';
-import { assertDefinedGet } from '../../types/TypeAssertions';
-import TypeUtils from '../../types/TypeUtils';
+import type ClassResolver from '../io/ClassResolver';
+import { assertDefinedGet } from '../types/TypeAssertions';
 import type Locale from './Locale';
 import type LocaleResource from './resources/LocaleResource';
 import type ResourceValue from './resources/ResourceValue';
 
-type VariableSettings = {
+export type VariableSettings = {
   prefix: string;
   suffix: string;
 };
-export default class Localizer<
+export default abstract class Localizer<
   S extends Locale,
   T,
   R extends LocaleResource<S, T>
 > {
+  public static defaultVariableSettings: VariableSettings = {
+    prefix: '{{',
+    suffix: '}}',
+  };
+
   public readonly defaultLocale: S;
 
   readonly #resources: Collection<S, R> = new Collection();
   readonly #resourceResolver: ClassResolver<R>;
+  readonly #variableSettings: VariableSettings;
   #defaultResource!: R;
-  #variableSettings: VariableSettings;
 
   public constructor(
     defaultLocale: S,
     resourceResolver: ClassResolver<R>,
-    variableSettings: VariableSettings = {
-      prefix: '{{',
-      suffix: '}}',
-    }
+    variableSettings: VariableSettings = Localizer.defaultVariableSettings
   ) {
     this.defaultLocale = defaultLocale;
     this.#resourceResolver = resourceResolver;
     this.#variableSettings = variableSettings;
+  }
+
+  public static getVariableNameForSetting(
+    variable: string,
+    settings: VariableSettings
+  ): string {
+    const { prefix, suffix } = settings;
+    return `${prefix}${variable}${suffix}`;
   }
 
   /**
@@ -43,8 +52,10 @@ export default class Localizer<
     const response = await this.#resourceResolver.getAllObjects();
     const resources = response.map((r) => r.object);
     for (const resource of resources) {
+      consola.log(`Setting resource with locale: ${resource.locale}`);
       this.#resources.set(resource.locale, resource);
     }
+    consola.log(`Setting default resource with locale: ${this.defaultLocale}`);
     this.#defaultResource = assertDefinedGet(
       this.#resources.get(this.defaultLocale)
     );
@@ -53,7 +64,7 @@ export default class Localizer<
   /**
    *
    * @param locale The locale of the translation you want to get.
-   * @param key A function that should return the ResourceValue you want from the resource structure of the locale.
+   * @param keyProvider A function that should return the ResourceValue you want from the resource structure of the locale.
    * @param placeholders The arguments to be passed to replace placeholders on the ResourceValue.
    * @param structure Do not modify used internally.
    * @param resourceValue Do not modify used internally.
@@ -61,47 +72,38 @@ export default class Localizer<
    * @returns A localized string.
    */
   public getTranslation<A extends string, K extends ResourceValue<A>>(
-    locale: S,
-    key: (structure: T) => K,
-    placeholders?: typeof typedArgs & Record<string, string>,
-    structure = ((): T => {
-      let resource = this.#resources.get(locale);
-      if (!resource) {
-        consola.error(`Locale not found: ${locale}`);
-        resource = this.#defaultResource;
-      }
-      return resource.structure;
-    })(),
-    resourceValue = key(structure),
-    typedArgs = TypeUtils.strEnum<typeof resourceValue.args[number], string>(
-      resourceValue.args
-    )
+    locale: S | undefined,
+    keyProvider: (key: T) => K,
+    placeholders: { [K in A]: string }
   ): string {
-    let { value } = resourceValue;
-    const { args } = resourceValue;
     const recordPlaceHolders = placeholders as Record<string, string>;
-    const argumentsCollection: Collection<A, string> = new Collection();
+    const argumentsCollection: Collection<string, string> = new Collection();
+
+    let resource = this.#resources.get(locale ?? this.defaultLocale);
+    if (!resource) {
+      consola.error(`Locale not found: ${locale}`);
+      resource = this.#defaultResource;
+    }
+
+    const structure = resource.structure;
+    const resourceValue = keyProvider(structure);
+
+    let { Value } = resourceValue;
 
     for (const placeholder in recordPlaceHolders) {
-      if (args.includes(placeholder as A)) {
-        argumentsCollection.set(
-          assertDefinedGet(args.find((a) => a === placeholder)),
-          placeholder
-        );
-      } else {
-        throw 'Invalid argument for translation get.';
-      }
+      argumentsCollection.set(
+        placeholder,
+        assertDefinedGet(recordPlaceHolders[placeholder])
+      );
     }
 
-    if ([...argumentsCollection.values()].length !== args.length) {
-      throw 'Invalid number of arguments for translation get.';
-    }
-
-    const { prefix, suffix } = this.#variableSettings;
     for (const entry of argumentsCollection.entries()) {
-      value = value.replaceAll(`${prefix}${entry[0]}${suffix}`, entry[1]);
+      Value = Value.replaceAll(
+        Localizer.getVariableNameForSetting(entry[0], this.#variableSettings),
+        entry[1]
+      );
     }
 
-    return value;
+    return Value;
   }
 }

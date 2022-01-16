@@ -3,7 +3,6 @@ import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
 import UserOption from '../../modules/framework/options/classes/UserOption';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
@@ -34,7 +33,8 @@ export default class Avatar extends FurudeCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, localizer, args } = context;
+    const { interaction, args, client } = context;
+    const { localizer } = client;
     const { user } = args;
 
     assertDefined(user);
@@ -44,9 +44,11 @@ export default class Avatar extends FurudeCommand<
 
     const embed = new BaseEmbed(
       {
-        title: localizer.get(FurudeTranslationKeys.AVATAR_RESPONSE, [
-          user.username,
-        ]),
+        title: localizer.getTranslationFromContext(
+          context,
+          (k) => k.avatar.response,
+          { USER: user.username }
+        ),
         image: {
           url: avatar,
         },

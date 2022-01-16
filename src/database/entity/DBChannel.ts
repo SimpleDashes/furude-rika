@@ -1,7 +1,6 @@
 import { Column, Entity } from 'typeorm';
-import type FurudeLocales from '../../localization/FurudeLocales';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import type SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import type FurudeLocalizer from '../../localization/FurudeLocalizer';
+import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
@@ -13,18 +12,18 @@ export default class DBChannel
   implements IHasPreferredLocale
 {
   @Column()
-  public preferred_locale?: SupportedFurudeLocales | undefined;
+  public preferred_locale?: FurudeLanguages | undefined;
 
   public setPreferredLocale(
-    localizer: FurudeLocales,
-    locale: SupportedFurudeLocales | null | undefined
+    localizer: FurudeLocalizer,
+    locale: FurudeLanguages | undefined
   ): IDatabaseOperation {
     return EntityWithLocaleHelper.setPreferredLocale(
       this,
       localizer,
       locale,
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_CHANNEL,
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_CHANNEL_ANY
+      (k) => k.customize.locale.channel.responses.default,
+      (k) => k.customize.locale.channel.responses.any
     );
   }
 }

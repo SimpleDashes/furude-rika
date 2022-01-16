@@ -3,7 +3,6 @@ import OsuContext from '../../../client/contexts/osu/OsuContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import Strings from '../../../containers/Strings';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import type ICommandContext from '../../../modules/framework/commands/contexts/ICommandContext';
 import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
@@ -77,11 +76,16 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
   protected async sendOsuUserNotFound(
     context: OsuContext<TypedArgs<A>>
   ): Promise<void> {
-    const { interaction, localizer } = context;
+    const { interaction, client } = context;
+    const { localizer } = client;
     await InteractionUtils.reply(
       interaction,
       MessageCreator.fail(
-        localizer.get(FurudeTranslationKeys.OSU_ACCOUNT_NOT_FOUND)
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.osu.account.error.not_found,
+          {}
+        )
       )
     );
   }
@@ -174,10 +178,11 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
     osuUser: IOsuUser<unknown>,
     context: OsuContext<TypedArgs<A>>
   ): MessageEmbedAuthor {
-    const { localizer } = context;
+    const { client } = context;
+    const { localizer } = client;
     const author: MessageEmbedAuthor = {
       name: `${osuUser.username}: ${osuUser.pps.raw.toLocaleString(
-        localizer.Language,
+        localizer.getLanguageFromContext(context),
         {
           maximumFractionDigits: 2,
         }

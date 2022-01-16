@@ -3,9 +3,8 @@ import type { Guild, GuildChannel, User } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import Globals from '../../containers/Globals';
 import Strings from '../../containers/Strings';
-import type FurudeLocales from '../../localization/FurudeLocales';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import type SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import type FurudeLocalizer from '../../localization/FurudeLocalizer';
+import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
 import { assertDefinedGet } from '../../modules/framework/types/TypeAssertions';
 import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
@@ -38,7 +37,7 @@ export default class DBUser
   public static MIN_SECONDS_FOR_EXPERIENCE_GLOBAL = 30;
 
   @Column()
-  public preferred_locale?: SupportedFurudeLocales | undefined;
+  public preferred_locale?: FurudeLanguages | undefined;
 
   @Column('string')
   public username: string = Strings.UNKNOWN;
@@ -50,14 +49,14 @@ export default class DBUser
   public lastTimeGotExperience = new GuildHyperDate(null);
 
   public setPreferredLocale(
-    localizer: FurudeLocales,
-    locale: SupportedFurudeLocales | null | undefined
+    localizer: FurudeLocalizer,
+    locale: FurudeLanguages | undefined
   ): IDatabaseOperation {
     return EntityWithLocaleHelper.setPreferredLocale(
       this,
       localizer,
       locale,
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_USER
+      (k) => k.customize.locale.user.response
     );
   }
 

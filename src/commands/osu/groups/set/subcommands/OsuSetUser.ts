@@ -32,7 +32,7 @@ export default class OsuSetUser extends OsuSubCommand<Args> {
   }
 
   public async trigger(context: OsuContext<TypedArgs<Args>>): Promise<void> {
-    const { interaction, osuPlayer, localizer, args } = context;
+    const { interaction, osuPlayer, args } = context;
     const { username } = args;
 
     assertDefinedGet(username);
@@ -45,12 +45,9 @@ export default class OsuSetUser extends OsuSubCommand<Args> {
       return;
     }
 
-    const operation = osuPlayer.addAccounts(
-      {
-        [server.name]: osuUser,
-      },
-      localizer
-    );
+    const operation = osuPlayer.addAccounts(context, {
+      [server.name]: osuUser,
+    });
 
     await FurudeOperations.saveWhenSuccess(osuPlayer, operation);
     await FurudeOperations.answerInteraction(interaction, operation);

@@ -1,12 +1,12 @@
-import type FurudeLocales from '../../localization/FurudeLocales';
-import type SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import type FurudeLocalizer from '../../localization/FurudeLocalizer';
+import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
 import type IDatabaseOperation from './IDatabaseOperation';
 
 export default interface IHasPreferredLocale {
-  preferred_locale?: SupportedFurudeLocales | undefined | null;
+  preferred_locale?: FurudeLanguages | undefined;
 
   setPreferredLocale: (
-    localizer: FurudeLocales,
-    locale: SupportedFurudeLocales | undefined | null
+    localizer: FurudeLocalizer,
+    locale: FurudeLanguages | undefined
   ) => IDatabaseOperation;
 }

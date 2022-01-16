@@ -2,6 +2,7 @@ import { secondsToHours } from 'date-fns';
 import type OsuContext from '../../../client/contexts/osu/OsuContext';
 import ExpandableEmbedHelper from '../../../discord/commands/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';
+import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
 import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
@@ -40,7 +41,8 @@ export default class OsuProfile
   }
 
   public async trigger(context: OsuContext<TypedArgs<Args>>): Promise<void> {
-    const { interaction, args } = context;
+    const { interaction, args, client } = context;
+    const { localizer } = client;
     const { discordUser } = args;
 
     const osuUser = await this.getUserFromServer(context, discordUser);
@@ -50,8 +52,14 @@ export default class OsuProfile
       return;
     }
 
-    const expandedEmbed = this.createExpandedEmbed(osuUser, context);
-    const minimizedEmbed = this.createMinimizedEmbed(osuUser, context);
+    const language = localizer.getLanguageFromContext(context);
+
+    const expandedEmbed = this.createExpandedEmbed(osuUser, context, language);
+    const minimizedEmbed = this.createMinimizedEmbed(
+      osuUser,
+      context,
+      language
+    );
 
     await ExpandableEmbedHelper.createInteractiveButtons(
       minimizedEmbed,
@@ -74,31 +82,31 @@ export default class OsuProfile
 
   public createMinimizedEmbed(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext<TypedArgs<Args>>
+    context: OsuContext<TypedArgs<Args>>,
+    language: FurudeLanguages
   ): BaseEmbed {
-    const { localizer } = context;
     return this.createBaseEmbed(osuUser, context).setDescription(
       `Accuracy: ${`${MessageCreator.block(
         osuUser.accuracy.toFixed(2)
       )}%`} • Level: ${MessageCreator.block(
         osuUser.level.toFixed(2)
       )}\nPlaycount: ${MessageCreator.block(
-        osuUser.counts.plays.toLocaleString(localizer.Language)
+        osuUser.counts.plays.toLocaleString(language)
       )} (${secondsToHours(osuUser.total_seconds_played)} hrs)`
     );
   }
 
   public createExpandedEmbed(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext<TypedArgs<Args>>
+    context: OsuContext<TypedArgs<Args>>,
+    language: FurudeLanguages
   ): BaseEmbed {
-    const { localizer } = context;
     return this.createBaseEmbed(osuUser, context)
       .setDescription(MessageCreator.bold('osu! statistics:'))
       .addFields([
         {
           name: 'Ranked score',
-          value: osuUser.scores.ranked.toLocaleString(localizer.Language),
+          value: osuUser.scores.ranked.toLocaleString(language),
         },
         {
           name: 'Accuracy',
@@ -106,13 +114,13 @@ export default class OsuProfile
         },
         {
           name: 'Total score',
-          value: osuUser.scores.total.toLocaleString(localizer.Language),
+          value: osuUser.scores.total.toLocaleString(language),
         },
         { name: 'Level', value: osuUser.level.toFixed(2) },
         {
           name: 'Play count / Time',
           value: `${osuUser.counts.plays.toLocaleString(
-            localizer.Language
+            language
           )} / ${secondsToHours(osuUser.total_seconds_played)}`,
         },
       ]);

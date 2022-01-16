@@ -5,7 +5,6 @@ import BooleanOption from '../../modules/framework/options/classes/BooleanOption
 import StringOption from '../../modules/framework/options/classes/StringOption';
 import DeployHandler from '../../modules/framework/rest/DeployHandler';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 import {
   Preconditions,
@@ -47,7 +46,8 @@ export default class Deploy extends FurudeCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, client, localizer, args } = context;
+    const { interaction, args, client } = context;
+    const { localizer } = client;
 
     const { commandName } = args;
     let { isDebug } = args;
@@ -65,7 +65,11 @@ export default class Deploy extends FurudeCommand<
           await InteractionUtils.reply(
             interaction,
             MessageCreator.fail(
-              localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_NOT_FOUND)
+              localizer.getTranslationFromContext(
+                context,
+                (k) => k.deploy.command.missing,
+                {}
+              )
             )
           );
         },
@@ -73,7 +77,11 @@ export default class Deploy extends FurudeCommand<
           await InteractionUtils.reply(
             interaction,
             MessageCreator.fail(
-              localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_CORRUPTED)
+              localizer.getTranslationFromContext(
+                context,
+                (k) => k.deploy.command.corrupted,
+                {}
+              )
             )
           );
         },
@@ -81,7 +89,11 @@ export default class Deploy extends FurudeCommand<
           await InteractionUtils.reply(
             interaction,
             MessageCreator.fail(
-              localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_ERROR)
+              localizer.getTranslationFromContext(
+                context,
+                (k) => k.deploy.command.error,
+                {}
+              )
             )
           );
         },
@@ -89,7 +101,11 @@ export default class Deploy extends FurudeCommand<
           await InteractionUtils.reply(
             interaction,
             MessageCreator.success(
-              localizer.get(FurudeTranslationKeys.DEPLOY_COMMAND_SUCCESS)
+              localizer.getTranslationFromContext(
+                context,
+                (k) => k.deploy.command.success,
+                {}
+              )
             )
           );
         },

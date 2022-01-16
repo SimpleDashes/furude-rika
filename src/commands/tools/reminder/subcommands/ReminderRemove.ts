@@ -4,7 +4,6 @@ import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
 import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
-import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
 import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
 import type { TypedArgs } from '../../../../modules/framework/commands/contexts/types';
@@ -39,7 +38,8 @@ export default class ReminderRemove extends FurudeSubCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { client, interaction, localizer, args } = context;
+    const { client, interaction, args } = context;
+    const { localizer } = client;
     const { index } = args;
 
     assertDefined(index);
@@ -49,13 +49,19 @@ export default class ReminderRemove extends FurudeSubCommand<
       interaction.user
     )[index - 1];
 
+    const textIndex = MessageCreator.block(index.toString());
+
     if (!reminder) {
       await InteractionUtils.reply(
         interaction,
         MessageCreator.fail(
-          localizer.get(FurudeTranslationKeys.REMINDER_REMOVE_FAIL, [
-            MessageCreator.block(index.toString()),
-          ])
+          localizer.getTranslationFromContext(
+            context,
+            (k) => k.reminder.remove.fail,
+            {
+              INDEX: textIndex,
+            }
+          )
         )
       );
       return;
@@ -65,9 +71,13 @@ export default class ReminderRemove extends FurudeSubCommand<
     await InteractionUtils.reply(
       interaction,
       MessageCreator.success(
-        localizer.get(FurudeTranslationKeys.REMINDER_REMOVE_SUCCESS, [
-          MessageCreator.block(index.toString()),
-        ])
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.reminder.remove.success,
+          {
+            INDEX: textIndex,
+          }
+        )
       )
     );
   }

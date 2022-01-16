@@ -54,7 +54,7 @@ export default abstract class ClassResolver<T> {
         });
         consola.success(`Imported object at: ${importPath}`);
       } else {
-        consola.error(`Failed to import object at: ${importPath}`);
+        consola.error(`Failed to import object at: ${importPath} (Wrong type)`);
       }
     }
     return objects;

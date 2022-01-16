@@ -5,7 +5,7 @@ import type ICommandRunResponse from '../modules/framework/client/ICommandRunRes
 import DeployHandler from '../modules/framework/rest/DeployHandler';
 import DirectoryMapperFactory from '../modules/framework/io/DirectoryMapperFactory';
 import path from 'path';
-import FurudeLocales from '../localization/FurudeLocales';
+import FurudeLocalizer from '../localization/FurudeLocalizer';
 import FurudeDB from '../database/FurudeDB';
 import type DefaultContext from './contexts/DefaultContext';
 import FurudeOperations from '../database/FurudeOperations';
@@ -16,24 +16,26 @@ import { secondsToMilliseconds } from 'date-fns';
 import BeatmapCacheManager from './managers/BeatmapCacheManager';
 import { Preconditions } from '../modules/framework/preconditions/PreconditionDecorators';
 import type CommandPrecondition from '../modules/framework/preconditions/abstracts/CommandPrecondition';
-import FurudeTranslationKeys from '../localization/FurudeTranslationKeys';
 import GuildPermissionsPrecondition from '../modules/framework/preconditions/GuildPermissionsPreconditions';
 import MessageCreator from '../modules/framework/helpers/MessageCreator';
 import { assertDefined } from '../modules/framework/types/TypeAssertions';
 import type { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
 import type { TypedArgs } from '../modules/framework/commands/contexts/types';
+import type ResourceValue from '../modules/framework/localization/resources/ResourceValue';
+import type FurudeResourceStructure from '../localization/FurudeResourceStructure';
 
 export default class FurudeRika extends BaseBot<
   DefaultContext<TypedArgs<unknown>>
 > {
+  public readonly localizer = new FurudeLocalizer();
+
   public readonly db = new FurudeDB();
-  public readonly localizer = new FurudeLocales();
   public readonly reminderManager = new ReminderManager(this);
   public readonly userScanner = new UserScanner(this);
   public readonly beatmapCache = new BeatmapCacheManager(this);
 
   readonly #forceDeploy = true;
-  readonly #isDebug = true;
+  readonly #isDebug = false;
 
   public constructor() {
     FurudeRika.init();
@@ -69,37 +71,33 @@ export default class FurudeRika extends BaseBot<
   #setupPreconditions(): void {
     const setupCondition = (
       condition: CommandPrecondition,
-      key: FurudeTranslationKeys
+      key: (structure: FurudeResourceStructure) => ResourceValue
     ): void => {
       (
         condition as CommandPrecondition<DefaultContext<unknown>>
       ).onFailMessage = (ctx): string =>
-        MessageCreator.fail(ctx.localizer.get(key));
+        MessageCreator.fail(
+          this.localizer.getTranslationFromContext(ctx, key, {})
+        );
     };
 
-    setupCondition(
-      Preconditions.OwnerOnly,
-      FurudeTranslationKeys.ERROR_OWNER_ONLY_COMMAND
-    );
+    setupCondition(Preconditions.OwnerOnly, (k) => k.command.error.owner_only);
 
     setupCondition(
       Preconditions.GuildOnly,
-      FurudeTranslationKeys.ERROR_REQUIRES_GUILD
+      (k) => k.command.error.requires_guild
     );
 
     setupCondition(
       Preconditions.RequiresSubCommand,
-      FurudeTranslationKeys.SUBCOMMAND_MISSING_REQUIRED
+      (k) => k.command.subcommand.error.required
     );
 
     Preconditions.WithPermission = (
       permissions
     ): GuildPermissionsPrecondition => {
       const condition = new GuildPermissionsPrecondition(permissions);
-      setupCondition(
-        condition,
-        FurudeTranslationKeys.ERROR_MISSING_PERMISSIONS
-      );
+      setupCondition(condition, (s) => s.command.error.missing_permissions);
       return condition;
     };
   }
@@ -118,8 +116,8 @@ export default class FurudeRika extends BaseBot<
   }
 
   public override async start(): Promise<void> {
-    await super.start();
     await this.localizer.build();
+    await super.start();
     await this.db.connect();
 
     await this.reminderManager.setupReminders();

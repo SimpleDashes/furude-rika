@@ -6,7 +6,6 @@ import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import BaseEmbed from '../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
 import UserOption from '../../../../modules/framework/options/classes/UserOption';
-import FurudeTranslationKeys from '../../../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
 import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
 import type { TypedArgs } from '../../../../modules/framework/commands/contexts/types';
@@ -38,7 +37,8 @@ export default class ReminderCheck extends FurudeSubCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, localizer, client, args } = context;
+    const { interaction, client, args } = context;
+    const { localizer } = client;
     const { user } = args;
 
     assertDefined(user);
@@ -59,17 +59,22 @@ export default class ReminderCheck extends FurudeSubCommand<
         if (displayContent.length >= ReminderCheck.MAX_REMINDER_LENGTH) {
           displayContent += '...';
         }
-        allReminders += localizer.get(
-          FurudeTranslationKeys.REMINDER_WILL_FIRE,
-          [
-            MessageCreator.block(displayContent),
-            MessageCreator.timeStamp(reminder.remind_end_date),
-          ]
+        allReminders += localizer.getTranslationFromContext(
+          context,
+          (k) => k.reminder.will_fire,
+          {
+            CONTENT: MessageCreator.block(displayContent),
+            TIME: MessageCreator.timeStamp(reminder.remind_end_date),
+          }
         );
         allReminders += '\n';
       }
     } else {
-      allReminders = localizer.get(FurudeTranslationKeys.NOTHING_HERE);
+      allReminders = localizer.getTranslationFromContext(
+        context,
+        (k) => k.errors.nothing_here,
+        {}
+      );
     }
 
     allReminders = MessageCreator.bold(allReminders);
@@ -77,7 +82,13 @@ export default class ReminderCheck extends FurudeSubCommand<
     const embed = new BaseEmbed(
       {
         title: MessageCreator.bold(
-          localizer.get(FurudeTranslationKeys.REMINDERS_STRING, [user.username])
+          localizer.getTranslationFromContext(
+            context,
+            (k) => k.reminder.string,
+            {
+              USER: user.username,
+            }
+          )
         ),
         description: allReminders,
       },

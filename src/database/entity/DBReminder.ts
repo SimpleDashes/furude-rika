@@ -5,11 +5,10 @@ import type FurudeRika from '../../client/FurudeRika';
 import Strings from '../../containers/Strings';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import Numbers from '../../modules/framework/helpers/Numbers';
-import type FurudeLocales from '../../localization/FurudeLocales';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import GeneratedIDEntity from './abstracts/GeneratedIDEntity';
+import type DefaultContext from '../../client/contexts/DefaultContext';
 
 @Entity()
 export default class DBReminder extends GeneratedIDEntity {
@@ -33,9 +32,14 @@ export default class DBReminder extends GeneratedIDEntity {
     return this;
   }
 
-  public fireReminderWhen(
-    rika: FurudeRika,
-    localizer: FurudeLocales,
+  /**
+   *
+   * @param context The context of the reminder.
+   * @param end_time When will the reminder fire.
+   * @returns A operation.
+   */
+  public setupFire(
+    context: DefaultContext<unknown>,
     end_time: {
       seconds?: number | null;
       minutes?: number | null;
@@ -44,26 +48,38 @@ export default class DBReminder extends GeneratedIDEntity {
       weeks?: number | null;
     }
   ): IDatabaseOperation {
+    const { client, dbUser } = context;
+    const { localizer } = client;
+
     const allTimeFrames = Object.values(end_time);
 
     if (
       allTimeFrames.every((time) => Numbers.defaultOptionalNumber(time) <= 0)
     ) {
       return FurudeOperations.error(
-        localizer.get(FurudeTranslationKeys.REMINDER_NEEDS_TIME_FRAME)
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.reminder.error.no_time_frame,
+          {}
+        )
       );
     }
 
     const userReminders = DBReminder.getAllRemindersForID(
-      rika,
+      client,
       this.reminder_owner
     );
 
     if (userReminders.length > DBReminder.MAX_NUMBER_OF_REMINDERS) {
       return FurudeOperations.error(
-        localizer.get(
-          FurudeTranslationKeys.REMINDER_MAX_NUMBER_OF_REMINDERS_REACHED,
-          [MessageCreator.block(DBReminder.MAX_NUMBER_OF_REMINDERS.toString())]
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.reminder.error.max_reached,
+          {
+            LIMIT: MessageCreator.block(
+              DBReminder.MAX_NUMBER_OF_REMINDERS.toString()
+            ),
+          }
         )
       );
     }
@@ -93,10 +109,14 @@ export default class DBReminder extends GeneratedIDEntity {
       Numbers.defaultOptionalNumber(end_time.weeks)
     );
 
-    rika.reminderManager.addReminders(localizer, this);
+    client.reminderManager.addReminders(dbUser, this);
 
     return FurudeOperations.success(
-      localizer.get(FurudeTranslationKeys.REMINDER_WILL_REMIND_YOU)
+      localizer.getTranslationFromContext(
+        context,
+        (k) => k.reminder.will_remind,
+        {}
+      )
     );
   }
 

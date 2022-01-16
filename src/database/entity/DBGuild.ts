@@ -2,9 +2,7 @@ import type { GuildChannel, Snowflake } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import BindableInteger from '../../modules/bindables/BindableInteger';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import type FurudeLocales from '../../localization/FurudeLocales';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
-import type SupportedFurudeLocales from '../../localization/SupportedFurudeLocales';
+import type FurudeLocalizer from '../../localization/FurudeLocalizer';
 import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
@@ -12,6 +10,8 @@ import EntityExtension from '../objects/abstracts/EntityExtension';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import DBUser from './DBUser';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
+import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
+import type DefaultContext from '../../client/contexts/DefaultContext';
 
 class DBGuildExtension extends EntityExtension<DBGuild> {
   #getBindableRewardedXP(): BindableInteger {
@@ -44,7 +44,7 @@ export default class DBGuild
   public static MAX_XP_CHANGE_VALUE = 100;
 
   @Column()
-  public preferred_locale?: SupportedFurudeLocales | undefined;
+  public preferred_locale?: FurudeLanguages | undefined;
 
   @Column('number')
   public min_rewarded_xp_value?: number;
@@ -56,15 +56,15 @@ export default class DBGuild
   public time_for_xp?: number;
 
   public setPreferredLocale(
-    localizer: FurudeLocales,
-    locale: SupportedFurudeLocales | null | undefined
+    localizer: FurudeLocalizer,
+    locale: FurudeLanguages | undefined
   ): IDatabaseOperation {
     return EntityWithLocaleHelper.setPreferredLocale(
       this,
       localizer,
       locale,
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_GUILD,
-      FurudeTranslationKeys.CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY
+      (k) => k.customize.locale.guild.responses.default,
+      (k) => k.customize.locale.guild.responses.any
     );
   }
 
@@ -87,22 +87,33 @@ export default class DBGuild
    * @param channel The channel to be blacklisted.
    */
   public blacklistChannelFromRewardingXP(
-    localizer: FurudeLocales,
+    context: DefaultContext<unknown>,
     channel: GuildChannel
   ): IDatabaseOperation {
+    const { client } = context;
+    const { localizer } = client;
+
     if (this.blocked_xp_channels.includes(channel.id)) {
       return FurudeOperations.error(
-        localizer.get(
-          FurudeTranslationKeys.DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL,
-          [channel.toString()]
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.database.guild.xp.channels.already.blacklisted,
+          {
+            CHANNEL: channel.toString(),
+          }
         )
       );
     }
+
     this.blocked_xp_channels.push(channel.id);
+
     return FurudeOperations.success(
-      localizer.get(
-        FurudeTranslationKeys.DATABASE_GUILD_BLACKLISTED_XP_CHANNEL,
-        [channel.toString()]
+      localizer.getTranslationFromContext(
+        context,
+        (k) => k.database.guild.xp.channels.blacklisted,
+        {
+          CHANNEL: channel.toString(),
+        }
       )
     );
   }
@@ -113,24 +124,33 @@ export default class DBGuild
    * @param channel The channel to be whitelisted.
    */
   public whitelistChannelToRewardXP(
-    localizer: FurudeLocales,
+    context: DefaultContext<unknown>,
     channel: GuildChannel
   ): IDatabaseOperation {
+    const { client } = context;
+    const { localizer } = client;
+
     if (!this.blocked_xp_channels.includes(channel.id)) {
       return FurudeOperations.error(
-        localizer.get(
-          FurudeTranslationKeys.DATABASE_GUILD_ALREADY_WHITELISTED_XP_CHANNEL,
-          [channel.toString()]
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.database.guild.xp.channels.already.whitelisted,
+          {
+            CHANNEL: channel.toString(),
+          }
         )
       );
     }
+
     this.blocked_xp_channels = this.blocked_xp_channels.filter(
       (o) => o != channel.id
     );
+
     return FurudeOperations.success(
-      localizer.get(
-        FurudeTranslationKeys.DATABASE_GUILD_WHITELISTED_XP_CHANNEL,
-        [channel.toString()]
+      localizer.getTranslationFromContext(
+        context,
+        (k) => k.database.guild.xp.channels.whitelisted,
+        { CHANNEL: channel.toString() }
       )
     );
   }
@@ -152,14 +172,21 @@ export default class DBGuild
   }
 
   public setTimeForXP(
-    localizer: FurudeLocales,
+    context: DefaultContext<unknown>,
     time: number
   ): IDatabaseOperation {
+    const { client } = context;
+    const { localizer } = client;
+
     this.time_for_xp = this.#extension.time_for_xp.Current = time;
     return FurudeOperations.success(
-      localizer.get(FurudeTranslationKeys.DATABASE_GUILD_CHANGED_TIME_FOR_XP, [
-        MessageCreator.block(time.toFixed()),
-      ])
+      localizer.getTranslationFromContext(
+        context,
+        (k) => k.database.guild.xp.time.changed,
+        {
+          TIME: MessageCreator.block(time.toFixed()),
+        }
+      )
     );
   }
 }

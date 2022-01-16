@@ -1,6 +1,4 @@
 import { Column, Entity } from 'typeorm';
-import type FurudeLocales from '../../localization/FurudeLocales';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import type { AnyServer } from '../../modules/osu/servers/OsuServers';
 import OsuServers from '../../modules/osu/servers/OsuServers';
@@ -11,6 +9,7 @@ import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import HyperNumber from '../objects/hypervalues/HyperNumber';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';
+import type OsuContext from '../../client/contexts/osu/OsuContext';
 
 interface IOsuAccounts {
   bancho: unknown;
@@ -41,11 +40,15 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
   }
 
   public addAccounts(
-    accounts: Partial<IArgOsuAccounts>,
-    localizer: FurudeLocales
+    context: OsuContext<unknown>,
+    accounts: Partial<IArgOsuAccounts>
   ): IDatabaseOperation {
+    const { client } = context;
+    const { localizer } = client;
+
     const dbNewAccounts = new OsuServerHyperValue();
     const tToAddAccounts = accounts as Record<string, IOsuUser<unknown>>;
+
     for (const o in tToAddAccounts) {
       const tToAddAccount = tToAddAccounts[o];
       assertDefined(tToAddAccount);
@@ -58,23 +61,26 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
         }
       }
     }
+
     if (dbNewAccounts.global) {
       this.accounts.global = dbNewAccounts.global;
     }
+
     for (const o of dbNewAccounts.locals) {
       const server = OsuServers.servers.find((s) => s.name === o.key);
       assertDefined(server);
       this.accounts.setLocal(server, o.value);
     }
+
     return FurudeOperations.success(
-      localizer.get(FurudeTranslationKeys.OSU_USER_ADDED_ACCOUNT, [
-        MessageCreator.block(
+      localizer.getTranslationFromContext(context, (k) => k.osu.account.added, {
+        USERNAME: MessageCreator.block(
           Object.values(tToAddAccounts)
             .map((a) => a.username)
             .toString()
         ),
-        MessageCreator.block(Object.keys(accounts).toString()),
-      ])
+        OSU_SERVER: MessageCreator.block(Object.keys(accounts).toString()),
+      })
     );
   }
 }

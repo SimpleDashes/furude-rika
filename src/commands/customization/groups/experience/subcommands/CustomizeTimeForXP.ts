@@ -43,13 +43,13 @@ export default class CustomizeTimeForXP extends FurudeSubCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, localizer, dbGuild, args } = context;
+    const { interaction, dbGuild, args } = context;
     const { seconds } = args;
 
     assertDefined(dbGuild);
     assertDefined(seconds);
 
-    const operation = dbGuild.setTimeForXP(localizer, seconds);
+    const operation = dbGuild.setTimeForXP(context, seconds);
 
     await FurudeOperations.saveWhenSuccess(dbGuild);
     await FurudeOperations.answerInteraction(interaction, operation);

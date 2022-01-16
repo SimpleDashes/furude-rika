@@ -2,9 +2,8 @@ import { differenceInMilliseconds } from 'date-fns';
 import type { User } from 'discord.js';
 import DBReminder from '../../database/entity/DBReminder';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import FurudeLocales from '../../localization/FurudeLocales';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import BaseFurudeManager from './abstracts/BaseFurudeManager';
+import type DBUser from '../../database/entity/DBUser';
 
 export default class ReminderManager extends BaseFurudeManager {
   public reminders: DBReminder[] = [];
@@ -20,19 +19,11 @@ export default class ReminderManager extends BaseFurudeManager {
       const userReminders = reminders.filter(
         (r) => r.reminder_owner === user.s_id
       );
-      this.addReminders(
-        new FurudeLocales({
-          language: user.preferred_locale,
-        }),
-        ...userReminders
-      );
+      this.addReminders(user, ...userReminders);
     }
   }
 
-  public addReminders(
-    localizer: FurudeLocales,
-    ...reminders: DBReminder[]
-  ): void {
+  public addReminders(databaseUser: DBUser, ...reminders: DBReminder[]): void {
     this.reminders.push(...reminders);
     for (const reminder of reminders) {
       setTimeout(async () => {
@@ -48,9 +39,13 @@ export default class ReminderManager extends BaseFurudeManager {
 
         await user.send(
           MessageCreator.success(
-            localizer.get(FurudeTranslationKeys.REMINDER_REMINDING_YOU, [
-              reminder.reminder,
-            ])
+            this.rika.localizer.getTranslation(
+              databaseUser.preferred_locale,
+              (k) => k.reminder.reminding,
+              {
+                CONTENT: reminder.reminder,
+              }
+            )
           )
         );
 

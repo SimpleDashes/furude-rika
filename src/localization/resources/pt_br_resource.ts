@@ -1,108 +1,304 @@
 import FurudeResource from '../FurudeResource';
-import SupportedFurudeLocales from '../SupportedFurudeLocales';
-import CurrencyContainer from '../../containers/CurrencyContainer';
+import Locale from '../../modules/framework/localization/Locale';
+import ResourceValue from '../../modules/framework/localization/resources/ResourceValue';
+import { ResourceArguments } from '../FurudeResourceStructure';
 
 export default class extends FurudeResource {
   public constructor() {
-    super(SupportedFurudeLocales.brazilian_portuguese, {
-      // AVATAR
-      AVATAR_RESPONSE: 'Aqui, toma o avatar do(a) [$USER]',
+    super(Locale.pt_BR, {
+      avatar: {
+        response: new ResourceValue(
+          (b) => [
+            `Avatar do(a) ${b.USER} é bem lindo mesmo...`,
+            `Toma logo... me paga um café!`,
+          ],
+          [ResourceArguments.USER]
+        ),
+      },
 
-      // PING
-      PING_TO_PING: 'Pinguei em [$PING]ms',
-      PING_NOT_REACHABLE: 'Não consegui pingar...',
+      ping: {
+        response: new ResourceValue(
+          (b) => `Pinguei em ${b.PING}ms`,
+          [ResourceArguments.PING]
+        ),
+        unreachable: new ResourceValue(
+          () => 'O servidor não me respondeu...',
+          []
+        ),
+      },
 
-      // DEPLOY
-      DEPLOY_COMMAND_NOT_FOUND:
-        'Eu não consegui achar o comando especificado na minha lista de comandos...',
-      DEPLOY_COMMAND_CORRUPTED:
-        'O comando especificado está provavelmente corrompido!',
-      DEPLOY_COMMAND_ERROR: 'Tive um erro tentando fazer deploy deste comando!',
-      DEPLOY_COMMAND_SUCCESS: 'Consegui fazer deploy desse comando!',
+      deploy: {
+        command: {
+          missing: new ResourceValue(
+            () => 'Não consegui encontrar o comando especificado.',
+            []
+          ),
+          corrupted: new ResourceValue(
+            () => 'O comando especificado provavelmente está corrompido.',
+            []
+          ),
+          error: new ResourceValue(
+            () => 'Não consegui fazer deploy do comando especificado.',
+            []
+          ),
+          success: new ResourceValue(
+            () => 'Fiz deploy do comando especificado com sucesso.',
+            []
+          ),
+        },
+      },
 
-      // CALC
-      CALC_RESULTS: '[$EXPR] resulta em: [$RES]',
-      CALC_ADDITIONAL_VARIABLES: 'Com as variáveis sendo: [$VARS]',
-      CALC_EVALUATE_ERROR:
-        'Talvez eu seja burra, MAS, eu não acho que [$EXPR] é uma expressão matemática',
-      CALC_MISSING_VARIABLES:
-        'Você se esqueceu de adicionar as seguintes variáveis: [$VARS], para a expressão: [$EXPR]',
+      calc: {
+        response: new ResourceValue(
+          (b) => `${b.EXPRESSION} equals to: ${b.RESULT}`,
+          [ResourceArguments.EXPRESSION, ResourceArguments.RESULT]
+        ),
+        fail: new ResourceValue(
+          (b) =>
+            `Talvez eu seja meio retardada, mas eu não acho que ${b.EXPRESSION} é uma expressão matemática.`,
+          [ResourceArguments.EXPRESSION]
+        ),
+        variables: {
+          description: new ResourceValue(
+            (b) => `Com as variáveis sendo: ${b.VARIABLES}`,
+            [ResourceArguments.VARIABLES]
+          ),
+          missing: new ResourceValue(
+            (b) =>
+              `Você esqueceu de adicionar as seguintes variáveis: ${b.VARIABLES}, para a expressão: ${b.EXPRESSION}`,
+            [ResourceArguments.VARIABLES, ResourceArguments.EXPRESSION]
+          ),
+        },
+      },
 
-      // COIN FLIP
-      COIN_FLIP_HEADS: 'Cara',
-      COIN_FLIP_TAILS: 'Coroa',
-      COIN_FLIP_RESULT: 'Não deu outra, foi: [$RES]',
+      coin: {
+        heads: new ResourceValue(() => 'Cara', []),
+        tails: new ResourceValue(() => 'Coroa', []),
+        response: new ResourceValue(
+          (b) => `~Eu lanço uma moeda no ar... ela para no lado da ${b.SIDE}.`,
+          [ResourceArguments.SIDE]
+        ),
+      },
 
-      // ERROS
-      ERROR_MISSING_PERMISSIONS:
-        'Você não tem permissões suficientes para executar este comando!',
-      ERROR_OWNER_ONLY_COMMAND:
-        'Esse comando só pode ser executado pelos meus desenvolvedores!',
-      ERROR_REQUIRES_GUILD:
-        'Mil desculpas MESMO, porém este comando só pode ser utilizado em um servidor...',
+      command: {
+        error: {
+          missing_permissions: new ResourceValue(
+            () => 'Você não tem permissões suficientes para usar esse comando.',
+            []
+          ),
+          owner_only: new ResourceValue(
+            () => 'Apenas meu dono pode usar esse comando.',
+            []
+          ),
+          requires_guild: new ResourceValue(
+            () =>
+              'Você precisa executar este comando em um servidor do discord...',
+            []
+          ),
+        },
 
-      // SUBCOMMANDS
-      SUBCOMMAND_ERROR_NOT_FOUND:
-        'Desculpa mas assim eu acho que o subcomando que você me especificou não existe sabe?',
+        subcommand: {
+          error: {
+            required: new ResourceValue(
+              () => 'Eu não encontrei o subcomando especificado...',
+              []
+            ),
+          },
+          group: {
+            error: {
+              required: new ResourceValue(
+                () =>
+                  'Você precisa escolher um subcomando para poder rodar este comando.',
+                []
+              ),
+            },
+          },
+        },
+      },
 
-      SUBCOMMAND_MISSING_REQUIRED:
-        'Você precisa escolher um subcomando para executar este comando!',
+      customize: {
+        locale: {
+          user: {
+            response: new ResourceValue(
+              () => [
+                'Se você realmente quer que eu fale assim, ok.',
+                'Tá bom então né, fazer o que... vou te responder assim quando possível...',
+              ],
+              []
+            ),
+          },
+          guild: {
+            responses: {
+              default: new ResourceValue(
+                () =>
+                  'Agora os membros deste servidor vão ser respondidos em português...',
+                []
+              ),
+              any: new ResourceValue(
+                () =>
+                  'Então quer dizer que tanto faz? então eu vou deixar as outras regras de idioma regularem...',
+                []
+              ),
+            },
+          },
+          channel: {
+            responses: {
+              default: new ResourceValue(
+                () => 'Nesse canal somente pode falar em português? entendido.',
+                []
+              ),
+              any: new ResourceValue(
+                () => 'Então tanto faz a lingua nesse canal?... ok.',
+                []
+              ),
+            },
+          },
+        },
+      },
 
-      // CUSTOMIZE
-      CUSTOMIZE_LOCALE_RESPONSE_USER:
-        'Opa! configurei para eu lhe responder em "brasiliense" k.',
-      CUSTOMIZE_LOCALE_RESPONSE_GUILD:
-        'Coé, configurei para os membros do servidor serem respondidos assim, bróder... tmj.',
-      CUSTOMIZE_LOCALE_RESPONSE_GUILD_ANY:
-        'Ah então ok, vou deixar seus ~~escravos~~ escolherem suas próprias linguagens!',
-      CUSTOMIZE_LOCALE_RESPONSE_CHANNEL:
-        'Ok então, este canal é para os(as) crias, certo!',
-      CUSTOMIZE_LOCALE_RESPONSE_CHANNEL_ANY:
-        'Então, é para os membros falarem o idioma preferido do servidor, neste canal? entendido.',
+      economy: {
+        open: {
+          success: new ResourceValue(
+            (b) => `Ok, abri uma conta de ${b.CURRENCY_NAME} pra você...`,
+            [ResourceArguments.CURRENCY_NAME]
+          ),
+          fail: new ResourceValue(
+            (b) => `Você já tem uma conta de ${b.CURRENCY_NAME}, não enche...`,
+            [ResourceArguments.CURRENCY_NAME]
+          ),
+        },
+        balance: {
+          fail: new ResourceValue(
+            (b) =>
+              `Você ou o usuário mencionado não possui uma conta ${b.CURRENCY_NAME}...`,
+            [ResourceArguments.CURRENCY_NAME]
+          ),
+        },
+        error: {
+          no_account: new ResourceValue(
+            (b) =>
+              `Você precisa abrir uma conta ${b.CURRENCY_NAME} para usar este comando!`,
+            [ResourceArguments.CURRENCY_NAME]
+          ),
+        },
+      },
 
-      // ECONOMY
-      ECONOMY_OPEN_SUCCESS: `Papo reto então, abri uma conta de ${CurrencyContainer.CURRENCY_NAME} pra tu!`,
-      ECONOMY_OPEN_FAIL: `Cê já tem uma conta de ${CurrencyContainer.CURRENCY_NAME}, coé não me enche atoa véi...`,
-      ECONOMY_BALANCE_FAIL: `Você ou o usuário mencionado não possui uma conta ${CurrencyContainer.CURRENCY_NAME}...`,
-      ECONOMY_MUST_HAVE_ACCOUNT: `Você primeiro precisa ter aberto uma conta ${CurrencyContainer.CURRENCY_NAME} para usar este comando...`,
+      database: {
+        guild: {
+          xp: {
+            channels: {
+              whitelisted: new ResourceValue(
+                (b) =>
+                  `Whitelistei o canal: ${b.CHANNEL} (Ele voltou a dar xp).`,
+                [ResourceArguments.CHANNEL]
+              ),
+              blacklisted: new ResourceValue(
+                (b) =>
+                  `Blacklistei o canal: ${b.CHANNEL} (Ele não está mais dando xp).`,
+                [ResourceArguments.CHANNEL]
+              ),
+              already: {
+                whitelisted: new ResourceValue(
+                  (b) => `${b.CHANNEL} já tá na whitelist...`,
+                  [ResourceArguments.CHANNEL]
+                ),
+                blacklisted: new ResourceValue(
+                  (b) => `${b.CHANNEL} já tá blacklist...`,
+                  [ResourceArguments.CHANNEL]
+                ),
+              },
+            },
+            time: {
+              changed: new ResourceValue(
+                (b) =>
+                  `Ok! o cooldown para receber xp é de ${b.TIME} a partir de agora...`,
+                [ResourceArguments.TIME]
+              ),
+            },
+          },
+        },
+        citizen: {
+          claims: {
+            fail: new ResourceValue(
+              (b) =>
+                `Voce já fez claim das suas ${b.CURRENCY_NAME}s diárias... Você pode fazer claim novamente em: ${b.TIME}`,
+              [ResourceArguments.TIME, ResourceArguments.CURRENCY_NAME]
+            ),
+            success: new ResourceValue(
+              (b) =>
+                `Você acaba de receber suas ${b.AMOUNT} ${b.CURRENCY_NAME}s diárias, você agora está em um streak de ${b.STREAK} dias, Você tem um total de ${b.TOTAL} ${b.CURRENCY_NAME}s agora!`,
+              [
+                ResourceArguments.STREAK,
+                ResourceArguments.AMOUNT,
+                ResourceArguments.TOTAL,
+                ResourceArguments.CURRENCY_NAME,
+              ]
+            ),
+          },
+        },
+      },
 
-      DATABASE_CITIZEN_ALREADY_CLAIMED: `Você já resgatou as suas ${CurrencyContainer.CURRENCY_NAME}s diárias hoje... Você pode regatar ${CurrencyContainer.CURRENCY_NAME}s novamente em: [$TIME].`,
-      DATABASE_CITIZEN_CLAIM_SUCCESS: `Você acaba de resgatar [$AMOUNT] ${CurrencyContainer.CURRENCY_NAME}s! Você agora está em um streak de [$STREAK] dia(s), com um saldo de [$TOTAL] ${CurrencyContainer.CURRENCY_NAME}s`,
+      reminder: {
+        error: {
+          no_time_frame: new ResourceValue(
+            () =>
+              'Você precisa ao menos por uma medida de tempo... não sou adivinha.',
+            []
+          ),
+          max_reached: new ResourceValue(
+            (b) =>
+              `Você só pode ter até ${b.LIMIT} lembretes ao mesmo tempo, desculpa.`,
+            [ResourceArguments.LIMIT]
+          ),
+        },
+        remove: {
+          success: new ResourceValue(
+            (b) => `Removi o lembrete no índice: ${b.INDEX}`,
+            [ResourceArguments.INDEX]
+          ),
+          fail: new ResourceValue(
+            (b) => `Não consegui remover o lembrete no índice: ${b.INDEX}`,
+            [ResourceArguments.INDEX]
+          ),
+        },
+        reminding: new ResourceValue(
+          (b) => `Lembrete: ${b.CONTENT}`,
+          [ResourceArguments.CONTENT]
+        ),
+        will_remind: new ResourceValue(
+          () => 'Ok! Irei lembrar você sobre isso!',
+          []
+        ),
+        will_fire: new ResourceValue(
+          (b) => `${b.CONTENT} vai ser alarmado em ${b.TIME}`,
+          [ResourceArguments.CONTENT, ResourceArguments.TIME]
+        ),
+        string: new ResourceValue(
+          (b) => `Lembretinhos do(a) ${b.USER}`,
+          [ResourceArguments.USER]
+        ),
+      },
 
-      // GUILD
-      DATABASE_GUILD_WHITELISTED_XP_CHANNEL:
-        'Coloquei o [$CHANNEL] pra dar uns xp legal pros membro ai.',
-      DATABASE_GUILD_BLACKLISTED_XP_CHANNEL:
-        'O [$CHANNEL] não vai mais dar xp então chefe...',
-      DATABASE_GUILD_ALREADY_WHITELISTED_XP_CHANNEL:
-        '[$CHANNEL] já ta dando xp...',
-      DATABASE_GUILD_ALREADY_BLACKLISTED_XP_CHANNEL:
-        '[$CHANNEL] já ta bloqueado de dar xp...',
-      DATABASE_GUILD_CHANGED_TIME_FOR_XP:
-        'Ok, os mano(a) vai ter que esperar [$TIME] segundos se quiser xp agora...',
+      osu: {
+        account: {
+          added: new ResourceValue(
+            (b) =>
+              `Adicionei as(a) conta(s) com os nomes de usuário ${b.USERNAME} ao(s) servidor(es) ${b.OSU_SERVER} para você.`,
+            [ResourceArguments.USERNAME, ResourceArguments.OSU_SERVER]
+          ),
+          error: {
+            not_found: new ResourceValue(
+              () =>
+                'Não consegui encontrar um usuário com esse username ou id, no servidor especificado.',
+              []
+            ),
+          },
+        },
+      },
 
-      // REMINDER
-      REMINDER_NEEDS_TIME_FRAME:
-        'Você tem que por ao menos um intervalo de tempo né tio(a)... não sou adivinha não.',
-      REMINDER_MAX_NUMBER_OF_REMINDERS_REACHED:
-        'Você só pode ter [$LIMIT] lembretes pendentes, cê ta ligado disso né.',
-      REMINDER_WILL_REMIND_YOU:
-        'Ja ja te lembro disso ai então... enquanto isso vou preparar meu cafe!',
-      REMINDER_REMINDING_YOU: 'Lembrete: [$TEXT]',
-      REMINDER_REMOVE_FAIL:
-        'Não consegui remover o lembrete de índice [$INDEX]',
-      REMINDER_REMOVE_SUCCESS: 'Removi o lembrete no índice [$INDEX]',
-      REMINDER_WILL_FIRE: '[$CONTENT] ativo em [$TIME]',
-      REMINDERS_STRING: 'Lembretes do(a) [$USER]',
-
-      // OSU
-      OSU_ACCOUNT_NOT_FOUND:
-        'Não consegui encontrar nenhum usuário com o id ou nickname especificado.',
-      OSU_USER_ADDED_ACCOUNT:
-        'Adicioneis as contas [$USERNAME] ao servidores [$SERVER] para você.',
-
-      // MISCELLANEOUS
-      NOTHING_HERE: 'Nada para ver aqui.',
+      errors: {
+        nothing_here: new ResourceValue(() => 'Nada para ver aqui...', []),
+      },
     });
   }
 }

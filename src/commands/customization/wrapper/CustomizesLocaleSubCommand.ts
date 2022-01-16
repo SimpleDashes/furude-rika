@@ -1,12 +1,14 @@
 import type DefaultContext from '../../../client/contexts/DefaultContext';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import StringOption from '../../../modules/framework/options/classes/StringOption';
-import SupportedFurudeLocales from '../../../localization/SupportedFurudeLocales';
 import type IHasPreferredLocale from '../../../database/interfaces/IHasPreferredLocale';
 import type SnowFlakeIDEntity from '../../../database/entity/abstracts/SnowFlakeIDEntity';
 import FurudeOperations from '../../../database/FurudeOperations';
 import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
-import assert from 'assert';
+import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
+import FurudeLocalizer, {
+  FurudeLanguagesArray,
+} from '../../../localization/FurudeLocalizer';
 
 export type BaseLanguageChangeArgs = {
   locale: Omit<StringOption, 'setAutocomplete'>;
@@ -27,7 +29,7 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
   }
 
   protected getAllFurudeLocales(): [name: string, value: string][] {
-    return Object.keys(SupportedFurudeLocales).map((l) => [l, l]);
+    return FurudeLanguagesArray.map((l) => [l, l]);
   }
 
   public constructor(description: string) {
@@ -40,15 +42,19 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
   public async trigger(
     context: DefaultContext<TypedArgs<BaseLanguageChangeArgs>>
   ): Promise<void> {
-    const { interaction, localizer, args } = context;
+    const { interaction, args, client } = context;
+    const { localizer } = client;
     const { locale } = args;
 
     const preferredLocale = locale
-      ? ((): SupportedFurudeLocales => {
-          assert(typeof locale === 'string');
-          return SupportedFurudeLocales[locale];
+      ? ((): FurudeLanguages => {
+          return (
+            FurudeLanguagesArray.find(
+              (l) => l === (locale as unknown as string as FurudeLanguages)
+            ) ?? FurudeLocalizer.defaultLocale
+          );
         })()
-      : null;
+      : undefined;
 
     const entityToLocalize = this.entityToLocalize(context);
 

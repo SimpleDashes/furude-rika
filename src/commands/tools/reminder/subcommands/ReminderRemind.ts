@@ -67,13 +67,13 @@ export default class ReminderReminderMe extends FurudeSubCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, client, localizer, args } = context;
+    const { interaction, args } = context;
     const { what, seconds, minutes, hours, days, weeks } = args;
 
     assertDefined(what);
 
     const reminder = DBReminder.create().build(interaction.user, what);
-    const operation = reminder.fireReminderWhen(client, localizer, {
+    const operation = reminder.setupFire(context, {
       seconds,
       minutes,
       hours,

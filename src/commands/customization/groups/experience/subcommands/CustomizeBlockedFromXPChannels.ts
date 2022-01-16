@@ -55,7 +55,7 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, dbGuild, client, localizer, args } = context;
+    const { interaction, dbGuild, client, args } = context;
     const { channel, whitelist } = args;
 
     assertDefined(dbGuild);
@@ -65,7 +65,7 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand<
       whitelist
         ? dbGuild.whitelistChannelToRewardXP
         : dbGuild.blacklistChannelFromRewardingXP
-    )(localizer, channel);
+    )(context, channel);
 
     let blockedChannelsString = Strings.EMPTY;
     for (const channel of dbGuild.blocked_xp_channels) {

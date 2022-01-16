@@ -7,9 +7,9 @@ export default class DailyHelper {
     context: CurrencyContext<unknown>,
     type: HyperTypes
   ): Promise<void> {
-    const { citizen, localizer, interaction } = context;
+    const { citizen, interaction } = context;
 
-    const baseOperation = citizen.claimDaily(interaction, localizer, type);
+    const baseOperation = citizen.claimDaily(context, type);
 
     const operation: IDatabaseOperation = {
       ...baseOperation,

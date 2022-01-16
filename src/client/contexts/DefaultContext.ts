@@ -3,7 +3,6 @@ import type { Guild, User } from 'discord.js';
 import type DBChannel from '../../database/entity/DBChannel';
 import type DBGuild from '../../database/entity/DBGuild';
 import type DBUser from '../../database/entity/DBUser';
-import FurudeLocales from '../../localization/FurudeLocales';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 import BaseContext from './BaseContext';
 import { assert } from 'console';
@@ -87,7 +86,6 @@ export class ChannelCreator extends DefaultContextCreator<
 }
 
 export default class DefaultContext<A> extends BaseContext<A> {
-  public localizer!: FurudeLocales;
   public dbUser!: DBUser;
   public dbGuild?: DBGuild;
   public dbChannel?: DBChannel;
@@ -101,11 +99,6 @@ export default class DefaultContext<A> extends BaseContext<A> {
       this.dbGuild = await this.GUILDS.create(this.interaction.guild);
       this.dbChannel = await this.CHANNELS.create(this.interaction.channel);
     }
-    /**
-     * We set the localizer at last simply because we need the previous
-     * variables for it to work properly.
-     */
-    this.localizer = this.createLocalizer();
   }
 
   public USERS: UsersCreator = new UsersCreator(this);
@@ -113,8 +106,4 @@ export default class DefaultContext<A> extends BaseContext<A> {
   public GUILDS: GuildCreator = new GuildCreator(this);
 
   public CHANNELS: ChannelCreator = new ChannelCreator(this);
-
-  protected createLocalizer(): FurudeLocales {
-    return new FurudeLocales({ context: this });
-  }
 }

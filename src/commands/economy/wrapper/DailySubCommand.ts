@@ -29,11 +29,11 @@ export default abstract class DailySubCommand extends EconomySubCommand<DailyArg
   public async trigger(
     context: CurrencyContext<TypedArgs<DailyArgs>>
   ): Promise<void> {
-    const { citizen, interaction, localizer } = context;
+    const { citizen, interaction } = context;
 
     const scope = this.dailyScope();
 
-    const baseOperation = citizen.claimDaily(interaction, localizer, scope);
+    const baseOperation = citizen.claimDaily(context, scope);
 
     const operation: IDatabaseOperation = {
       ...baseOperation,

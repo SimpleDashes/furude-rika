@@ -26,9 +26,9 @@ export default class EconomyOpen extends EconomySubCommand<Args> {
   public async trigger(
     context: CurrencyContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { citizen, interaction, localizer } = context;
+    const { citizen, interaction } = context;
 
-    const operation = citizen.openAccount(localizer);
+    const operation = citizen.openAccount(context);
 
     await FurudeOperations.saveWhenSuccess(citizen, operation);
     await FurudeOperations.answerInteraction(interaction, operation);

@@ -6,7 +6,6 @@ import UserType from '../../modules/framework/enums/UserType';
 import PingContainer from '../../modules/framework/ping/PingContainer';
 import PingData from '../../modules/framework/ping/PingData';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
 
@@ -57,7 +56,8 @@ export default class Ping extends FurudeCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, localizer } = context;
+    const { interaction, client } = context;
+    const { localizer } = client;
 
     const embed = new BaseEmbed({}, interaction, {
       author: interaction.user,
@@ -72,8 +72,14 @@ export default class Ping extends FurudeCommand<
       const ping = await pingData.ping?.call(pingData, pingArgs);
 
       const text = ping
-        ? localizer.get(FurudeTranslationKeys.PING_TO_PING, [ping?.toString()])
-        : localizer.get(FurudeTranslationKeys.PING_NOT_REACHABLE);
+        ? localizer.getTranslationFromContext(context, (k) => k.ping.response, {
+            PING: ping.toString(),
+          })
+        : localizer.getTranslationFromContext(
+            context,
+            (k) => k.ping.unreachable,
+            {}
+          );
 
       const value = MessageCreator.bold(MessageCreator.blockQuote(text));
       embed.addField(pingData.pingWhat, value);

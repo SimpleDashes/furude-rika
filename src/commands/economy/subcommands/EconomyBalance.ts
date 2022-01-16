@@ -3,7 +3,6 @@ import CurrencyContainer from '../../../containers/CurrencyContainer';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import UserOption from '../../../modules/framework/options/classes/UserOption';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
-import FurudeTranslationKeys from '../../../localization/FurudeTranslationKeys';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
@@ -34,7 +33,8 @@ export default class EconomyOpen extends EconomySubCommand<Args> {
   public async trigger(
     context: CurrencyContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, localizer, args } = context;
+    const { interaction, args } = context;
+    const { localizer } = context.client;
     const { user } = args;
 
     assertDefined(user);
@@ -45,7 +45,13 @@ export default class EconomyOpen extends EconomySubCommand<Args> {
       await InteractionUtils.reply(
         interaction,
         MessageCreator.fail(
-          localizer.get(FurudeTranslationKeys.ECONOMY_BALANCE_FAIL)
+          localizer.getTranslationFromContext(
+            context,
+            (k) => k.economy.balance.fail,
+            {
+              CURRENCY_NAME: CurrencyContainer.CURRENCY_NAME,
+            }
+          )
         )
       );
       return;

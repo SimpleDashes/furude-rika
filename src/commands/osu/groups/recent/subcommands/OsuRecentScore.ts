@@ -2,6 +2,7 @@ import type OsuContext from '../../../../../client/contexts/osu/OsuContext';
 import Strings from '../../../../../containers/Strings';
 import ExpandableEmbedHelper from '../../../../../discord/commands/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../../../discord/commands/interfaces/IHasExpandableEmbed';
+import type { FurudeLanguages } from '../../../../../localization/FurudeLocalizer';
 import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
 import { MessageButtonCreator } from '../../../../../modules/framework/creators/MessageButtonCreator';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
@@ -43,6 +44,7 @@ export default class OsuRecentScore
 
   public async trigger(context: OsuContext<TypedArgs<Args>>): Promise<void> {
     const { interaction, client, args } = context;
+    const { localizer } = client;
     const { discordUser } = args;
 
     assertDefined(discordUser);
@@ -66,11 +68,14 @@ export default class OsuRecentScore
 
     await client.beatmapCache.fetchFromScore(recentScore);
 
+    const language = localizer.getLanguageFromContext(context);
+
     let expandedEmbed = new BaseEmbed();
     const minimizedEmbed = this.createMinimizedEmbed(
       context,
       osuUser,
-      recentScore
+      recentScore,
+      language
     );
 
     await ExpandableEmbedHelper.createExpandingInteractiveButton(
@@ -106,7 +111,8 @@ export default class OsuRecentScore
                 context,
                 osuUser,
                 scores,
-                page
+                page,
+                language
               );
               options.embeds = [expandedEmbed];
             }
@@ -132,10 +138,11 @@ export default class OsuRecentScore
   public createMinimizedEmbed(
     context: OsuContext<TypedArgs<Args>>,
     user: IOsuUser<unknown>,
-    score: IOsuScore
+    score: IOsuScore,
+    language: FurudeLanguages
   ): BaseEmbed {
     const embed = this.createBaseEmbed(context, user).setDescription(
-      this.#createMinimizedDescription(score, context)
+      this.#createMinimizedDescription(score, context, language)
     );
 
     if (score.apiBeatmap) {
@@ -149,7 +156,8 @@ export default class OsuRecentScore
     context: OsuContext<TypedArgs<Args>>,
     user: IOsuUser<unknown>,
     scores: IOsuScore[],
-    page: number
+    page: number,
+    language: FurudeLanguages
   ): BaseEmbed {
     const embed = this.createBaseEmbed(context, user);
     embed.description = Strings.EMPTY;
@@ -173,18 +181,21 @@ export default class OsuRecentScore
           }.`
         ) + ' ';
 
-      embed.description += this.#createMinimizedDescription(score, context);
+      embed.description += this.#createMinimizedDescription(
+        score,
+        context,
+        language
+      );
     }
     return embed;
   }
 
   #createMinimizedDescription(
     score: IOsuScore,
-    context: OsuContext<TypedArgs<Args>>
+    _context: OsuContext<TypedArgs<Args>>,
+    language: FurudeLanguages
   ): string {
     const { apiBeatmap } = score;
-    const { localizer } = context;
-    const { Language } = localizer;
 
     let string = Strings.EMPTY;
     let canHyperLink = false;
@@ -207,7 +218,7 @@ export default class OsuRecentScore
 
     string = MessageCreator.breakLine(string);
 
-    string += `▸ ${score.score.toLocaleString(Language)} ▸ x${
+    string += `▸ ${score.score.toLocaleString(language)} ▸ x${
       score.counts.combo
     } ▸ [${score.counts[300]}/${score.counts[100]}/${score.counts[50]}/${
       score.counts.misses

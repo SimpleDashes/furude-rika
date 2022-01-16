@@ -3,14 +3,13 @@ import type { CommandInteraction } from 'discord.js';
 import { Column, Entity } from 'typeorm';
 import CurrencyContainer from '../../containers/CurrencyContainer';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import type FurudeLocales from '../../localization/FurudeLocales';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDate';
 import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
 import type { HyperTypes } from '../objects/hypervalues/HyperTypes';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
+import type CurrencyContext from '../../client/contexts/currency/CurrencyContext';
 
 interface IStreakOperation extends IDatabaseOperation {
   readonly lostStreak: boolean;
@@ -117,11 +116,13 @@ export default class DBCitizen extends SnowFlakeIDEntity {
    * @returns wether you could claim or not because you had already claimed this day
    */
   public claimDaily(
-    interaction: CommandInteraction,
-    localizer: FurudeLocales,
+    context: CurrencyContext<unknown>,
     type: HyperTypes,
     amount = DBCitizen.AMOUNT_DAILY
   ): IDatabaseOperation {
+    const { interaction, client } = context;
+    const { localizer } = client;
+
     const dateNow = new Date();
     const selectedLastTimeClaimedDaily =
       this.lastTimeClaimedDaily.getValueSwitchedForType(
@@ -138,9 +139,14 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     if (selectedLastTimeClaimedDaily && duration.days == 0) {
       const ableToClaimWhen = addDays(startDate, 1);
       return FurudeOperations.error(
-        localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_ALREADY_CLAIMED, [
-          MessageCreator.timeStamp(ableToClaimWhen),
-        ])
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.database.citizen.claims.fail,
+          {
+            TIME: MessageCreator.timeStamp(ableToClaimWhen),
+            CURRENCY_NAME: CurrencyContainer.CURRENCY_NAME,
+          }
+        )
       );
     } else {
       this.lastTimeClaimedDaily.setValueSwitchedForType(
@@ -164,17 +170,24 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     this.#incrementCapital(interaction, type, amount);
 
     return FurudeOperations.success(
-      localizer.get(FurudeTranslationKeys.DATABASE_CITIZEN_CLAIM_SUCCESS, [
-        MessageCreator.block(amount.toFixed()),
-        MessageCreator.block(
-          this.streak.getValueSwitchedForType(interaction.guild, type).toFixed()
-        ),
-        MessageCreator.block(
-          this.capital
-            .getValueSwitchedForType(interaction.guild, type)
-            .toFixed()
-        ),
-      ])
+      localizer.getTranslationFromContext(
+        context,
+        (k) => k.database.citizen.claims.success,
+        {
+          CURRENCY_NAME: CurrencyContainer.CURRENCY_NAME,
+          AMOUNT: MessageCreator.block(amount.toFixed()),
+          STREAK: MessageCreator.block(
+            this.streak
+              .getValueSwitchedForType(interaction.guild, type)
+              .toFixed()
+          ),
+          TOTAL: MessageCreator.block(
+            this.capital
+              .getValueSwitchedForType(interaction.guild, type)
+              .toFixed()
+          ),
+        }
+      )
     );
   }
 
@@ -182,10 +195,19 @@ export default class DBCitizen extends SnowFlakeIDEntity {
    * Assigns a new account (this instance) to our parent (A DBUser).
    * If the parent didn't had an open account beforehand.
    */
-  public openAccount(localizer: FurudeLocales): IDatabaseOperation {
+  public openAccount(context: CurrencyContext<unknown>): IDatabaseOperation {
+    const { client } = context;
+    const { localizer } = client;
+
     if (!this.justCreated) {
       return FurudeOperations.error(
-        localizer.get(FurudeTranslationKeys.ECONOMY_OPEN_FAIL)
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.economy.open.fail,
+          {
+            CURRENCY_NAME: CurrencyContainer.CURRENCY_NAME,
+          }
+        )
       );
     }
 
@@ -193,7 +215,13 @@ export default class DBCitizen extends SnowFlakeIDEntity {
     this.capital.global = DBCitizen.STARTING_CAPITAL;
 
     return FurudeOperations.success(
-      localizer.get(FurudeTranslationKeys.ECONOMY_OPEN_SUCCESS)
+      localizer.getTranslationFromContext(
+        context,
+        (k) => k.economy.open.success,
+        {
+          CURRENCY_NAME: CurrencyContainer.CURRENCY_NAME,
+        }
+      )
     );
   }
 }

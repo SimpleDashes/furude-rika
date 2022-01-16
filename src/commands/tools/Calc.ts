@@ -1,5 +1,4 @@
 import { Collection } from 'discord.js';
-
 import { Parser } from 'expr-eval';
 import type DefaultContext from '../../client/contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
@@ -7,7 +6,6 @@ import CollectionHelper from '../../modules/framework/helpers/CollectionHelper';
 import StringUtils from '../../modules/framework/helpers/StringUtils';
 import StringOption from '../../modules/framework/options/classes/StringOption';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import FurudeTranslationKeys from '../../localization/FurudeTranslationKeys';
 import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
 import { assertDefined } from '../../modules/framework/types/TypeAssertions';
 import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
@@ -16,6 +14,7 @@ type Args = {
   expression: StringOption;
   rawVariables: StringOption;
 };
+
 export default class Calc extends FurudeCommand<
   DefaultContext<TypedArgs<Args>>,
   Args
@@ -44,7 +43,8 @@ export default class Calc extends FurudeCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, localizer, args } = context;
+    const { interaction, client, args } = context;
+    const { localizer } = client;
 
     let { expression } = args;
     const { rawVariables } = args;
@@ -69,10 +69,14 @@ export default class Calc extends FurudeCommand<
       await InteractionUtils.reply(
         interaction,
         MessageCreator.fail(
-          localizer.get(FurudeTranslationKeys.CALC_MISSING_VARIABLES, [
-            MessageCreator.block(missingVariables.toString()),
-            expressionText,
-          ])
+          localizer.getTranslationFromContext(
+            context,
+            (k) => k.calc.variables.missing,
+            {
+              VARIABLES: MessageCreator.block(missingVariables.toString()),
+              EXPRESSION: expressionText,
+            }
+          )
         )
       );
       return;
@@ -85,9 +89,9 @@ export default class Calc extends FurudeCommand<
       await InteractionUtils.reply(
         interaction,
         MessageCreator.fail(
-          localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, [
-            expressionText,
-          ])
+          localizer.getTranslationFromContext(context, (k) => k.calc.fail, {
+            EXPRESSION: expressionText,
+          })
         )
       );
       return;
@@ -104,22 +108,29 @@ export default class Calc extends FurudeCommand<
 
     let displayText;
     if (evaluatedResult) {
-      displayText = localizer.get(FurudeTranslationKeys.CALC_RESULTS, [
-        expressionText,
-        MessageCreator.block(evaluatedResult.toString()),
-      ]);
+      displayText = localizer.getTranslationFromContext(
+        context,
+        (k) => k.calc.response,
+        {
+          EXPRESSION: expressionText,
+          RESULT: MessageCreator.block(evaluatedResult.toString()),
+        }
+      );
       if (gotVariables && rawVariables) {
-        displayText += `, ${localizer.get(
-          FurudeTranslationKeys.CALC_ADDITIONAL_VARIABLES,
-          [MessageCreator.block(rawVariables.trim())]
+        displayText += `, ${localizer.getTranslationFromContext(
+          context,
+          (k) => k.calc.variables.description,
+          {
+            VARIABLES: MessageCreator.block(rawVariables.trim()),
+          }
         )}`;
       }
       displayText = MessageCreator.success(displayText);
     } else {
       displayText = MessageCreator.fail(
-        localizer.get(FurudeTranslationKeys.CALC_EVALUATE_ERROR, [
-          expressionText,
-        ])
+        localizer.getTranslationFromContext(context, (k) => k.calc.fail, {
+          EXPRESSION: expressionText,
+        })
       );
     }
 
