@@ -1,12 +1,12 @@
-import ResourceResolver from './ResourceResolver';
-import DirectoryMapper from '../modules/framework/io/DirectoryMapper';
-import path from 'path';
-import type DefaultContext from '../client/contexts/DefaultContext';
-import Localizer from '../modules/framework/localization/Localizer';
-import Locale from '../modules/framework/localization/Locale';
-import type ResourceValue from '../modules/framework/localization/resources/ResourceValue';
 import type FurudeResourceStructure from './FurudeResourceStructure';
-import type FurudeResource from './FurudeResource';
+import FurudeResource from './FurudeResource';
+import Localizer from 'discowork/src/localization/Localizer';
+import Locale from 'discowork/src/localization/Locale';
+import type ResourceValue from 'discowork/src/localization/resources/ResourceValue';
+import path from 'path';
+import ClassLoader from 'discowork/src/io/loaders/ClassLoader';
+import Directory from 'discowork/src/io/directories/Directory';
+import type DefaultContext from '../contexts/DefaultContext';
 
 export type FurudeLanguages = Locale.pt_BR | Locale.en;
 
@@ -22,8 +22,9 @@ export default class FurudeLocalizer extends Localizer<
 > {
   public static defaultLocale: FurudeLanguages = Locale.en;
 
-  static #resourceResolver = new ResourceResolver(
-    new DirectoryMapper(path.join(__dirname, 'resources'))
+  static #resourceResolver = new ClassLoader(
+    FurudeResource,
+    new Directory(path.join(__dirname, 'resources'))
   );
 
   public constructor() {

@@ -1,20 +1,17 @@
-import type OsuContext from '../../client/contexts/osu/OsuContext';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import type OsuContext from '../../contexts/osu/OsuContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
 
+@CommandInformation({
+  name: 'osu',
+  description: '.',
+})
 export default class OsuRootCommand extends FurudeCommand<
-  OsuContext<TypedArgs<unknown>>,
-  unknown
+  unknown,
+  OsuContext<unknown>
 > {
-  public createArgs(): unknown {
+  public createArguments(): unknown {
     return {};
-  }
-
-  public constructor() {
-    super({
-      name: 'osu',
-      description: '.',
-    });
   }
 
   public trigger(): Promise<void> {

@@ -1,22 +1,27 @@
-import type DefaultContext from '../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../contexts/DefaultContext';
 import CommandOptions from '../../../../containers/CommandOptions';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
-import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
-import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../../../modules/framework/commands/contexts/types';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import { assertDefined } from 'discowork/src/assertions';
+import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
+import IntegerOption from 'discowork/src/options/classes/IntegerOption';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 type Args = {
   index: IntegerOption;
 };
 
+@CommandInformation({
+  name: 'remove',
+  description: 'Removes a reminder by a index.',
+})
 export default class ReminderRemove extends FurudeSubCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
+  Args,
+  DefaultContext<Args>
 > {
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       index: new IntegerOption()
         .setRequired(true)
@@ -26,13 +31,6 @@ export default class ReminderRemove extends FurudeSubCommand<
         )
         .setMaxValue(DBReminder.MAX_NUMBER_OF_REMINDERS),
     };
-  }
-
-  public constructor() {
-    super({
-      name: 'remove',
-      description: 'Removes a reminder by a index.',
-    });
   }
 
   public async trigger(

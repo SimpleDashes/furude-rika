@@ -17,6 +17,5 @@ declare global {
   }
 }
 
-const furudeRika = new FurudeRika();
-
-void furudeRika.start();
+const rika = new FurudeRika();
+void rika.login();

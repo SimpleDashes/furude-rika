@@ -1,25 +1,23 @@
-import type DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
 import GenericNames from '../../../../../containers/GenericNames';
 import type DBUser from '../../../../../database/entity/DBUser';
-import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
-import {
-  Preconditions,
-  SetPreconditions,
-} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 import type { LeaderboardArgs } from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
+import {
+  CommandPreconditions,
+  Preconditions,
+} from 'discowork/src/preconditions';
+import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import { assertDefined } from 'discowork/src/assertions';
 
-@SetPreconditions(Preconditions.GuildOnly)
+@CommandPreconditions(Preconditions.GuildOnly)
+@CommandInformation({
+  name: GenericNames.local,
+  description:
+    'Get the local xp leaderboard. will you be able to grind to the top.',
+})
 export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSubCommand {
-  public constructor() {
-    super({
-      name: GenericNames.local,
-      description:
-        'Get the local xp leaderboard. will you be able to grind to the top.',
-    });
-  }
-
   public getAppliedExperienceFromUser(
     context: DefaultContext<TypedArgs<LeaderboardArgs>>,
     user: DBUser

@@ -1,4 +1,4 @@
-import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
+import { assertDefined } from 'discowork/src/assertions';
 import type { HyperTypes } from './HyperTypes';
 import HyperValue from './HyperValue';
 

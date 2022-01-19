@@ -15,13 +15,13 @@ import { MessageActionRow, MessageButton } from 'discord.js';
 import Strings from '../../../containers/Strings';
 import MessageCreator from '../helpers/MessageCreator';
 import StringHelper from '../helpers/StringHelper';
-import InteractionUtils from '../interactions/InteractionUtils';
-import type PageOption from '../options/custom/PageOption';
 import InteractionCollectorCreator from './abstracts/InteractionCollectorCreator';
 import type OnButtonPageChange from './interfaces/OnButtonPageChange';
 import Symbols from './Symbols';
 import { capitalize } from '@stdlib/string';
-import { assertDefined } from '../types/TypeAssertions';
+import { assertDefined } from 'discowork/src/assertions';
+import type PageOption from 'discowork/src/options/custom/PageOption';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 type Column = {
   name: string;

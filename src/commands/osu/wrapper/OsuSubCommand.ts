@@ -1,14 +1,8 @@
 import type { User, MessageEmbedAuthor } from 'discord.js';
-import OsuContext from '../../../client/contexts/osu/OsuContext';
+import OsuContext from '../../../contexts/osu/OsuContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import Strings from '../../../containers/Strings';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import type ICommandContext from '../../../modules/framework/commands/contexts/ICommandContext';
-import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
-import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
-import StringOption from '../../../modules/framework/options/classes/StringOption';
-import UserOption from '../../../modules/framework/options/classes/UserOption';
 import OsuUserRecentsLimitBindable from '../../../modules/osu/bindables/OsuUserRecentsLimitBindable';
 import type IOsuScore from '../../../modules/osu/scores/IOsuScore';
 import type IBanchoOsuUserParams from '../../../modules/osu/servers/implementations/bancho/params/IBanchoOsuUserParams';
@@ -19,6 +13,13 @@ import type { AnyServer } from '../../../modules/osu/servers/OsuServers';
 import OsuServers from '../../../modules/osu/servers/OsuServers';
 import type IOsuUser from '../../../modules/osu/users/IOsuUser';
 import OsuServerUtils from '../../../utils/OsuServerUtils';
+import type { CommandContextOnlyInteractionAndClient } from 'discowork/src/commands/interfaces/CommandContext';
+import type { ConstructorType } from 'discowork/src/types';
+import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
+import StringOption from 'discowork/src/options/classes/StringOption';
+import UserOption from 'discowork/src/options/classes/UserOption';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 
 type OsuServerOption = Omit<StringOption, 'setAutocomplete'>;
 
@@ -32,8 +33,8 @@ export type OsuServerUserOptionWithDiscord = OsuServerUserOptions & {
 };
 
 export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
-  OsuContext<TypedArgs<A>>,
-  A
+  A,
+  OsuContext<A>
 > {
   protected getServerOptions(): OsuServerOption {
     return new StringOption()
@@ -194,9 +195,10 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
     return author;
   }
 
-  public override createContext(
-    baseContext: ICommandContext
-  ): OsuContext<TypedArgs<A>> {
-    return new OsuContext(baseContext);
+  public override contextConstructor(): ConstructorType<
+    [CommandContextOnlyInteractionAndClient],
+    OsuContext<A>
+  > {
+    return OsuContext;
   }
 }

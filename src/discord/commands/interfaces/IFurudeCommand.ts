@@ -1,10 +1,14 @@
-import type DefaultContext from '../../../client/contexts/DefaultContext';
-import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
-import type ICommand from '../../../modules/framework/commands/interfaces/ICommand';
+import type { CommandContextOnlyInteractionAndClient } from 'discowork/src/commands/interfaces/CommandContext';
+import type WorkerCommand from 'discowork/src/commands/interfaces/WorkerCommand';
+import type { ConstructorType } from 'discowork/src/types';
+import type DefaultContext from '../../../contexts/DefaultContext';
 
-type IFurudeCommand<CTX extends DefaultContext<TypedArgs<A>>, A> = ICommand<
-  CTX,
-  A
->;
+interface IFurudeCommand<A, CTX extends DefaultContext<A>>
+  extends WorkerCommand<A, CTX> {
+  trigger: (context: CTX) => Promise<void>;
+  contextConstructor: () =>
+    | ConstructorType<[CommandContextOnlyInteractionAndClient], CTX>
+    | undefined;
+}
 
 export default IFurudeCommand;

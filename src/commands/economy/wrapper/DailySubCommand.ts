@@ -1,34 +1,28 @@
-import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
+import type CommandWithPreconditions from 'discowork/src/preconditions/interfaces/CommandWithPreconditions';
+import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
 import FurudeOperations from '../../../database/FurudeOperations';
 import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
 import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
-import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
-import type ICommandInformation from '../../../modules/framework/commands/interfaces/ICommandInformation';
-import type IHasPreconditions from '../../../modules/framework/preconditions/interfaces/IHasPreconditions';
 import EconomySubCommand, { MustHaveOpenAccount } from './EconomySubCommand';
 
 export type DailyArgs = unknown;
 export default abstract class DailySubCommand extends EconomySubCommand<DailyArgs> {
-  public createArgs(): DailyArgs {
+  public createArguments(): DailyArgs {
     return {};
   }
 
-  public constructor(information: ICommandInformation) {
-    super(information);
+  public constructor() {
+    super();
     if (
-      !(
-        this as unknown as IHasPreconditions<
-          CurrencyContext<TypedArgs<DailyArgs>>
-        >
-      ).preconditions.includes(MustHaveOpenAccount)
+      !(this as unknown as CommandWithPreconditions).preconditions.includes(
+        MustHaveOpenAccount
+      )
     ) {
       throw 'DailySubCommand implementations should include MustHaveOpenAccount precondition.';
     }
   }
 
-  public async trigger(
-    context: CurrencyContext<TypedArgs<DailyArgs>>
-  ): Promise<void> {
+  public async trigger(context: CurrencyContext<DailyArgs>): Promise<void> {
     const { citizen, interaction } = context;
 
     const scope = this.dailyScope();

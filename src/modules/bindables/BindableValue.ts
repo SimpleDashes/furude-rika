@@ -1,4 +1,4 @@
-import { assertDefined } from '../framework/types/TypeAssertions';
+import { assertDefined } from 'discowork/src/assertions';
 
 class ValueChangeEvent<T> {
   public readonly oldValue: T;

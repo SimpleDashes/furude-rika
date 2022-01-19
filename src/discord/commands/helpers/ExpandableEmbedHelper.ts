@@ -4,14 +4,11 @@ import type {
   CommandInteraction,
   MessageButton,
 } from 'discord.js';
-import type {
-  IListenerButton} from '../../../modules/framework/creators/MessageButtonCreator';
-import {
-  MessageButtonCreator,
-} from '../../../modules/framework/creators/MessageButtonCreator';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+import type { IListenerButton } from '../../../modules/framework/creators/MessageButtonCreator';
+import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
 import MessageButtonFactory from '../../../modules/framework/creators/MessageButtonFactory';
 import type BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
-import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
 
 type ButtonCustomizer = (button: MessageButton) => void;
 type ExpandingChangeListener = (button: MessageButton) => Promise<void>;

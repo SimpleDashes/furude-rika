@@ -1,5 +1,6 @@
 import { hoursToSeconds } from 'date-fns';
 import type { Guild, GuildChannel, Snowflake, User } from 'discord.js';
+import { assertDefined } from 'discowork/src/assertions';
 import type {
   BaseEntity,
   Connection,
@@ -7,8 +8,7 @@ import type {
   FindOneOptions,
 } from 'typeorm';
 import { createConnection } from 'typeorm';
-import { CacheCollection } from '../client/managers/abstracts/BaseFurudeCacheManager';
-import { assertDefined } from '../modules/framework/types/TypeAssertions';
+import { CacheCollection } from '../managers/abstracts/BaseFurudeCacheManager';
 import type SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBCitizen from './entity/DBCitizen';
@@ -205,7 +205,7 @@ abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
     };
     let entity = that.cache.get(newKey.id);
     if (!entity) {
-      entity = await that.db.getSnowflake(newKey, that.typeObjectConst);
+      entity = await that.db.getSnowflake<T>(newKey, that.typeObjectConst);
       this.addCache(that, entity);
     }
     return entity;

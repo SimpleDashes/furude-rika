@@ -1,35 +1,41 @@
 import assert from 'assert';
 import { ChannelType } from 'discord-api-types';
 import { GuildChannel } from 'discord.js';
-import type DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import Strings from '../../../../../containers/Strings';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
-import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
 import {
+  CommandPreconditions,
   Preconditions,
-  SetPreconditions,
-} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
+} from 'discowork/src/preconditions';
+import { assertDefined } from 'discowork/src/assertions';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import BooleanOption from 'discowork/src/options/classes/BooleanOption';
+import ChannelOption from 'discowork/src/options/classes/ChannelOption';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
-import BooleanOption from '../../../../../modules/framework/options/classes/BooleanOption';
-import ChannelOption from '../../../../../modules/framework/options/classes/ChannelOption';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 
 type Args = {
   channel: ChannelOption;
   whitelist: BooleanOption;
 };
-@SetPreconditions(
+
+@CommandPreconditions(
   Preconditions.GuildOnly,
   Preconditions.WithPermission('ADMINISTRATOR')
 )
+@CommandInformation({
+  name: 'experience_channel',
+  description:
+    'Whitelists or blacklists an channel from being able to reward experience.',
+})
 export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
+  Args,
+  DefaultContext<Args>
 > {
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       channel: new ChannelOption()
         .setRequired(true)
@@ -44,17 +50,7 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand<
     };
   }
 
-  public constructor() {
-    super({
-      name: 'experience_channel',
-      description:
-        'Whitelists or blacklists an channel from being able to reward experience.',
-    });
-  }
-
-  public async trigger(
-    context: DefaultContext<TypedArgs<Args>>
-  ): Promise<void> {
+  public async trigger(context: DefaultContext<Args>): Promise<void> {
     const { interaction, dbGuild, client, args } = context;
     const { channel, whitelist } = args;
 

@@ -1,25 +1,31 @@
-import type DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import DBUser from '../../../../../database/entity/DBUser';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
-import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
+
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import { assertDefined } from 'discowork/src/assertions';
+import IntegerOption from 'discowork/src/options/classes/IntegerOption';
 import {
+  CommandPreconditions,
   Preconditions,
-  SetPreconditions,
-} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
-import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
+} from 'discowork/src/preconditions';
 
 type Args = {
   seconds: IntegerOption;
 };
-@SetPreconditions(Preconditions.WithPermission('ADMINISTRATOR'))
+@CommandPreconditions(Preconditions.WithPermission('ADMINISTRATOR'))
+@CommandInformation({
+  name: 'time_for_xp',
+  description:
+    'Customizes how much time the users are required to wait before gaining any xp on a conversation.',
+})
 export default class CustomizeTimeForXP extends FurudeSubCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
+  Args,
+  DefaultContext<Args>
 > {
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       seconds: new IntegerOption()
         .setRequired(true)
@@ -32,17 +38,7 @@ export default class CustomizeTimeForXP extends FurudeSubCommand<
     };
   }
 
-  public constructor() {
-    super({
-      name: 'time_for_xp',
-      description:
-        'Customizes how much time the users are required to wait before gaining any xp on a conversation.',
-    });
-  }
-
-  public async trigger(
-    context: DefaultContext<TypedArgs<Args>>
-  ): Promise<void> {
+  public async trigger(context: DefaultContext<Args>): Promise<void> {
     const { interaction, dbGuild, args } = context;
     const { seconds } = args;
 

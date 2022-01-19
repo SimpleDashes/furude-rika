@@ -1,26 +1,23 @@
-import type DefaultContext from '../../../client/contexts/DefaultContext';
-import FurudeCommand from '../../../discord/commands/FurudeCommand';
-import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
+import { CommandInformation } from 'discowork/src/commands/decorators';
 import {
+  CommandPreconditions,
   Preconditions,
-  SetPreconditions,
-} from '../../../modules/framework/preconditions/PreconditionDecorators';
+} from 'discowork/src/preconditions';
+import type DefaultContext from '../../../contexts/DefaultContext';
+import FurudeCommand from '../../../discord/commands/FurudeCommand';
 
-@SetPreconditions(Preconditions.RequiresSubCommand)
+@CommandPreconditions(Preconditions.RequiresSubCommand)
+@CommandInformation({
+  name: 'reminder',
+  description:
+    'Setups a little reminder for you to get your lazy uwu working on next time.',
+})
 export default class RemindMe extends FurudeCommand<
-  DefaultContext<TypedArgs<unknown>>,
-  unknown
+  unknown,
+  DefaultContext<unknown>
 > {
-  public createArgs(): unknown {
+  public createArguments(): unknown {
     return {};
-  }
-
-  public constructor() {
-    super({
-      name: 'reminder',
-      description:
-        'Setups a little reminder for you to get your lazy uwu working on next time.',
-    });
   }
 
   public trigger(): Promise<void> {

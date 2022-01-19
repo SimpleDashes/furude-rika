@@ -1,13 +1,14 @@
-import type DefaultContext from '../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../contexts/DefaultContext';
 import CommandOptions from '../../../../containers/CommandOptions';
 import TimeFrames from '../../../../containers/TimeFrames';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeOperations from '../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
-import type { TypedArgs } from '../../../../modules/framework/commands/contexts/types';
-import IntegerOption from '../../../../modules/framework/options/classes/IntegerOption';
-import StringOption from '../../../../modules/framework/options/classes/StringOption';
-import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
+import IntegerOption from 'discowork/src/options/classes/IntegerOption';
+import { assertDefined } from 'discowork/src/assertions';
+import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
+import StringOption from 'discowork/src/options/classes/StringOption';
+import { CommandInformation } from 'discowork/src/commands/decorators';
 
 class ReminderTimeOption extends IntegerOption {
   public constructor(name: CommandOptions) {
@@ -28,11 +29,16 @@ type Args = {
   weeks: ReminderTimeOption;
 };
 
+@CommandInformation({
+  name: 'remind',
+  description:
+    'Setups a little reminder for you to get your lazy uwu working on next time.',
+})
 export default class ReminderReminderMe extends FurudeSubCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
+  Args,
+  DefaultContext<Args>
 > {
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       what: new StringOption()
         .setRequired(true)
@@ -54,14 +60,6 @@ export default class ReminderReminderMe extends FurudeSubCommand<
         TimeFrames.WEEKS_ON_MONTH
       ),
     };
-  }
-
-  public constructor() {
-    super({
-      name: 'remind',
-      description:
-        'Setups a little reminder for you to get your lazy uwu working on next time.',
-    });
   }
 
   public async trigger(

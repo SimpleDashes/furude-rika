@@ -1,7 +1,7 @@
 import type { Snowflake } from 'discord.js';
+import { assertDefined } from 'discowork/src/assertions';
 import { Column } from 'typeorm';
 import KeySetHelper from '../../../modules/framework/helpers/KeySetHelper';
-import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
 import type { SnowflakeSet } from '../../types/TSnowflakeSet';
 import { HyperTypes } from './HyperTypes';
 

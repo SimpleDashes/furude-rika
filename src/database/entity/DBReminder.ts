@@ -8,7 +8,7 @@ import Numbers from '../../modules/framework/helpers/Numbers';
 import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import GeneratedIDEntity from './abstracts/GeneratedIDEntity';
-import type DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../contexts/DefaultContext';
 
 @Entity()
 export default class DBReminder extends GeneratedIDEntity {

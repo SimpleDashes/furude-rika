@@ -9,7 +9,7 @@ import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDat
 import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
 import type { HyperTypes } from '../objects/hypervalues/HyperTypes';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
-import type CurrencyContext from '../../client/contexts/currency/CurrencyContext';
+import type CurrencyContext from '../../contexts/currency/CurrencyContext';
 
 interface IStreakOperation extends IDatabaseOperation {
   readonly lostStreak: boolean;

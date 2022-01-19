@@ -9,7 +9,7 @@ import type IOsuUserScores from './interfaces/IOsuUserScores';
 import type IOsuUser from './IOsuUser';
 import type IOsuScore from '../scores/IOsuScore';
 import type { AnyServer } from '../servers/OsuServers';
-import { assertDefined } from '../../framework/types/TypeAssertions';
+import { assertDefined } from 'discowork/src/assertions';
 
 export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
   public readonly user_id: number;
@@ -27,7 +27,6 @@ export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
   public readonly server: AnyServer;
 
   /**
-   *
    * @param res An api response, the constructor will convert that response into itself.
    */
   public constructor(

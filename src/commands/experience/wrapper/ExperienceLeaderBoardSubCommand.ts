@@ -1,20 +1,19 @@
-import type DefaultContext from '../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import type DBUser from '../../../database/entity/DBUser';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
 import ArrayHelper from '../../../modules/framework/helpers/ArrayHelper';
-import PageOption from '../../../modules/framework/options/custom/PageOption';
+import PageOption from 'discowork/src/options/custom/PageOption';
 
 export type LeaderboardArgs = {
   page: PageOption;
 };
 export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubCommand<
-  DefaultContext<TypedArgs<LeaderboardArgs>>,
-  LeaderboardArgs
+  LeaderboardArgs,
+  DefaultContext<LeaderboardArgs>
 > {
-  public createArgs(): LeaderboardArgs {
+  public createArguments(): LeaderboardArgs {
     return {
       page: new PageOption(10)
         .setName(CommandOptions.page)
@@ -23,7 +22,7 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
   }
 
   public async trigger(
-    context: DefaultContext<TypedArgs<LeaderboardArgs>>
+    context: DefaultContext<LeaderboardArgs>
   ): Promise<void> {
     const { interaction, args } = context;
     const { page } = args;
@@ -51,11 +50,11 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
   }
 
   public abstract getUsers(
-    context: DefaultContext<TypedArgs<LeaderboardArgs>>
+    context: DefaultContext<LeaderboardArgs>
   ): Promise<DBUser[]>;
 
   public abstract getAppliedExperienceFromUser(
-    context: DefaultContext<TypedArgs<LeaderboardArgs>>,
+    context: DefaultContext<LeaderboardArgs>,
     user: DBUser
   ): number | null;
 }

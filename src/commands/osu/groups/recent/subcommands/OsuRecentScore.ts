@@ -1,27 +1,32 @@
-import type OsuContext from '../../../../../client/contexts/osu/OsuContext';
+import type OsuContext from '../../../../../contexts/osu/OsuContext';
 import Strings from '../../../../../containers/Strings';
 import ExpandableEmbedHelper from '../../../../../discord/commands/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../../../discord/commands/interfaces/IHasExpandableEmbed';
 import type { FurudeLanguages } from '../../../../../localization/FurudeLocalizer';
-import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
 import { MessageButtonCreator } from '../../../../../modules/framework/creators/MessageButtonCreator';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 import type IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
 import type IOsuUser from '../../../../../modules/osu/users/IOsuUser';
 import type { OsuServerUserOptionWithDiscord } from '../../../wrapper/OsuSubCommand';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import { assertDefined, assertDefinedGet } from 'discowork/src/assertions';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 type Args = unknown & OsuServerUserOptionWithDiscord;
+
+@CommandInformation({
+  name: 'score',
+  description: 'Views a osu! recent score.',
+})
 export default class OsuRecentScore
   extends OsuSubCommand<Args>
   implements IHasExpandableEmbed
 {
-  static #SCORES_PER_PAGE = 5;
+  private static SCORES_PER_PAGE = 5;
 
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       ...((): OsuServerUserOptionWithDiscord => {
         const args = this.getOsuServerOptionsWithDiscordUser();
@@ -35,14 +40,7 @@ export default class OsuRecentScore
     };
   }
 
-  public constructor() {
-    super({
-      name: 'score',
-      description: 'Views a osu! recent score.',
-    });
-  }
-
-  public async trigger(context: OsuContext<TypedArgs<Args>>): Promise<void> {
+  public async trigger(context: OsuContext<Args>): Promise<void> {
     const { interaction, client, args } = context;
     const { localizer } = client;
     const { discordUser } = args;
@@ -90,13 +88,13 @@ export default class OsuRecentScore
             {},
             [interaction.user.id],
             recentScores,
-            OsuRecentScore.#SCORES_PER_PAGE,
+            OsuRecentScore.SCORES_PER_PAGE,
             1,
             60,
             async (options, page) => {
               const scores: IOsuScore[] = [];
               await MessageButtonCreator.loopPages(
-                OsuRecentScore.#SCORES_PER_PAGE,
+                OsuRecentScore.SCORES_PER_PAGE,
                 page,
                 recentScores,
                 async (i) => {
@@ -123,7 +121,7 @@ export default class OsuRecentScore
   }
 
   public createBaseEmbed(
-    context: OsuContext<TypedArgs<Args>>,
+    context: OsuContext<Args>,
     user: IOsuUser<unknown>
   ): BaseEmbed {
     const { interaction } = context;
@@ -136,7 +134,7 @@ export default class OsuRecentScore
   }
 
   public createMinimizedEmbed(
-    context: OsuContext<TypedArgs<Args>>,
+    context: OsuContext<Args>,
     user: IOsuUser<unknown>,
     score: IOsuScore,
     language: FurudeLanguages
@@ -153,7 +151,7 @@ export default class OsuRecentScore
   }
 
   public createExpandedEmbed(
-    context: OsuContext<TypedArgs<Args>>,
+    context: OsuContext<Args>,
     user: IOsuUser<unknown>,
     scores: IOsuScore[],
     page: number,
@@ -162,9 +160,7 @@ export default class OsuRecentScore
     const embed = this.createBaseEmbed(context, user);
     embed.description = Strings.EMPTY;
     for (let i = 0; i < scores.length; i++) {
-      const score = scores[i];
-
-      assertDefined(score);
+      const score = assertDefinedGet(scores[i]);
 
       if (i > 0) {
         embed.description = MessageCreator.breakLine(embed.description);
@@ -175,7 +171,7 @@ export default class OsuRecentScore
           `${
             MessageButtonCreator.getPageContentIndex(
               i,
-              OsuRecentScore.#SCORES_PER_PAGE,
+              OsuRecentScore.SCORES_PER_PAGE,
               page
             ) + 1
           }.`
@@ -187,12 +183,13 @@ export default class OsuRecentScore
         language
       );
     }
+
     return embed;
   }
 
   #createMinimizedDescription(
     score: IOsuScore,
-    _context: OsuContext<TypedArgs<Args>>,
+    _context: OsuContext<Args>,
     language: FurudeLanguages
   ): string {
     const { apiBeatmap } = score;

@@ -1,21 +1,20 @@
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
-import CommandPrecondition from '../../../modules/framework/preconditions/abstracts/CommandPrecondition';
-import CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
-import type { OmittedCommandContext } from '../../../modules/framework/commands/contexts/ICommandContext';
-import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
+import CurrencyContext from '../../../contexts/currency/CurrencyContext';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
+import CommandPrecondition from 'discowork/src/preconditions/CommandPrecondition';
+import type { CommandContextOnlyInteractionAndClient } from 'discowork/src/commands/interfaces/CommandContext';
+import type { ConstructorType } from 'discowork/src/types';
 
-class MustHaveOpenAccountPrecondition extends CommandPrecondition<
-  CurrencyContext<TypedArgs<unknown>>
-> {
+class MustHaveOpenAccountPrecondition extends CommandPrecondition {
   public constructor() {
     super();
     this.onFailMessage = (context): string => {
-      const { localizer } = context.client;
+      // TODO FIX TYPING
+      const { localizer } = (context as CurrencyContext<unknown>).client;
       return MessageCreator.fail(
         localizer.getTranslationFromContext(
-          context,
+          context as CurrencyContext<unknown>,
           (k) => k.economy.error.no_account,
           {
             CURRENCY_NAME: CurrencyContainer.CURRENCY_NAME,
@@ -26,7 +25,7 @@ class MustHaveOpenAccountPrecondition extends CommandPrecondition<
   }
 
   protected async validateInternally(
-    context: CurrencyContext<TypedArgs<unknown>>
+    context: CurrencyContext<unknown>
   ): Promise<boolean> {
     const { citizen } = context;
     if (citizen.justCreated) {
@@ -39,12 +38,13 @@ class MustHaveOpenAccountPrecondition extends CommandPrecondition<
 export const MustHaveOpenAccount = new MustHaveOpenAccountPrecondition();
 
 export default abstract class EconomySubCommand<A> extends FurudeSubCommand<
-  CurrencyContext<TypedArgs<A>>,
-  A
+  A,
+  CurrencyContext<A>
 > {
-  public override createContext(
-    baseContext: OmittedCommandContext
-  ): CurrencyContext<TypedArgs<A>> {
-    return new CurrencyContext(baseContext);
+  public override contextConstructor(): ConstructorType<
+    [CommandContextOnlyInteractionAndClient],
+    CurrencyContext<A>
+  > {
+    return CurrencyContext;
   }
 }

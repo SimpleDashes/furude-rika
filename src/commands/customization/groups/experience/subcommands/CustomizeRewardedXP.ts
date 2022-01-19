@@ -1,19 +1,19 @@
-import type DefaultContext from '../../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import DBGuild from '../../../../../database/entity/DBGuild';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import {
+  CommandPreconditions,
   Preconditions,
-  SetPreconditions,
-} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
-import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
-import IntegerOption from '../../../../../modules/framework/options/classes/IntegerOption';
-import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../../../../../modules/framework/interactions/InteractionUtils';
-import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
+} from 'discowork/src/preconditions';
+import { assertDefined } from 'discowork/src/assertions';
+import IntegerOption from 'discowork/src/options/classes/IntegerOption';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 import type IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
+import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
+import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
+import { CommandInformation } from 'discowork/src/commands/decorators';
 
 class XPChangeOption extends IntegerOption {
   public constructor() {
@@ -29,15 +29,20 @@ type Args = {
   max: XPChangeOption;
 };
 
-@SetPreconditions(
+@CommandPreconditions(
   Preconditions.GuildOnly,
   Preconditions.WithPermission('ADMINISTRATOR')
 )
+@CommandInformation({
+  name: 'rewarded_experience',
+  description:
+    'Customizes how much users are rewarded with experience on this guild.',
+})
 export default class CustomizeMinXP extends FurudeSubCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
+  Args,
+  DefaultContext<Args>
 > {
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       min: new XPChangeOption()
         .setName(CommandOptions.min)
@@ -48,17 +53,7 @@ export default class CustomizeMinXP extends FurudeSubCommand<
     };
   }
 
-  public constructor() {
-    super({
-      name: 'rewarded_experience',
-      description:
-        'Customizes how much users are rewarded with experience on this guild.',
-    });
-  }
-
-  public async trigger(
-    context: DefaultContext<TypedArgs<Args>>
-  ): Promise<void> {
+  public async trigger(context: DefaultContext<Args>): Promise<void> {
     const { interaction, dbGuild, args } = context;
     const { min, max } = args;
 

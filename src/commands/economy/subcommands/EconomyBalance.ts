@@ -1,19 +1,24 @@
 import CommandOptions from '../../../containers/CommandOptions';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
-import UserOption from '../../../modules/framework/options/classes/UserOption';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
-import InteractionUtils from '../../../modules/framework/interactions/InteractionUtils';
-import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
-import { assertDefined } from '../../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
+import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import UserOption from 'discowork/src/options/classes/UserOption';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+import { assertDefined } from 'discowork/src/assertions';
 
 type Args = {
   user: UserOption;
 };
+
+@CommandInformation({
+  name: 'balance',
+  description: `Check information about your's or someone else ${CurrencyContainer.CURRENCY_NAME} account`,
+})
 export default class EconomyOpen extends EconomySubCommand<Args> {
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       user: new UserOption(true)
         .setName(CommandOptions.user)
@@ -23,16 +28,7 @@ export default class EconomyOpen extends EconomySubCommand<Args> {
     };
   }
 
-  public constructor() {
-    super({
-      name: 'balance',
-      description: `Check information about your's or someone else ${CurrencyContainer.CURRENCY_NAME} account`,
-    });
-  }
-
-  public async trigger(
-    context: CurrencyContext<TypedArgs<Args>>
-  ): Promise<void> {
+  public async trigger(context: CurrencyContext<Args>): Promise<void> {
     const { interaction, args } = context;
     const { localizer } = context.client;
     const { user } = args;

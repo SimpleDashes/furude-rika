@@ -6,9 +6,9 @@ import type {
   MessagePayload,
   WebhookEditMessageOptions,
 } from 'discord.js';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 import type { BaseEntity } from 'typeorm';
 import MessageCreator from '../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../modules/framework/interactions/InteractionUtils';
 import type IDatabaseOperation from './interfaces/IDatabaseOperation';
 
 export default class FurudeOperations {

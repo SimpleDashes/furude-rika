@@ -1,32 +1,23 @@
-import { BaseGuildTextChannel } from 'discord.js';
-import BaseBot from '../modules/framework/client/BaseBot';
 import consola from 'consola';
-import type ICommandRunResponse from '../modules/framework/client/ICommandRunResponse';
-import DeployHandler from '../modules/framework/rest/DeployHandler';
-import DirectoryMapperFactory from '../modules/framework/io/DirectoryMapperFactory';
-import path from 'path';
-import FurudeLocalizer from '../localization/FurudeLocalizer';
-import FurudeDB from '../database/FurudeDB';
-import type DefaultContext from './contexts/DefaultContext';
-import FurudeOperations from '../database/FurudeOperations';
-import ReminderManager from './managers/ReminderManager';
-import UserScanner from './managers/UserScanner';
-import OsuServers from '../modules/osu/servers/OsuServers';
 import { secondsToMilliseconds } from 'date-fns';
-import BeatmapCacheManager from './managers/BeatmapCacheManager';
-import { Preconditions } from '../modules/framework/preconditions/PreconditionDecorators';
-import type CommandPrecondition from '../modules/framework/preconditions/abstracts/CommandPrecondition';
-import GuildPermissionsPrecondition from '../modules/framework/preconditions/GuildPermissionsPreconditions';
-import MessageCreator from '../modules/framework/helpers/MessageCreator';
-import { assertDefined } from '../modules/framework/types/TypeAssertions';
-import type { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
-import type { TypedArgs } from '../modules/framework/commands/contexts/types';
-import type ResourceValue from '../modules/framework/localization/resources/ResourceValue';
+import { BaseGuildTextChannel } from 'discord.js';
+import FurudeDB from '../database/FurudeDB';
+import FurudeOperations from '../database/FurudeOperations';
+import FurudeLocalizer from '../localization/FurudeLocalizer';
 import type FurudeResourceStructure from '../localization/FurudeResourceStructure';
+import MessageCreator from '../modules/framework/helpers/MessageCreator';
+import OsuServers from '../modules/osu/servers/OsuServers';
+import BeatmapCacheManager from '../managers/BeatmapCacheManager';
+import ReminderManager from '../managers/ReminderManager';
+import UserScanner from '../managers/UserScanner';
+import type CommandPrecondition from 'discowork/src/preconditions/CommandPrecondition';
+import SimpleClient from 'discowork/src/client/SimpleClient';
+import { Preconditions } from 'discowork/src/preconditions';
+import GuildPermissionsPrecondition from 'discowork/src/preconditions/implementations/GuildPermissionsPreconditions';
+import type ResourceValue from 'discowork/src/localization/resources/ResourceValue';
+import type DefaultContext from '../contexts/DefaultContext';
 
-export default class FurudeRika extends BaseBot<
-  DefaultContext<TypedArgs<unknown>>
-> {
+export default class FurudeRika extends SimpleClient {
   public readonly localizer = new FurudeLocalizer();
 
   public readonly db = new FurudeDB();
@@ -34,27 +25,14 @@ export default class FurudeRika extends BaseBot<
   public readonly userScanner = new UserScanner(this);
   public readonly beatmapCache = new BeatmapCacheManager(this);
 
-  readonly #forceDeploy = true;
-  readonly #isDebug = false;
-
   public constructor() {
     FurudeRika.init();
-    super(
-      {
-        intents: ['GUILDS', 'GUILD_MESSAGES'],
-      },
-      {
-        ENV_TOKEN_VAR: 'BOT_TOKEN',
-        ENV_DEVELOPMENT_SERVER: 'DEV_GUILD_ID',
-        OWNER_IDS: ['902963589898444800'],
-      },
-      new DirectoryMapperFactory(path.join('dist', 'commands'), [
-        'subcommands',
-        'groups',
-        'wrapper',
-      ])
-    );
-
+    super({
+      intents: ['GUILDS', 'GUILD_MESSAGES'],
+      token: process.env['BOT_TOKEN'],
+      developmentGuild: process.env['DEV_GUILD_ID'],
+      ownerIDS: ['902963589898444800'],
+    });
     this.#setupMemoryLogger();
     this.#setupPreconditions();
   }
@@ -73,11 +51,14 @@ export default class FurudeRika extends BaseBot<
       condition: CommandPrecondition,
       key: (structure: FurudeResourceStructure) => ResourceValue
     ): void => {
-      (
-        condition as CommandPrecondition<DefaultContext<unknown>>
-      ).onFailMessage = (ctx): string =>
+      (condition as CommandPrecondition).onFailMessage = (ctx): string =>
         MessageCreator.fail(
-          this.localizer.getTranslationFromContext(ctx, key, {})
+          this.localizer.getTranslationFromContext(
+            // TODO FIX TYPING, .... generics.....
+            ctx as DefaultContext<unknown>,
+            key,
+            {}
+          )
         );
     };
 
@@ -115,9 +96,10 @@ export default class FurudeRika extends BaseBot<
     }, secondsToMilliseconds(60));
   }
 
-  public override async start(): Promise<void> {
+  public override async login(token?: string): Promise<string> {
+    const response = await super.login(token);
+
     await this.localizer.build();
-    await super.start();
     await this.db.connect();
 
     await this.reminderManager.setupReminders();
@@ -144,17 +126,23 @@ export default class FurudeRika extends BaseBot<
       }
       await FurudeOperations.saveWhenSuccess(user, operation);
     });
+
+    return response;
   }
 
-  public override async beforeCommandRun(
+  /**
+   * 
+   * public override async beforeCommandRun(
     response: ICommandRunResponse<DefaultContext<TypedArgs<unknown>>>
   ): Promise<void> {
     const { context } = response;
     const { interaction } = context;
     await interaction.deferReply();
   }
+   */
 
-  public override async onCommandRun(
+  /**
+   *  public override async onCommandRun(
     response: ICommandRunResponse<DefaultContext<TypedArgs<unknown>>>
   ): Promise<void> {
     const { command, context } = response;
@@ -177,16 +165,11 @@ export default class FurudeRika extends BaseBot<
         : undefined
     );
 
-    consola.success(
-      `Command "${
-        command.information.name
-      }" was ran, requested by: ${interaction.user.toString()} on channel: ${
-        interaction.channel?.id
-      } on server: ${interaction.guild?.name}`
-    );
-  }
+   */
 
-  public override async onCommandsLoaded(): Promise<void> {
+  /**
+   *
+   *   public override async onCommandsLoaded(): Promise<void> {
     consola.log(this.commands.size + ' commands were loaded');
     if (!this.#forceDeploy) return;
     await DeployHandler.deployAll<DefaultContext<TypedArgs<unknown>>>(
@@ -202,4 +185,5 @@ export default class FurudeRika extends BaseBot<
       }
     );
   }
+   */
 }

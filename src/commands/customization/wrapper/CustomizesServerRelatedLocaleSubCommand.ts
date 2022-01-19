@@ -12,8 +12,4 @@ export default abstract class CustomizesServerRelatedLocaleSubCommand extends Cu
       ...super.getAllFurudeLocales(),
     ];
   }
-
-  public constructor(description: string) {
-    super(description);
-  }
 }

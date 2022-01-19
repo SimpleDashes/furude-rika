@@ -1,9 +1,9 @@
 import { secondsToHours } from 'date-fns';
-import type OsuContext from '../../../client/contexts/osu/OsuContext';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import type OsuContext from '../../../contexts/osu/OsuContext';
 import ExpandableEmbedHelper from '../../../discord/commands/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';
 import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
-import type { TypedArgs } from '../../../modules/framework/commands/contexts/types';
 import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import type IOsuUser from '../../../modules/osu/users/IOsuUser';
@@ -11,11 +11,16 @@ import type { OsuServerUserOptionWithDiscord } from '../wrapper/OsuSubCommand';
 import OsuSubCommand from '../wrapper/OsuSubCommand';
 
 type Args = unknown & OsuServerUserOptionWithDiscord;
+
+@CommandInformation({
+  name: 'profile',
+  description: 'Views a user osu! profile.',
+})
 export default class OsuProfile
   extends OsuSubCommand<Args>
   implements IHasExpandableEmbed
 {
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       ...((): OsuServerUserOptionWithDiscord => {
         const args = this.getOsuServerOptionsWithDiscordUser();
@@ -33,14 +38,7 @@ export default class OsuProfile
     };
   }
 
-  public constructor() {
-    super({
-      name: 'profile',
-      description: 'Views a user osu! profile.',
-    });
-  }
-
-  public async trigger(context: OsuContext<TypedArgs<Args>>): Promise<void> {
+  public async trigger(context: OsuContext<Args>): Promise<void> {
     const { interaction, args, client } = context;
     const { localizer } = client;
     const { discordUser } = args;
@@ -70,7 +68,7 @@ export default class OsuProfile
 
   public createBaseEmbed(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext<TypedArgs<Args>>
+    context: OsuContext<Args>
   ): BaseEmbed {
     return new BaseEmbed(
       {
@@ -82,7 +80,7 @@ export default class OsuProfile
 
   public createMinimizedEmbed(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext<TypedArgs<Args>>,
+    context: OsuContext<Args>,
     language: FurudeLanguages
   ): BaseEmbed {
     return this.createBaseEmbed(osuUser, context).setDescription(
@@ -98,7 +96,7 @@ export default class OsuProfile
 
   public createExpandedEmbed(
     osuUser: IOsuUser<unknown>,
-    context: OsuContext<TypedArgs<Args>>,
+    context: OsuContext<Args>,
     language: FurudeLanguages
   ): BaseEmbed {
     return this.createBaseEmbed(osuUser, context)

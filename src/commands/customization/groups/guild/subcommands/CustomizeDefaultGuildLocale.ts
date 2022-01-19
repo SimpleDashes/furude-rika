@@ -1,31 +1,32 @@
-import type DefaultContext from '../../../../../client/contexts/DefaultContext';
+import { assertDefined } from 'discowork/src/assertions';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import {
+  CommandPreconditions,
+  Preconditions,
+} from 'discowork/src/preconditions';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
 import type SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlakeIDEntity';
 import type IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
-import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
-import {
-  Preconditions,
-  SetPreconditions,
-} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
 import type { BaseLanguageChangeArgs } from '../../../wrapper/CustomizesLocaleSubCommand';
+import CustomizesLocaleSubCommand from '../../../wrapper/CustomizesLocaleSubCommand';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
-@SetPreconditions(Preconditions.WithPermission('MANAGE_GUILD'))
+@CommandPreconditions(Preconditions.WithPermission('MANAGE_GUILD'))
+@CommandInformation({
+  name: CustomizesLocaleSubCommand.LOCALE_NAME,
+  description: 'Customizes the guild to have a forced specific locale.',
+})
 export default class CustomizeDefaultGuildLocale extends CustomizesServerRelatedLocaleSubCommand {
-  public override createArgs(): BaseLanguageChangeArgs {
+  public override createArguments(): BaseLanguageChangeArgs {
     return ((): BaseLanguageChangeArgs => {
-      const args = super.createArgs();
+      const args = super.createArguments();
       args.locale.setDescription("The guild's new locale.");
       return args;
     })();
   }
 
-  public constructor() {
-    super('Customizes the guild to have a forced specific locale.');
-  }
-
   public entityToLocalize(
-    context: DefaultContext<TypedArgs<BaseLanguageChangeArgs>>
+    context: DefaultContext<BaseLanguageChangeArgs>
   ): IHasPreferredLocale & SnowFlakeIDEntity {
     assertDefined(context.dbGuild);
     return context.dbGuild;

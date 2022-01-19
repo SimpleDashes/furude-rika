@@ -11,7 +11,7 @@ import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import DBUser from './DBUser';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
-import type DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../contexts/DefaultContext';
 
 class DBGuildExtension extends EntityExtension<DBGuild> {
   #getBindableRewardedXP(): BindableInteger {

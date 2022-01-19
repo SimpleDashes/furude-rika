@@ -1,33 +1,33 @@
-import type DefaultContext from '../../../../../client/contexts/DefaultContext';
+import { assertDefined } from 'discowork/src/assertions';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import {
+  CommandPreconditions,
+  Preconditions,
+} from 'discowork/src/preconditions';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
 import type SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlakeIDEntity';
 import type IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';
-import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
-import {
-  Preconditions,
-  SetPreconditions,
-} from '../../../../../modules/framework/preconditions/PreconditionDecorators';
-import { assertDefined } from '../../../../../modules/framework/types/TypeAssertions';
+
 import type { BaseLanguageChangeArgs } from '../../../wrapper/CustomizesLocaleSubCommand';
+import CustomizesLocaleSubCommand from '../../../wrapper/CustomizesLocaleSubCommand';
 import CustomizesServerRelatedLocaleSubCommand from '../../../wrapper/CustomizesServerRelatedLocaleSubCommand';
 
-@SetPreconditions(Preconditions.WithPermission('MANAGE_CHANNELS'))
+@CommandPreconditions(Preconditions.WithPermission('MANAGE_CHANNELS'))
+@CommandInformation({
+  name: CustomizesLocaleSubCommand.LOCALE_NAME,
+  description: 'Customizes the channel to have a forced specific locale.',
+})
 export default class CustomizeDefaultChannelLocale extends CustomizesServerRelatedLocaleSubCommand {
-  public override createArgs(): BaseLanguageChangeArgs {
+  public override createArguments(): BaseLanguageChangeArgs {
     return ((): BaseLanguageChangeArgs => {
-      const args = super.createArgs();
+      const args = super.createArguments();
       args.locale.setDescription("The channel's new locale.");
       return args;
     })();
   }
 
-  public constructor() {
-    super(
-      'Customizes the current channel to have an specific required locale.'
-    );
-  }
-
   public entityToLocalize(
-    context: DefaultContext<TypedArgs<BaseLanguageChangeArgs>>
+    context: DefaultContext<BaseLanguageChangeArgs>
   ): IHasPreferredLocale & SnowFlakeIDEntity {
     assertDefined(context.dbChannel);
     return context.dbChannel;

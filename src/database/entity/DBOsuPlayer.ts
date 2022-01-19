@@ -8,8 +8,8 @@ import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import HyperNumber from '../objects/hypervalues/HyperNumber';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
-import { assertDefined } from '../../modules/framework/types/TypeAssertions';
-import type OsuContext from '../../client/contexts/osu/OsuContext';
+import type OsuContext from '../../contexts/osu/OsuContext';
+import { assertDefined } from 'discowork/src/assertions';
 
 interface IOsuAccounts {
   bancho: unknown;

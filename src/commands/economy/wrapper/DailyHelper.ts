@@ -1,4 +1,4 @@
-import type CurrencyContext from '../../../client/contexts/currency/CurrencyContext';
+import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
 import FurudeOperations from '../../../database/FurudeOperations';
 import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
 import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';

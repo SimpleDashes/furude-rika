@@ -1,5 +1,5 @@
+import type { ConstructorType } from 'discowork/src/types';
 import type { BaseEntity, Repository } from 'typeorm';
-import type Constructor from '../../modules/framework/interfaces/Constructor';
 
 type ClassRepository<T extends BaseEntity> = Omit<
   Repository<T>,
@@ -12,6 +12,6 @@ type ClassRepository<T extends BaseEntity> = Omit<
   | 'increment'
   | 'decrement'
 > &
-  Constructor<[], T>;
+  ConstructorType<[], T>;
 
 export type { ClassRepository };

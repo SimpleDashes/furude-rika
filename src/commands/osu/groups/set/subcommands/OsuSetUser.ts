@@ -1,14 +1,18 @@
-import type OsuContext from '../../../../../client/contexts/osu/OsuContext';
+import { assertDefined } from 'discowork/src/assertions';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import type OsuContext from '../../../../../contexts/osu/OsuContext';
 import FurudeOperations from '../../../../../database/FurudeOperations';
-import type { TypedArgs } from '../../../../../modules/framework/commands/contexts/types';
-import { assertDefinedGet } from '../../../../../modules/framework/types/TypeAssertions';
 import type { OsuServerUserOptions } from '../../../wrapper/OsuSubCommand';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
 
 type Args = unknown & OsuServerUserOptions;
 
+@CommandInformation({
+  name: 'user',
+  description: 'Set your osu! account on a osu! server.',
+})
 export default class OsuSetUser extends OsuSubCommand<Args> {
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       ...((): OsuServerUserOptions => {
         const args = this.getOsuServerUserOptions();
@@ -24,18 +28,11 @@ export default class OsuSetUser extends OsuSubCommand<Args> {
     };
   }
 
-  public constructor() {
-    super({
-      name: 'user',
-      description: 'Set your osu! account on a osu! server',
-    });
-  }
-
-  public async trigger(context: OsuContext<TypedArgs<Args>>): Promise<void> {
+  public async trigger(context: OsuContext<Args>): Promise<void> {
     const { interaction, osuPlayer, args } = context;
     const { username } = args;
 
-    assertDefinedGet(username);
+    assertDefined(username);
 
     const server = this.applyToServerOption(context);
     const osuUser = await this.getUserFromServer(context);

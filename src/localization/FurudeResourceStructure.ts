@@ -1,4 +1,4 @@
-import type ResourceValue from '../modules/framework/localization/resources/ResourceValue';
+import type ResourceValue from 'discowork/src/localization/resources/ResourceValue';
 
 enum ResourceArguments {
   USER = 'USER',

@@ -1,25 +1,22 @@
-import type CurrencyContext from '../../client/contexts/currency/CurrencyContext';
-import FurudeCommand from '../../discord/commands/FurudeCommand';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
+import { CommandInformation } from 'discowork/src/commands/decorators';
 import {
+  CommandPreconditions,
   Preconditions,
-  SetPreconditions,
-} from '../../modules/framework/preconditions/PreconditionDecorators';
+} from 'discowork/src/preconditions';
+import type CurrencyContext from '../../contexts/currency/CurrencyContext';
+import FurudeCommand from '../../discord/commands/FurudeCommand';
 
-@SetPreconditions(Preconditions.RequiresSubCommand)
+@CommandPreconditions(Preconditions.RequiresSubCommand)
+@CommandInformation({
+  name: 'economy',
+  description: 'Economy, related commands all of then here...',
+})
 export default class Economy extends FurudeCommand<
-  CurrencyContext<TypedArgs<unknown>>,
-  unknown
+  unknown,
+  CurrencyContext<unknown>
 > {
-  public createArgs(): unknown {
+  public createArguments(): unknown {
     return {};
-  }
-
-  public constructor() {
-    super({
-      name: 'economy',
-      description: 'Economy, related commands all of then here...',
-    });
   }
 
   public async trigger(): Promise<void> {

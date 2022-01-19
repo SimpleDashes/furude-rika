@@ -1,20 +1,23 @@
-import type DefaultContext from '../../client/contexts/DefaultContext';
-import SubCommand from '../../modules/framework/commands/SubCommand';
-import FurudeCommandWrapper from './FurudeCommandWrapper';
+import DefaultContext from '../../contexts/DefaultContext';
 import type IFurudeCommand from './interfaces/IFurudeCommand';
-import type { OmittedCommandContext } from '../../modules/framework/commands/contexts/ICommandContext';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
+import type { CommandContextOnlyInteractionAndClient } from 'discowork/src/commands/interfaces/CommandContext';
+import SubCommand from 'discowork/src/commands/SubCommand';
+import type { ConstructorType } from 'discowork/src/types';
 
-export default abstract class FurudeSubCommand<
-    CTX extends DefaultContext<TypedArgs<A>>,
-    A
-  >
-  extends SubCommand<CTX, A>
-  implements IFurudeCommand<CTX, A>
+export default abstract class FurudeCommand<A, CTX extends DefaultContext<A>>
+  extends SubCommand<A, CTX>
+  implements IFurudeCommand<A, CTX>
 {
   public abstract override trigger(context: CTX): Promise<void>;
 
-  public createContext(baseContext: OmittedCommandContext): CTX {
-    return FurudeCommandWrapper.defaultContext(baseContext) as CTX;
+  // TODO FIX TYPING
+  public contextConstructor(): ConstructorType<
+    [CommandContextOnlyInteractionAndClient],
+    CTX
+  > {
+    return DefaultContext as ConstructorType<
+      [CommandContextOnlyInteractionAndClient],
+      CTX
+    >;
   }
 }

@@ -1,5 +1,5 @@
 import type { Collection } from 'discord.js';
-import { assertDefined } from '../types/TypeAssertions';
+import { assertDefined } from 'discowork/src/assertions';
 
 export default class CollectionHelper {
   public static collectionToRecord<K extends string | number | symbol, T>(

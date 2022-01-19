@@ -1,25 +1,26 @@
 import { Collection } from 'discord.js';
+import { assertDefined } from 'discowork/src/assertions';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import StringOption from 'discowork/src/options/classes/StringOption';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 import { Parser } from 'expr-eval';
-import type DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import CollectionHelper from '../../modules/framework/helpers/CollectionHelper';
-import StringUtils from '../../modules/framework/helpers/StringUtils';
-import StringOption from '../../modules/framework/options/classes/StringOption';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
+import StringUtils from '../../modules/framework/helpers/StringUtils';
 
 type Args = {
   expression: StringOption;
   rawVariables: StringOption;
 };
 
-export default class Calc extends FurudeCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
-> {
-  public createArgs(): Args {
+@CommandInformation({
+  name: 'calc',
+  description: 'Calculates mathematical expressions, how nice!',
+})
+export default class Calc extends FurudeCommand<Args, DefaultContext<Args>> {
+  public createArguments(): Args {
     return {
       expression: new StringOption()
         .setRequired(true)
@@ -33,16 +34,7 @@ export default class Calc extends FurudeCommand<
     };
   }
 
-  public constructor() {
-    super({
-      name: 'calc',
-      description: 'Calculates mathematical expressions, how nice!',
-    });
-  }
-
-  public async trigger(
-    context: DefaultContext<TypedArgs<Args>>
-  ): Promise<void> {
+  public async trigger(context: DefaultContext<Args>): Promise<void> {
     const { interaction, client, args } = context;
     const { localizer } = client;
 

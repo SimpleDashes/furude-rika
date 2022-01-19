@@ -1,28 +1,28 @@
-import type DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import BooleanOption from '../../modules/framework/options/classes/BooleanOption';
-import StringOption from '../../modules/framework/options/classes/StringOption';
-import DeployHandler from '../../modules/framework/rest/DeployHandler';
-import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
+import { assertDefined } from 'discowork/src/assertions';
+import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
+import BooleanOption from 'discowork/src/options/classes/BooleanOption';
+import StringOption from 'discowork/src/options/classes/StringOption';
 import {
+  CommandPreconditions,
   Preconditions,
-  SetPreconditions,
-} from '../../modules/framework/preconditions/PreconditionDecorators';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
-import { assertDefined } from '../../modules/framework/types/TypeAssertions';
+} from 'discowork/src/preconditions';
+import { CommandInformation } from 'discowork/src/commands/decorators';
 
 type Args = {
   commandName: StringOption;
   isDebug: BooleanOption;
 };
-@SetPreconditions(Preconditions.OwnerOnly)
-export default class Deploy extends FurudeCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
-> {
-  public createArgs(): Args {
+
+@CommandPreconditions(Preconditions.OwnerOnly)
+@CommandInformation({
+  name: 'deploy',
+  description: 'deploys a discord command',
+})
+export default class Deploy extends FurudeCommand<Args, DefaultContext<Args>> {
+  public createArguments(): Args {
     return {
       commandName: new StringOption()
         .setRequired(true)
@@ -36,31 +36,27 @@ export default class Deploy extends FurudeCommand<
     };
   }
 
-  public constructor() {
-    super({
-      name: 'deploy',
-      description: 'deploys a discord command',
-    });
-  }
-
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, args, client } = context;
-    const { localizer } = client;
+    const { args, client } = context;
 
     const { commandName } = args;
-    let { isDebug } = args;
 
     assertDefined(commandName);
-    isDebug = Boolean(isDebug);
 
-    await DeployHandler.deployCommand<DefaultContext<TypedArgs<unknown>>>({
-      client,
+    /**
+     * TODO debug handling.
+     * TODO output.
+     */
+
+    await client.Deployer.deployCommand({
       commandName,
-      isDebug,
-      interaction,
-      resFunctions: {
+      context,
+    });
+
+    /**+
+     * {
         onCommandNotFound: async () => {
           await InteractionUtils.reply(
             interaction,
@@ -110,6 +106,6 @@ export default class Deploy extends FurudeCommand<
           );
         },
       },
-    });
+     */
   }
 }

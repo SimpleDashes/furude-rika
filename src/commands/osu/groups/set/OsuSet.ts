@@ -1,18 +1,16 @@
-import FurudeCommandGroup from '../../../../discord/commands/FurudeCommandGroup';
+import { CommandInformation } from 'discowork/src/commands/decorators';
 import {
+  CommandPreconditions,
   Preconditions,
-  SetPreconditions,
-} from '../../../../modules/framework/preconditions/PreconditionDecorators';
+} from 'discowork/src/preconditions';
+import FurudeCommandGroup from '../../../../discord/commands/FurudeCommandGroup';
 
-@SetPreconditions(Preconditions.RequiresSubCommand)
+@CommandPreconditions(Preconditions.RequiresSubCommand)
+@CommandInformation({
+  name: 'set',
+  description: '.',
+})
 export default class OsuSet extends FurudeCommandGroup {
-  public constructor() {
-    super({
-      name: 'set',
-      description: '.',
-    });
-  }
-
   public trigger(): Promise<void> {
     throw new Error('Method not implemented.');
   }

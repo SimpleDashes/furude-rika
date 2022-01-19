@@ -1,9 +1,9 @@
-import type DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 enum COIN {
   HEAD,
@@ -12,26 +12,21 @@ enum COIN {
 
 type Args = unknown;
 
+@CommandInformation({
+  name: 'coinflip',
+  description: "Flips a coin, will it land on head or tails, let's see?",
+})
 export default class CoinFlip extends FurudeCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
+  Args,
+  DefaultContext<Args>
 > {
   readonly #coinsArray = Object.values(COIN);
 
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {};
   }
 
-  public constructor() {
-    super({
-      name: 'coinflip',
-      description: "Flips a coin, will it land on head or tails, let's see?",
-    });
-  }
-
-  public async trigger(
-    context: DefaultContext<TypedArgs<Args>>
-  ): Promise<void> {
+  public async trigger(context: DefaultContext<Args>): Promise<void> {
     const { interaction, client } = context;
     const { localizer } = client;
 

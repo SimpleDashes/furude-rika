@@ -1,6 +1,6 @@
+import Locale from 'discowork/src/localization/Locale';
+import ResourceValue from 'discowork/src/localization/resources/ResourceValue';
 import FurudeResource from '../FurudeResource';
-import Locale from '../../modules/framework/localization/Locale';
-import ResourceValue from '../../modules/framework/localization/resources/ResourceValue';
 import { ResourceArguments } from '../FurudeResourceStructure';
 
 export default class extends FurudeResource {

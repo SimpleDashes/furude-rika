@@ -1,25 +1,22 @@
-import type DefaultContext from '../../client/contexts/DefaultContext';
-import FurudeCommand from '../../discord/commands/FurudeCommand';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
+import { CommandInformation } from 'discowork/src/commands/decorators';
 import {
+  CommandPreconditions,
   Preconditions,
-  SetPreconditions,
-} from '../../modules/framework/preconditions/PreconditionDecorators';
+} from 'discowork/src/preconditions';
+import type DefaultContext from '../../contexts/DefaultContext';
+import FurudeCommand from '../../discord/commands/FurudeCommand';
 
-@SetPreconditions(Preconditions.RequiresSubCommand)
+@CommandPreconditions(Preconditions.RequiresSubCommand)
+@CommandInformation({
+  name: 'customize',
+  description: 'customizes information about you, GIMME YOUR DATA1!!11!',
+})
 export default class Customize extends FurudeCommand<
-  DefaultContext<TypedArgs<unknown>>,
-  unknown
+  unknown,
+  DefaultContext<unknown>
 > {
-  public createArgs(): unknown {
+  public createArguments(): unknown {
     return {};
-  }
-
-  public constructor() {
-    super({
-      name: 'customize',
-      description: 'customizes information about you, GIMME YOUR DATA1!!11!',
-    });
   }
 
   public trigger(): Promise<void> {

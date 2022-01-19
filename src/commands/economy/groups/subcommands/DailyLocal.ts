@@ -1,21 +1,20 @@
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import {
+  CommandPreconditions,
+  Preconditions,
+} from 'discowork/src/preconditions';
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
-import {
-  Preconditions,
-  SetPreconditions,
-} from '../../../../modules/framework/preconditions/PreconditionDecorators';
+
 import DailySubCommand from '../../wrapper/DailySubCommand';
 import { MustHaveOpenAccount } from '../../wrapper/EconomySubCommand';
 
-@SetPreconditions(Preconditions.GuildOnly, MustHaveOpenAccount)
+@CommandPreconditions(Preconditions.GuildOnly, MustHaveOpenAccount)
+@CommandInformation({
+  name: 'local',
+  description: `Get your daily ${CurrencyContainer.CURRENCY_NAME} for the current guild you are in.`,
+})
 export default class DailyLocal extends DailySubCommand {
-  public constructor() {
-    super({
-      name: 'local',
-      description: `Get your daily ${CurrencyContainer.CURRENCY_NAME} for the current guild you are in.`,
-    });
-  }
-
   public dailyScope(): HyperTypes {
     return HyperTypes.local;
   }

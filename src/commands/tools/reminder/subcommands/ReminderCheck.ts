@@ -1,37 +1,36 @@
-import type DefaultContext from '../../../../client/contexts/DefaultContext';
+import type DefaultContext from '../../../../contexts/DefaultContext';
 import CommandOptions from '../../../../containers/CommandOptions';
 import Strings from '../../../../containers/Strings';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import BaseEmbed from '../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
-import UserOption from '../../../../modules/framework/options/classes/UserOption';
-import InteractionUtils from '../../../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../../../modules/framework/commands/contexts/types';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import { assertDefined } from 'discowork/src/assertions';
+import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
+import UserOption from 'discowork/src/options/classes/UserOption';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 type Args = {
   user: UserOption;
 };
+
+@CommandInformation({
+  name: 'check',
+  description: 'Check all your pending reminders.',
+})
 export default class ReminderCheck extends FurudeSubCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
+  Args,
+  DefaultContext<Args>
 > {
   public static MAX_REMINDER_LENGTH = 16;
 
-  public createArgs(): Args {
+  public createArguments(): Args {
     return {
       user: new UserOption(true)
         .setName(CommandOptions.user)
         .setDescription('The user you want to check the reminders.'),
     };
-  }
-
-  public constructor() {
-    super({
-      name: 'check',
-      description: 'Check all your pending reminders.',
-    });
   }
 
   public async trigger(

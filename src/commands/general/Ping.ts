@@ -1,13 +1,13 @@
 import type { CommandInteraction } from 'discord.js';
-import type DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
 import UserType from '../../modules/framework/enums/UserType';
 import PingContainer from '../../modules/framework/ping/PingContainer';
 import PingData from '../../modules/framework/ping/PingData';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 interface IPingCallbackArguments {
   interaction: CommandInteraction;
@@ -27,35 +27,28 @@ class PingContainerType extends PingContainer<
 
   public constructor() {
     super();
-    this.discord = this.pushGet(
-      new PingDataType('Discord websocket').setPingCallback(
+    this.data.push(
+      (this.discord = new PingDataType('Discord websocket').setPingCallback(
         async (args) => args.interaction.client.ws.ping
-      )
+      ))
     );
   }
 }
 
 type Args = unknown;
-export default class Ping extends FurudeCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
-> {
-  public createArgs(): Args {
+
+@CommandInformation({
+  name: 'ping',
+  description: 'Pings multiple servers.',
+})
+export default class Ping extends FurudeCommand<Args, DefaultContext<Args>> {
+  public createArguments(): Args {
     return {};
   }
 
   readonly #pingContainer: PingContainerType = new PingContainerType();
 
-  public constructor() {
-    super({
-      name: 'ping',
-      description: 'Pings multiple servers',
-    });
-  }
-
-  public async trigger(
-    context: DefaultContext<TypedArgs<Args>>
-  ): Promise<void> {
+  public async trigger(context: DefaultContext<Args>): Promise<void> {
     const { interaction, client } = context;
     const { localizer } = client;
 
@@ -68,7 +61,7 @@ export default class Ping extends FurudeCommand<
       interaction,
     };
 
-    for (const pingData of this.#pingContainer.InternalArray) {
+    for (const pingData of this.#pingContainer.data) {
       const ping = await pingData.ping?.call(pingData, pingArgs);
 
       const text = ping

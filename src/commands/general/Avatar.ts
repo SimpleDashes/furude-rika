@@ -1,21 +1,22 @@
-import type DefaultContext from '../../client/contexts/DefaultContext';
+import type DefaultContext from '../../contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
-import UserOption from '../../modules/framework/options/classes/UserOption';
-import InteractionUtils from '../../modules/framework/interactions/InteractionUtils';
-import { assertDefined } from '../../modules/framework/types/TypeAssertions';
-import type { TypedArgs } from '../../modules/framework/commands/contexts/types';
+import { CommandInformation } from 'discowork/src/commands/decorators';
+import { assertDefined } from 'discowork/src/assertions';
+import UserOption from 'discowork/src/options/classes/UserOption';
+import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 type Args = {
   user: UserOption;
 };
 
-export default class Avatar extends FurudeCommand<
-  DefaultContext<TypedArgs<Args>>,
-  Args
-> {
-  public createArgs(): Args {
+@CommandInformation({
+  name: 'avatar',
+  description: "Displays your's or another user Avatar.",
+})
+export default class Avatar extends FurudeCommand<Args, DefaultContext<Args>> {
+  public createArguments(): Args {
     return {
       user: new UserOption(true)
         .setName(CommandOptions.user)
@@ -23,16 +24,7 @@ export default class Avatar extends FurudeCommand<
     };
   }
 
-  public constructor() {
-    super({
-      name: 'avatar',
-      description: "Displays your's or another user Avatar.",
-    });
-  }
-
-  public async trigger(
-    context: DefaultContext<TypedArgs<Args>>
-  ): Promise<void> {
+  public async trigger(context: DefaultContext<Args>): Promise<void> {
     const { interaction, args, client } = context;
     const { localizer } = client;
     const { user } = args;

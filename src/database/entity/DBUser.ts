@@ -1,11 +1,11 @@
 import { intervalToDuration } from 'date-fns';
 import type { Guild, GuildChannel, User } from 'discord.js';
+import { assertDefinedGet } from 'discowork/src/assertions';
 import { Column, Entity } from 'typeorm';
 import Globals from '../../containers/Globals';
 import Strings from '../../containers/Strings';
 import type FurudeLocalizer from '../../localization/FurudeLocalizer';
 import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
-import { assertDefinedGet } from '../../modules/framework/types/TypeAssertions';
 import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';

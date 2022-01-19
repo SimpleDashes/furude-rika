@@ -1,12 +1,7 @@
-import type {
-  Interaction,
-  MessageEmbedOptions,
-  User} from 'discord.js';
-import {
-  MessageEmbed
-} from 'discord.js';
+import type { Interaction, MessageEmbedOptions, User } from 'discord.js';
+import { MessageEmbed } from 'discord.js';
+import { assertDefined } from 'discowork/src/assertions';
 import UserType from '../enums/UserType';
-import { assertDefined } from '../types/TypeAssertions';
 
 export default class BaseEmbed extends MessageEmbed {
   public constructor(
