@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npm run build && npm run start",
     "build": "tsc --build tsconfig.json",
-    "start": "node --trace-warnings .",
+    "start": "node --trace-warnings --experimental-specifier-resolution=node .",
     "format": "npx prettier -w src",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint_fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
@@ -19,7 +19,7 @@
   "dependencies": {
     "@discordjs/builders": "^0.11.0",
     "@discordjs/rest": "^0.2.0-canary.0",
-    "@stdlib/stdlib": "^0.0.96",
+    "@stdlib/string": "^0.0.13",
     "axios": "^0.24.0",
     "chance": "^1.1.8",
     "cheerio": "^1.0.0-rc.10",
@@ -27,7 +27,7 @@
     "date-fns": "^2.27.0",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.5.0",
-    "discowork": "github:SimpleDashes/discowork#main",
+    "discowork": "^1.4.5",
     "dotenv": "^10.0.0",
     "expr-eval": "^2.0.2",
     "i18next": "^21.6.3",

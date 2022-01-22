@@ -7,7 +7,7 @@ import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
 import FurudeLocalizer, {
   FurudeLanguagesArray,
 } from '../../../localization/FurudeLocalizer';
-import StringOption from 'discowork/src/options/classes/StringOption';
+import { StringOption } from 'discowork';
 
 export type BaseLanguageChangeArgs = {
   locale: Omit<StringOption, 'setAutocomplete'>;

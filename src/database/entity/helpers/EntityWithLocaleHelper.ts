@@ -1,5 +1,5 @@
-import { assertDefinedGet } from 'discowork/src/assertions';
-import type ResourceValue from 'discowork/src/localization/resources/ResourceValue';
+import type { ResourceValue} from 'discowork';
+import { assertDefinedGet } from 'discowork';
 import type FurudeLocalizer from '../../../localization/FurudeLocalizer';
 import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
 import type FurudeResourceStructure from '../../../localization/FurudeResourceStructure';

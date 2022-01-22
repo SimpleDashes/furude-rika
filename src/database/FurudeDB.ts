@@ -1,13 +1,14 @@
 import { hoursToSeconds } from 'date-fns';
 import type { Guild, GuildChannel, Snowflake, User } from 'discord.js';
-import { assertDefined } from 'discowork/src/assertions';
+import { assertDefined } from 'discowork';
 import type {
   BaseEntity,
   Connection,
   FindManyOptions,
-  FindOneOptions,
+  FindOneOptions} from 'typeorm';
+import {
+  createConnection
 } from 'typeorm';
-import { createConnection } from 'typeorm';
 import { CacheCollection } from '../managers/abstracts/BaseFurudeCacheManager';
 import type SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';

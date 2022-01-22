@@ -1,5 +1,5 @@
 import { Collection } from 'discord.js';
-import { assertDefined } from 'discowork/src/assertions';
+import { assertDefined } from 'discowork';
 import type IKeyValueSet from '../interfaces/IKeyValueSet';
 
 export default class StringUtils {

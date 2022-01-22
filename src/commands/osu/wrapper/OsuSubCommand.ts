@@ -12,14 +12,15 @@ import type IDroidOsuUserRecentsParam from '../../../modules/osu/servers/impleme
 import type { AnyServer } from '../../../modules/osu/servers/OsuServers';
 import OsuServers from '../../../modules/osu/servers/OsuServers';
 import type IOsuUser from '../../../modules/osu/users/IOsuUser';
-import OsuServerUtils from '../../../utils/OsuServerUtils';
-import type { CommandContextOnlyInteractionAndClient } from 'discowork/src/commands/interfaces/CommandContext';
-import type { ConstructorType } from 'discowork/src/types';
-import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
-import StringOption from 'discowork/src/options/classes/StringOption';
-import UserOption from 'discowork/src/options/classes/UserOption';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+
+import UserOption from 'discowork/lib/options/classes/UserOption';
+import type ConstructorType from 'discowork/lib/types/ConstructorType';
+import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
+import type { TypedArgs } from 'discowork';
+import { StringOption } from 'discowork';
+import type { CommandContextOnlyInteractionAndClient } from 'discowork/lib/commands/interfaces/CommandContext';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
+import OsuServerUtils from '../../../utils/OsuServerUtils';
 
 type OsuServerOption = Omit<StringOption, 'setAutocomplete'>;
 

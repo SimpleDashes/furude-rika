@@ -1,8 +1,8 @@
+import { SubCommand } from 'discowork';
+import type { CommandContextOnlyInteractionAndClient } from 'discowork/lib/commands/interfaces/CommandContext';
+import type ConstructorType from 'discowork/lib/types/ConstructorType';
 import DefaultContext from '../../contexts/DefaultContext';
 import type IFurudeCommand from './interfaces/IFurudeCommand';
-import type { CommandContextOnlyInteractionAndClient } from 'discowork/src/commands/interfaces/CommandContext';
-import SubCommand from 'discowork/src/commands/SubCommand';
-import type { ConstructorType } from 'discowork/src/types';
 
 export default abstract class FurudeCommand<A, CTX extends DefaultContext<A>>
   extends SubCommand<A, CTX>

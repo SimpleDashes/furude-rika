@@ -1,4 +1,4 @@
-import type { ConstructorType } from 'discowork/src/types';
+import type { ConstructorType } from 'discowork';
 import type { BaseEntity, Repository } from 'typeorm';
 
 type ClassRepository<T extends BaseEntity> = Omit<

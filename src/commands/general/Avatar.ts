@@ -1,11 +1,9 @@
 import type DefaultContext from '../../contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
+import { UserOption, assertDefined, InteractionUtils } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import { assertDefined } from 'discowork/src/assertions';
-import UserOption from 'discowork/src/options/classes/UserOption';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 type Args = {
   user: UserOption;

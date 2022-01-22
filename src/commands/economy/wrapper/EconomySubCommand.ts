@@ -2,9 +2,9 @@ import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import CurrencyContext from '../../../contexts/currency/CurrencyContext';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
-import CommandPrecondition from 'discowork/src/preconditions/CommandPrecondition';
-import type { CommandContextOnlyInteractionAndClient } from 'discowork/src/commands/interfaces/CommandContext';
-import type { ConstructorType } from 'discowork/src/types';
+import type { ConstructorType } from 'discowork';
+import { CommandPrecondition } from 'discowork';
+import type { CommandContextOnlyInteractionAndClient } from 'discowork/lib/commands/interfaces/CommandContext';
 
 class MustHaveOpenAccountPrecondition extends CommandPrecondition {
   public constructor() {

@@ -1,9 +1,9 @@
+import { InteractionUtils } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type DefaultContext from '../../contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
 
 enum COIN {
   HEAD,

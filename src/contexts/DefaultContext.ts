@@ -5,7 +5,7 @@ import type DBGuild from '../database/entity/DBGuild';
 import type DBUser from '../database/entity/DBUser';
 import BaseContext from './BaseContext';
 import { assert } from 'console';
-import { assertDefined } from 'discowork/src/assertions';
+import { assertDefined } from 'discowork';
 
 export abstract class ContextCreator<C extends DefaultContext<unknown>, P, T> {
   protected context: C;

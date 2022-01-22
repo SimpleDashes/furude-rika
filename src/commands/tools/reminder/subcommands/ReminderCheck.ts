@@ -5,11 +5,11 @@ import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import BaseEmbed from '../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import { assertDefined } from 'discowork/src/assertions';
-import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
-import UserOption from 'discowork/src/options/classes/UserOption';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+import type { TypedArgs} from 'discowork';
+import { assertDefined } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
+import UserOption from 'discowork/lib/options/classes/UserOption';
+import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
 
 type Args = {
   user: UserOption;

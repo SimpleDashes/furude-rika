@@ -4,16 +4,16 @@ import DBGuild from '../../../../../database/entity/DBGuild';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import {
+  IntegerOption,
   CommandPreconditions,
   Preconditions,
-} from 'discowork/src/preconditions';
-import { assertDefined } from 'discowork/src/assertions';
-import IntegerOption from 'discowork/src/options/classes/IntegerOption';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+  assertDefined,
+  InteractionUtils,
+} from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
-import { CommandInformation } from 'discowork/src/commands/decorators';
 
 class XPChangeOption extends IntegerOption {
   public constructor() {

@@ -4,10 +4,8 @@ import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import UserOption from 'discowork/src/options/classes/UserOption';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
-import { assertDefined } from 'discowork/src/assertions';
+import { UserOption, assertDefined, InteractionUtils } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 
 type Args = {
   user: UserOption;

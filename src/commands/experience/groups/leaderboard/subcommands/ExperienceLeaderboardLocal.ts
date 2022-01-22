@@ -1,19 +1,19 @@
 import type DefaultContext from '../../../../../contexts/DefaultContext';
-import GenericNames from '../../../../../containers/GenericNames';
 import type DBUser from '../../../../../database/entity/DBUser';
 import type { LeaderboardArgs } from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
+import type {
+  TypedArgs} from 'discowork';
 import {
   CommandPreconditions,
   Preconditions,
-} from 'discowork/src/preconditions';
-import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import { assertDefined } from 'discowork/src/assertions';
+  assertDefined,
+} from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 
 @CommandPreconditions(Preconditions.GuildOnly)
 @CommandInformation({
-  name: GenericNames.local,
+  name: 'local',
   description:
     'Get the local xp leaderboard. will you be able to grind to the top.',
 })

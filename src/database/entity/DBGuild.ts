@@ -1,5 +1,4 @@
 import type { GuildChannel, Snowflake } from 'discord.js';
-import { Column, Entity } from 'typeorm';
 import BindableInteger from '../../modules/bindables/BindableInteger';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import type FurudeLocalizer from '../../localization/FurudeLocalizer';
@@ -12,6 +11,7 @@ import DBUser from './DBUser';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
 import type DefaultContext from '../../contexts/DefaultContext';
+import { Entity, Column } from 'typeorm';
 
 class DBGuildExtension extends EntityExtension<DBGuild> {
   #getBindableRewardedXP(): BindableInteger {

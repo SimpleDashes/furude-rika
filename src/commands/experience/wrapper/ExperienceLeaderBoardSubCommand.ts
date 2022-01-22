@@ -3,12 +3,13 @@ import CommandOptions from '../../../containers/CommandOptions';
 import type DBUser from '../../../database/entity/DBUser';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
+import { PageOption } from 'discowork';
 import ArrayHelper from '../../../modules/framework/helpers/ArrayHelper';
-import PageOption from 'discowork/src/options/custom/PageOption';
 
 export type LeaderboardArgs = {
   page: PageOption;
 };
+
 export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubCommand<
   LeaderboardArgs,
   DefaultContext<LeaderboardArgs>

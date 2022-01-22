@@ -1,4 +1,3 @@
-import { Column, Entity } from 'typeorm';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import type { AnyServer } from '../../modules/osu/servers/OsuServers';
 import OsuServers from '../../modules/osu/servers/OsuServers';
@@ -9,7 +8,8 @@ import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import HyperNumber from '../objects/hypervalues/HyperNumber';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import type OsuContext from '../../contexts/osu/OsuContext';
-import { assertDefined } from 'discowork/src/assertions';
+import { assertDefined } from 'discowork';
+import { Entity, Column } from 'typeorm';
 
 interface IOsuAccounts {
   bancho: unknown;

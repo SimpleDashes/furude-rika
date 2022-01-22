@@ -1,6 +1,6 @@
 import { intervalToDuration } from 'date-fns';
 import type { Guild, GuildChannel, User } from 'discord.js';
-import { assertDefinedGet } from 'discowork/src/assertions';
+import { assertDefinedGet } from 'discowork';
 import { Column, Entity } from 'typeorm';
 import Globals from '../../containers/Globals';
 import Strings from '../../containers/Strings';

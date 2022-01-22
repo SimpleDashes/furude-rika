@@ -1,5 +1,4 @@
-import Locale from 'discowork/src/localization/Locale';
-import ResourceValue from 'discowork/src/localization/resources/ResourceValue';
+import { Locale, ResourceValue } from 'discowork';
 import FurudeResource from '../FurudeResource';
 import { ResourceArguments } from '../FurudeResourceStructure';
 

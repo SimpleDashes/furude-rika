@@ -1,9 +1,5 @@
-import { assertDefined } from 'discowork/src/assertions';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import {
-  CommandPreconditions,
-  Preconditions,
-} from 'discowork/src/preconditions';
+import { CommandPreconditions, Preconditions, assertDefined } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type DefaultContext from '../../../../../contexts/DefaultContext';
 import type SnowFlakeIDEntity from '../../../../../database/entity/abstracts/SnowFlakeIDEntity';
 import type IHasPreferredLocale from '../../../../../database/interfaces/IHasPreferredLocale';

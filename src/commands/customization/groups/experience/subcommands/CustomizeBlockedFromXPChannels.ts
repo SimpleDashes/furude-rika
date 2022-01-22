@@ -1,19 +1,19 @@
 import assert from 'assert';
 import { ChannelType } from 'discord-api-types';
 import { GuildChannel } from 'discord.js';
-import type DefaultContext from '../../../../../contexts/DefaultContext';
-import CommandOptions from '../../../../../containers/CommandOptions';
-import Strings from '../../../../../containers/Strings';
-import FurudeOperations from '../../../../../database/FurudeOperations';
-import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import {
+  ChannelOption,
+  BooleanOption,
   CommandPreconditions,
   Preconditions,
-} from 'discowork/src/preconditions';
-import { assertDefined } from 'discowork/src/assertions';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import BooleanOption from 'discowork/src/options/classes/BooleanOption';
-import ChannelOption from 'discowork/src/options/classes/ChannelOption';
+  assertDefined,
+} from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
+import CommandOptions from '../../../../../containers/CommandOptions';
+import Strings from '../../../../../containers/Strings';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
+import FurudeOperations from '../../../../../database/FurudeOperations';
+import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
 import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
 

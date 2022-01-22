@@ -1,16 +1,15 @@
-import type DefaultContext from '../../../../../contexts/DefaultContext';
+import {
+  IntegerOption,
+  CommandPreconditions,
+  Preconditions,
+  assertDefined,
+} from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import CommandOptions from '../../../../../containers/CommandOptions';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
 import DBUser from '../../../../../database/entity/DBUser';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
-
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import { assertDefined } from 'discowork/src/assertions';
-import IntegerOption from 'discowork/src/options/classes/IntegerOption';
-import {
-  CommandPreconditions,
-  Preconditions,
-} from 'discowork/src/preconditions';
 
 type Args = {
   seconds: IntegerOption;

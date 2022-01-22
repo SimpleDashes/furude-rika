@@ -3,11 +3,11 @@ import CommandOptions from '../../../../containers/CommandOptions';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
 import MessageCreator from '../../../../modules/framework/helpers/MessageCreator';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import { assertDefined } from 'discowork/src/assertions';
-import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
-import IntegerOption from 'discowork/src/options/classes/IntegerOption';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+import type { TypedArgs} from 'discowork';
+import { assertDefined } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
+import IntegerOption from 'discowork/lib/options/classes/IntegerOption';
+import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
 
 type Args = {
   index: IntegerOption;

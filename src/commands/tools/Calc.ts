@@ -1,8 +1,8 @@
 import { Collection } from 'discord.js';
-import { assertDefined } from 'discowork/src/assertions';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import StringOption from 'discowork/src/options/classes/StringOption';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+import { assertDefined } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
+import StringOption from 'discowork/lib/options/classes/StringOption';
+import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
 import { Parser } from 'expr-eval';
 import type DefaultContext from '../../contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';

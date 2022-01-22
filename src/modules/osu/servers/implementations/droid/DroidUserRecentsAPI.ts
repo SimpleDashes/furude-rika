@@ -5,7 +5,7 @@ import type IDroidOsuUserRecentsParam from './params/IDroidOsuUserRecentsParams'
 import cheerio from 'cheerio';
 import type IBanchoAPIBeatmapResponse from '../bancho/interfaces/beatmaps/IBanchoAPIBeatmapResponse';
 import BaseOsuAPIBeatmap from '../../beatmaps/BaseOsuAPIBeatmap';
-import { assertDefined } from 'discowork/src/assertions';
+import { assertDefined } from 'discowork';
 
 export default class DroidUserRecentsAPI extends OsuUserRecentRoute<
   DroidScore,

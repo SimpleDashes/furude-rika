@@ -1,7 +1,7 @@
-import { LimitedCapacityCollection } from 'discowork/src/collections/LimitedCapacityCollection';
 import type FurudeRika from '../../client/FurudeRika';
 import BaseFurudeManager from './BaseFurudeManager';
 import consola from 'consola';
+import { LimitedCapacityCollection } from 'discowork';
 
 export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
   public readonly name: string;

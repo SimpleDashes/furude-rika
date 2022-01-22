@@ -1,12 +1,10 @@
-import type FurudeResourceStructure from './FurudeResourceStructure';
-import FurudeResource from './FurudeResource';
-import Localizer from 'discowork/src/localization/Localizer';
-import Locale from 'discowork/src/localization/Locale';
-import type ResourceValue from 'discowork/src/localization/resources/ResourceValue';
+import type { ResourceValue } from 'discowork';
+import { Locale, ClassLoader, Directory } from 'discowork';
+import Localizer from 'discowork/lib/localization/Localizer';
 import path from 'path';
-import ClassLoader from 'discowork/src/io/loaders/ClassLoader';
-import Directory from 'discowork/src/io/directories/Directory';
 import type DefaultContext from '../contexts/DefaultContext';
+import FurudeResource from './FurudeResource';
+import type FurudeResourceStructure from './FurudeResourceStructure';
 
 export type FurudeLanguages = Locale.pt_BR | Locale.en;
 

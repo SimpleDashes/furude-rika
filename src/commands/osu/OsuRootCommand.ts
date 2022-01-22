@@ -1,4 +1,4 @@
-import { CommandInformation } from 'discowork/src/commands/decorators';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type OsuContext from '../../contexts/osu/OsuContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 

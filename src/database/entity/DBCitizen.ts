@@ -1,6 +1,5 @@
 import { addDays, intervalToDuration } from 'date-fns';
 import type { CommandInteraction } from 'discord.js';
-import { Column, Entity } from 'typeorm';
 import CurrencyContainer from '../../containers/CurrencyContainer';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
 import FurudeOperations from '../FurudeOperations';
@@ -10,6 +9,7 @@ import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperN
 import type { HyperTypes } from '../objects/hypervalues/HyperTypes';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import type CurrencyContext from '../../contexts/currency/CurrencyContext';
+import { Entity, Column } from 'typeorm';
 
 interface IStreakOperation extends IDatabaseOperation {
   readonly lostStreak: boolean;

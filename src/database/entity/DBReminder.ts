@@ -1,6 +1,6 @@
 import { addDays, addHours, addMinutes, addSeconds, addWeeks } from 'date-fns';
 import type { Snowflake, User } from 'discord.js';
-import { Column, Entity } from 'typeorm';
+
 import type FurudeRika from '../../client/FurudeRika';
 import Strings from '../../containers/Strings';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
@@ -9,6 +9,7 @@ import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import GeneratedIDEntity from './abstracts/GeneratedIDEntity';
 import type DefaultContext from '../../contexts/DefaultContext';
+import { Entity, Column } from 'typeorm';
 
 @Entity()
 export default class DBReminder extends GeneratedIDEntity {

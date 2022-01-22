@@ -1,5 +1,5 @@
 import { hoursToSeconds } from 'date-fns';
-import { assertDefined } from 'discowork/src/assertions';
+import { assertDefined } from 'discowork';
 import type IOsuScore from '../modules/osu/scores/IOsuScore';
 import type IAPIOsuBeatmap from '../modules/osu/servers/beatmaps/IAPIOsuBeatmap';
 import DroidScore from '../modules/osu/servers/implementations/droid/objects/DroidScore';

@@ -1,15 +1,16 @@
 import type DefaultContext from '../../contexts/DefaultContext';
 import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import { assertDefined } from 'discowork/src/assertions';
-import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
-import BooleanOption from 'discowork/src/options/classes/BooleanOption';
-import StringOption from 'discowork/src/options/classes/StringOption';
+import type {
+  TypedArgs} from 'discowork';
 import {
   CommandPreconditions,
   Preconditions,
-} from 'discowork/src/preconditions';
-import { CommandInformation } from 'discowork/src/commands/decorators';
+  assertDefined,
+} from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
+import BooleanOption from 'discowork/lib/options/classes/BooleanOption';
+import StringOption from 'discowork/lib/options/classes/StringOption';
 
 type Args = {
   commandName: StringOption;

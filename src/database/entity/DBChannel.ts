@@ -1,4 +1,4 @@
-import { Column, Entity } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import type FurudeLocalizer from '../../localization/FurudeLocalizer';
 import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';

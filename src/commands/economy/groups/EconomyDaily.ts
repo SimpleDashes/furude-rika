@@ -1,8 +1,5 @@
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import {
-  CommandPreconditions,
-  Preconditions,
-} from 'discowork/src/preconditions';
+import { CommandPreconditions, Preconditions } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import DBCitizen from '../../../database/entity/DBCitizen';
 import FurudeCommandGroup from '../../../discord/commands/FurudeCommandGroup';

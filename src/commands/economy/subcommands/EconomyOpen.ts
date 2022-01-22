@@ -3,7 +3,7 @@ import CurrencyContainer from '../../../containers/CurrencyContainer';
 import FurudeOperations from '../../../database/FurudeOperations';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 import DBCitizen from '../../../database/entity/DBCitizen';
-import { CommandInformation } from 'discowork/src/commands/decorators';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 
 type Args = unknown;
 

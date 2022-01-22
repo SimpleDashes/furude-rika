@@ -1,7 +1,7 @@
 import type { CommandInteraction } from 'discord.js';
-import type CommandContext from 'discowork/src/commands/interfaces/CommandContext';
-import type { CommandContextOnlyInteractionAndClient } from 'discowork/src/commands/interfaces/CommandContext';
-import type { TypedArgs } from 'discowork/src/contexts/TypedArgs';
+import type { TypedArgs } from 'discowork';
+import type { CommandContextOnlyInteractionAndClient } from 'discowork/lib/commands/interfaces/CommandContext';
+import type CommandContext from 'discowork/lib/commands/interfaces/CommandContext';
 import type FurudeRika from '../client/FurudeRika';
 
 export default abstract class BaseContext<A> implements CommandContext<A> {

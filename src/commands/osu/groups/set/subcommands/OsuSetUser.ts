@@ -1,5 +1,5 @@
-import { assertDefined } from 'discowork/src/assertions';
-import { CommandInformation } from 'discowork/src/commands/decorators';
+import { assertDefined } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type OsuContext from '../../../../../contexts/osu/OsuContext';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import type { OsuServerUserOptions } from '../../../wrapper/OsuSubCommand';

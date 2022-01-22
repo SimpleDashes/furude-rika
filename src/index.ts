@@ -1,6 +1,8 @@
+import 'reflect-metadata';
+
 import FurudeRika from './client/FurudeRika';
 import dotenv from 'dotenv';
-import 'reflect-metadata';
+
 
 dotenv.config();
 

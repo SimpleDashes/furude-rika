@@ -9,7 +9,7 @@ import type IOsuUserScores from './interfaces/IOsuUserScores';
 import type IOsuUser from './IOsuUser';
 import type IOsuScore from '../scores/IOsuScore';
 import type { AnyServer } from '../servers/OsuServers';
-import { assertDefined } from 'discowork/src/assertions';
+import { assertDefined } from 'discowork';
 
 export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
   public readonly user_id: number;

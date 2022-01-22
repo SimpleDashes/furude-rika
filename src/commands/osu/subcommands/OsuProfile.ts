@@ -1,5 +1,5 @@
 import { secondsToHours } from 'date-fns';
-import { CommandInformation } from 'discowork/src/commands/decorators';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type OsuContext from '../../../contexts/osu/OsuContext';
 import ExpandableEmbedHelper from '../../../discord/commands/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasExpandableEmbed';

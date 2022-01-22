@@ -6,9 +6,8 @@ import UserType from '../../modules/framework/enums/UserType';
 import PingContainer from '../../modules/framework/ping/PingContainer';
 import PingData from '../../modules/framework/ping/PingData';
 import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
-
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
+import { InteractionUtils } from 'discowork';
 interface IPingCallbackArguments {
   interaction: CommandInteraction;
 }

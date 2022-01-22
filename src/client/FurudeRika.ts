@@ -9,13 +9,18 @@ import MessageCreator from '../modules/framework/helpers/MessageCreator';
 import OsuServers from '../modules/osu/servers/OsuServers';
 import BeatmapCacheManager from '../managers/BeatmapCacheManager';
 import ReminderManager from '../managers/ReminderManager';
+import DefaultContext from '../contexts/DefaultContext';
 import UserScanner from '../managers/UserScanner';
-import type CommandPrecondition from 'discowork/src/preconditions/CommandPrecondition';
-import SimpleClient from 'discowork/src/client/SimpleClient';
-import { Preconditions } from 'discowork/src/preconditions';
-import GuildPermissionsPrecondition from 'discowork/src/preconditions/implementations/GuildPermissionsPreconditions';
-import type ResourceValue from 'discowork/src/localization/resources/ResourceValue';
-import type DefaultContext from '../contexts/DefaultContext';
+import assert from 'assert';
+import type { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
+import type { CommandPrecondition, ResourceValue } from 'discowork';
+import {
+  SimpleClient,
+  Preconditions,
+  GuildPermissionsPrecondition,
+  Logger,
+  assertDefined,
+} from 'discowork';
 
 export default class FurudeRika extends SimpleClient {
   public readonly localizer = new FurudeLocalizer();
@@ -96,15 +101,12 @@ export default class FurudeRika extends SimpleClient {
     }, secondsToMilliseconds(60));
   }
 
-  public override async login(token?: string): Promise<string> {
-    const response = await super.login(token);
-
+  public override async onceLogin(): Promise<void> {
+    await super.onceLogin();
     await this.localizer.build();
     await this.db.connect();
-
     await this.reminderManager.setupReminders();
     this.userScanner.startScan();
-
     this.on('messageCreate', async (message) => {
       if (
         !message.guild ||
@@ -122,68 +124,44 @@ export default class FurudeRika extends SimpleClient {
         channel: message.channel,
       });
       if (operation.successfully) {
-        consola.success(operation.response);
+        Logger.success(operation.response);
       }
       await FurudeOperations.saveWhenSuccess(user, operation);
     });
+    this.commandProcessor.beforeCommandTrigger = async (
+      context
+    ): Promise<void> => {
+      await context.interaction.deferReply({ fetchReply: true });
+    };
+    this.commandProcessor.afterCommandTrigger = async (
+      context
+    ): Promise<void> => {
+      assert(context instanceof DefaultContext);
 
-    return response;
-  }
+      const { interaction, dbUser, dbGuild } = context;
 
-  /**
-   * 
-   * public override async beforeCommandRun(
-    response: ICommandRunResponse<DefaultContext<TypedArgs<unknown>>>
-  ): Promise<void> {
-    const { context } = response;
-    const { interaction } = context;
-    await interaction.deferReply();
-  }
-   */
+      const operation = dbUser.incrementExperience(
+        interaction.user,
+        interaction.inGuild() &&
+          interaction.channel instanceof BaseGuildTextChannel
+          ? ((): IncrementLocalUserExperienceInfo => {
+              assertDefined(interaction.guild);
+              assertDefined(dbGuild);
+              assertDefined(interaction.channel);
+              return {
+                rawGuild: interaction.guild,
+                dbGuild: dbGuild,
+                channel: interaction.channel,
+              };
+            })()
+          : undefined
+      );
 
-  /**
-   *  public override async onCommandRun(
-    response: ICommandRunResponse<DefaultContext<TypedArgs<unknown>>>
-  ): Promise<void> {
-    const { command, context } = response;
-    const { interaction, dbUser, dbGuild } = context;
-
-    dbUser.incrementExperience(
-      interaction.user,
-      interaction.inGuild() &&
-        interaction.channel instanceof BaseGuildTextChannel
-        ? ((): IncrementLocalUserExperienceInfo => {
-            assertDefined(interaction.guild);
-            assertDefined(dbGuild);
-            assertDefined(interaction.channel);
-            return {
-              rawGuild: interaction.guild,
-              dbGuild: dbGuild,
-              channel: interaction.channel,
-            };
-          })()
-        : undefined
-    );
-
-   */
-
-  /**
-   *
-   *   public override async onCommandsLoaded(): Promise<void> {
-    consola.log(this.commands.size + ' commands were loaded');
-    if (!this.#forceDeploy) return;
-    await DeployHandler.deployAll<DefaultContext<TypedArgs<unknown>>>(
-      this,
-      this.#isDebug,
-      {
-        onError: () => {
-          consola.error(`Error deploying all commands`);
-        },
-        onSuccess: () => {
-          consola.success(`Deployed all commands`);
-        },
+      if (operation.successfully) {
+        Logger.success(operation.response);
       }
-    );
+
+      await FurudeOperations.saveWhenSuccess(dbUser, operation);
+    };
   }
-   */
 }

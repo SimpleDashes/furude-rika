@@ -18,10 +18,11 @@ import StringHelper from '../helpers/StringHelper';
 import InteractionCollectorCreator from './abstracts/InteractionCollectorCreator';
 import type OnButtonPageChange from './interfaces/OnButtonPageChange';
 import Symbols from './Symbols';
-import { capitalize } from '@stdlib/string';
-import { assertDefined } from 'discowork/src/assertions';
-import type PageOption from 'discowork/src/options/custom/PageOption';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
+import stdlibString from '@stdlib/string';
+import type { PageOption } from 'discowork';
+import { InteractionUtils, assertDefined } from 'discowork';
+
+const { capitalize } = stdlibString;
 
 type Column = {
   name: string;

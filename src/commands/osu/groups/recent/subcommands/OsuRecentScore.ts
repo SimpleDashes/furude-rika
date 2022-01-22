@@ -9,11 +9,9 @@ import MessageCreator from '../../../../../modules/framework/helpers/MessageCrea
 import type IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
 import type IOsuUser from '../../../../../modules/osu/users/IOsuUser';
 import type { OsuServerUserOptionWithDiscord } from '../../../wrapper/OsuSubCommand';
+import { assertDefined, InteractionUtils, assertDefinedGet } from 'discowork';
+import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
-import { CommandInformation } from 'discowork/src/commands/decorators';
-import { assertDefined, assertDefinedGet } from 'discowork/src/assertions';
-import InteractionUtils from 'discowork/src/utils/InteractionUtils';
-
 type Args = unknown & OsuServerUserOptionWithDiscord;
 
 @CommandInformation({

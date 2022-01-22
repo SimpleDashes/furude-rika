@@ -1,4 +1,4 @@
-import type CommandWithPreconditions from 'discowork/src/preconditions/interfaces/CommandWithPreconditions';
+import type { CommandWithPreconditions } from 'discowork';
 import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
 import FurudeOperations from '../../../database/FurudeOperations';
 import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';

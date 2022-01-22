@@ -1,4 +1,4 @@
-import LocaleResource from 'discowork/src/localization/resources/LocaleResource';
+import { LocaleResource } from 'discowork';
 import type { FurudeLanguages } from './FurudeLocalizer';
 import type FurudeResourceStructure from './FurudeResourceStructure';
 
