@@ -15,7 +15,7 @@ import type DefaultContext from '../../../../../contexts/DefaultContext';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
-import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
+import MessageCreator from '../../../../../utils/MessageCreator';
 
 type Args = {
   channel: ChannelOption;

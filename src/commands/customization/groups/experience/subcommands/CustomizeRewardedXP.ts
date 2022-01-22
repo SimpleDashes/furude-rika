@@ -13,7 +13,7 @@ import {
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
 import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
-import MessageCreator from '../../../../../modules/framework/helpers/MessageCreator';
+import MessageCreator from '../../../../../utils/MessageCreator';
 
 class XPChangeOption extends IntegerOption {
   public constructor() {

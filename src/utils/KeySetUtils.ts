@@ -1,6 +1,6 @@
-import type IKeyValueSet from '../interfaces/IKeyValueSet';
+import type IKeyValueSet from '../modules/framework/interfaces/IKeyValueSet';
 
-export default class KeySetHelper {
+export default class KeySetUtils {
   public static getObject<K, V>(
     array: IKeyValueSet<K, V>[],
     key: K

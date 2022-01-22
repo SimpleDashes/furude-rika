@@ -3,8 +3,8 @@ import type { Snowflake, User } from 'discord.js';
 
 import type FurudeRika from '../../client/FurudeRika';
 import Strings from '../../containers/Strings';
-import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import Numbers from '../../modules/framework/helpers/Numbers';
+import MessageCreator from '../../utils/MessageCreator';
+import NumberUtils from '../../utils/NumberUtils';
 import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import GeneratedIDEntity from './abstracts/GeneratedIDEntity';
@@ -55,7 +55,9 @@ export default class DBReminder extends GeneratedIDEntity {
     const allTimeFrames = Object.values(end_time);
 
     if (
-      allTimeFrames.every((time) => Numbers.defaultOptionalNumber(time) <= 0)
+      allTimeFrames.every(
+        (time) => NumberUtils.defaultOptionalNumber(time) <= 0
+      )
     ) {
       return FurudeOperations.error(
         localizer.getTranslationFromContext(
@@ -87,27 +89,27 @@ export default class DBReminder extends GeneratedIDEntity {
 
     this.remind_end_date = addSeconds(
       this.remind_end_date,
-      Numbers.defaultOptionalNumber(end_time.seconds)
+      NumberUtils.defaultOptionalNumber(end_time.seconds)
     );
 
     this.remind_end_date = addMinutes(
       this.remind_end_date,
-      Numbers.defaultOptionalNumber(end_time.minutes)
+      NumberUtils.defaultOptionalNumber(end_time.minutes)
     );
 
     this.remind_end_date = addHours(
       this.remind_end_date,
-      Numbers.defaultOptionalNumber(end_time.hours)
+      NumberUtils.defaultOptionalNumber(end_time.hours)
     );
 
     this.remind_end_date = addDays(
       this.remind_end_date,
-      Numbers.defaultOptionalNumber(end_time.days)
+      NumberUtils.defaultOptionalNumber(end_time.days)
     );
 
     this.remind_end_date = addWeeks(
       this.remind_end_date,
-      Numbers.defaultOptionalNumber(end_time.weeks)
+      NumberUtils.defaultOptionalNumber(end_time.weeks)
     );
 
     client.reminderManager.addReminders(dbUser, this);

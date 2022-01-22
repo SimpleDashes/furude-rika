@@ -19,7 +19,7 @@ import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
 import type { TypedArgs } from 'discowork';
 import { StringOption } from 'discowork';
 import type { CommandContextOnlyInteractionAndClient } from 'discowork/lib/commands/interfaces/CommandContext';
-import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
+import MessageCreator from '../../../utils/MessageCreator';
 import OsuServerUtils from '../../../utils/OsuServerUtils';
 
 type OsuServerOption = Omit<StringOption, 'setAutocomplete'>;

@@ -1,5 +1,5 @@
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import MessageCreator from '../../../modules/framework/helpers/MessageCreator';
+import MessageCreator from '../../../utils/MessageCreator';
 import CurrencyContext from '../../../contexts/currency/CurrencyContext';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import type { ConstructorType } from 'discowork';

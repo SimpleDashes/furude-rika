@@ -4,7 +4,7 @@ import type DBUser from '../../../database/entity/DBUser';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
 import { PageOption } from 'discowork';
-import ArrayHelper from '../../../modules/framework/helpers/ArrayHelper';
+import ArrayUtils from '../../../utils/ArrayUtils';
 
 export type LeaderboardArgs = {
   page: PageOption;
@@ -28,7 +28,7 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
     const { interaction, args } = context;
     const { page } = args;
 
-    const users = ArrayHelper.greatestToLowest(
+    const users = ArrayUtils.greatestToLowest(
       await this.getUsers(context),
       (item) => this.getAppliedExperienceFromUser(context, item)
     );

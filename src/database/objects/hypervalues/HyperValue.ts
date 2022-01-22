@@ -1,7 +1,7 @@
 import type { Snowflake } from 'discord.js';
 import { assertDefined } from 'discowork';
 import { Column } from 'typeorm';
-import KeySetHelper from '../../../modules/framework/helpers/KeySetHelper';
+import KeySetUtils from '../../../utils/KeySetUtils';
 import type { SnowflakeSet } from '../../types/TSnowflakeSet';
 import { HyperTypes } from './HyperTypes';
 
@@ -30,7 +30,7 @@ export default abstract class GlobalLocalValue<T, K> {
 
   public currentLocal(key: K): T | null {
     const realKey = this.getLocalDecorationKey(key);
-    const current = KeySetHelper.getValue(this.locals, realKey);
+    const current = KeySetUtils.getValue(this.locals, realKey);
     if (current) return current;
     const newValue = this.#forceDefaultValue;
     this.setLocal(key, newValue);
@@ -38,7 +38,7 @@ export default abstract class GlobalLocalValue<T, K> {
   }
 
   public setLocal(key: K, value: T | null): void {
-    KeySetHelper.setValue(this.locals, this.getLocalDecorationKey(key), value);
+    KeySetUtils.setValue(this.locals, this.getLocalDecorationKey(key), value);
   }
 
   public values(key: K): (T | null)[] {

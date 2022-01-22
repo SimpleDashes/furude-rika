@@ -13,14 +13,14 @@ import type {
 } from 'discord.js';
 import { MessageActionRow, MessageButton } from 'discord.js';
 import Strings from '../../../containers/Strings';
-import MessageCreator from '../helpers/MessageCreator';
-import StringHelper from '../helpers/StringHelper';
+import MessageCreator from '../../../utils/MessageCreator';
 import InteractionCollectorCreator from './abstracts/InteractionCollectorCreator';
 import type OnButtonPageChange from './interfaces/OnButtonPageChange';
 import Symbols from './Symbols';
 import stdlibString from '@stdlib/string';
 import type { PageOption } from 'discowork';
 import { InteractionUtils, assertDefined } from 'discowork';
+import StringUtils from '../../../utils/StringUtils';
 
 const { capitalize } = stdlibString;
 
@@ -503,10 +503,10 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
 
           const columnContents = filledTables.map((table) => table[i]);
           const longest = Math.max(
-            StringHelper.getUnicodeStringLength(column.name),
+            StringUtils.getUnicodeStringLength(column.name),
             ...columnContents.map((v) => {
               assertDefined(v);
-              return StringHelper.getUnicodeStringLength(v);
+              return StringUtils.getUnicodeStringLength(v);
             })
           );
 

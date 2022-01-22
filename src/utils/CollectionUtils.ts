@@ -1,7 +1,7 @@
 import type { Collection } from 'discord.js';
 import { assertDefined } from 'discowork';
 
-export default class CollectionHelper {
+export default class CollectionUtils {
   public static collectionToRecord<K extends string | number | symbol, T>(
     collection: Collection<K, T>
   ): Record<K, T> {

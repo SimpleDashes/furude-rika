@@ -5,7 +5,7 @@ import FurudeDB from '../database/FurudeDB';
 import FurudeOperations from '../database/FurudeOperations';
 import FurudeLocalizer from '../localization/FurudeLocalizer';
 import type FurudeResourceStructure from '../localization/FurudeResourceStructure';
-import MessageCreator from '../modules/framework/helpers/MessageCreator';
+import MessageCreator from '../utils/MessageCreator';
 import OsuServers from '../modules/osu/servers/OsuServers';
 import BeatmapCacheManager from '../managers/BeatmapCacheManager';
 import ReminderManager from '../managers/ReminderManager';

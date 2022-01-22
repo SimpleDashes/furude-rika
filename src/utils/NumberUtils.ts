@@ -1,4 +1,4 @@
-export default class Numbers {
+export default class NumberUtils {
   /**
    *
    * @param number The optional number.

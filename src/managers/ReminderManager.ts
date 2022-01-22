@@ -1,7 +1,7 @@
 import { differenceInMilliseconds } from 'date-fns';
 import type { User } from 'discord.js';
 import DBReminder from '../database/entity/DBReminder';
-import MessageCreator from '../modules/framework/helpers/MessageCreator';
+import MessageCreator from '../utils/MessageCreator';
 import BaseFurudeManager from './abstracts/BaseFurudeManager';
 import type DBUser from '../database/entity/DBUser';
 

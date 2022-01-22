@@ -1,6 +1,6 @@
 import type { GuildChannel, Snowflake } from 'discord.js';
 import BindableInteger from '../../modules/bindables/BindableInteger';
-import MessageCreator from '../../modules/framework/helpers/MessageCreator';
+import MessageCreator from '../../utils/MessageCreator';
 import type FurudeLocalizer from '../../localization/FurudeLocalizer';
 import FurudeOperations from '../FurudeOperations';
 import type IDatabaseOperation from '../interfaces/IDatabaseOperation';

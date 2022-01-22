@@ -6,9 +6,9 @@ import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
 import { Parser } from 'expr-eval';
 import type DefaultContext from '../../contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import CollectionHelper from '../../modules/framework/helpers/CollectionHelper';
-import MessageCreator from '../../modules/framework/helpers/MessageCreator';
-import StringUtils from '../../modules/framework/helpers/StringUtils';
+import CollectionUtils from '../../utils/CollectionUtils';
+import MessageCreator from '../../utils/MessageCreator';
+import StringUtils from '../../utils/StringUtils';
 
 type Args = {
   expression: StringOption;
@@ -92,7 +92,7 @@ export default class Calc extends FurudeCommand<Args, DefaultContext<Args>> {
     let evaluatedResult: number | null = null;
     try {
       evaluatedResult = parsedExpression.evaluate(
-        gotVariables ? CollectionHelper.collectionToRecord(gotVariables) : {}
+        gotVariables ? CollectionUtils.collectionToRecord(gotVariables) : {}
       );
     } catch {
       // invalid input.

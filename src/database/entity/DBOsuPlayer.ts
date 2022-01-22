@@ -1,4 +1,4 @@
-import MessageCreator from '../../modules/framework/helpers/MessageCreator';
+import MessageCreator from '../../utils/MessageCreator';
 import type { AnyServer } from '../../modules/osu/servers/OsuServers';
 import OsuServers from '../../modules/osu/servers/OsuServers';
 import type BanchoUser from '../../modules/osu/servers/implementations/bancho/objects/BanchoUser';

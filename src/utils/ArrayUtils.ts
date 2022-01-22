@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SortType = any | number | bigint;
 
-export default class ArrayHelper {
+export default class ArrayUtils {
   public static getRandomArrayElement<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)] as T;
   }

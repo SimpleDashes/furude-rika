@@ -2,8 +2,8 @@ import { InteractionUtils } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type DefaultContext from '../../contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import ArrayHelper from '../../modules/framework/helpers/ArrayHelper';
-import MessageCreator from '../../modules/framework/helpers/MessageCreator';
+import ArrayUtils from '../../utils/ArrayUtils';
+import MessageCreator from '../../utils/MessageCreator';
 
 enum COIN {
   HEAD,
@@ -30,7 +30,7 @@ export default class CoinFlip extends FurudeCommand<
     const { interaction, client } = context;
     const { localizer } = client;
 
-    const selectedCoin = ArrayHelper.getRandomArrayElement(this.#coinsArray);
+    const selectedCoin = ArrayUtils.getRandomArrayElement(this.#coinsArray);
     await InteractionUtils.reply(
       interaction,
       MessageCreator.success(
