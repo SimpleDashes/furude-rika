@@ -6,7 +6,7 @@ import DailySubCommand from '../../wrapper/DailySubCommand';
 import { MustHaveOpenAccount } from '../../wrapper/EconomySubCommand';
 @CommandPreconditions(MustHaveOpenAccount)
 @CommandInformation({
-  name: 'global',
+  name: HyperTypes.global,
   description: `Get your daily ${CurrencyContainer.CURRENCY_NAME} globally.`,
 })
 export default class DailyGlobal extends DailySubCommand {

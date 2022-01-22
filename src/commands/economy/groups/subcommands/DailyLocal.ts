@@ -7,7 +7,7 @@ import { MustHaveOpenAccount } from '../../wrapper/EconomySubCommand';
 
 @CommandPreconditions(Preconditions.GuildOnly, MustHaveOpenAccount)
 @CommandInformation({
-  name: 'local',
+  name: HyperTypes.local,
   description: `Get your daily ${CurrencyContainer.CURRENCY_NAME} for the current guild you are in.`,
 })
 export default class DailyLocal extends DailySubCommand {
