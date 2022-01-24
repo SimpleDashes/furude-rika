@@ -3,7 +3,7 @@ import CommandOptions from '../../containers/CommandOptions';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
 import { UserOption, assertDefined, InteractionUtils } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
-import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
+import BaseEmbed from '../../discord/embeds/BaseEmbed';
 
 type Args = {
   user: UserOption;

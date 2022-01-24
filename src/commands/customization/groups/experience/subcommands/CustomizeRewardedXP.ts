@@ -12,7 +12,7 @@ import {
 } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type IDatabaseOperation from '../../../../../database/interfaces/IDatabaseOperation';
-import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
+import BaseEmbed from '../../../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../../../utils/MessageCreator';
 
 class XPChangeOption extends IntegerOption {

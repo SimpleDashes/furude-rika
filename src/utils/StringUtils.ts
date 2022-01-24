@@ -1,6 +1,6 @@
 import { Collection } from 'discord.js';
 import { assertDefined } from 'discowork';
-import type IKeyValueSet from '../modules/framework/interfaces/IKeyValueSet';
+import type IKeyValueSet from '../discord/interfaces/IKeyValueSet';
 
 export default class StringUtils {
   public static toCollectionSplittedByEqualSign<T>(

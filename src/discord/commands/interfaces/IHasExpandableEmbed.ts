@@ -1,4 +1,4 @@
-import type BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
+import type BaseEmbed from '../../embeds/BaseEmbed';
 
 export default interface IHasExpandableEmbed {
   createBaseEmbed: (...args: never[]) => BaseEmbed;

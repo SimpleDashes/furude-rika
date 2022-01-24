@@ -2,7 +2,7 @@ import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import type DBUser from '../../../database/entity/DBUser';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import { MessageButtonCreator } from '../../../modules/framework/creators/MessageButtonCreator';
+import { MessageButtonCreator } from '../../../discord/creators/MessageButtonCreator';
 import { PageOption } from 'discowork';
 import ArrayUtils from '../../../utils/ArrayUtils';
 

@@ -1,10 +1,10 @@
 import type OsuContext from '../../../../../contexts/osu/OsuContext';
 import Strings from '../../../../../containers/Strings';
-import ExpandableEmbedHelper from '../../../../../discord/commands/helpers/ExpandableEmbedHelper';
+import ExpandableEmbedHelper from '../../../../../discord/helpers/ExpandableEmbedHelper';
 import type IHasExpandableEmbed from '../../../../../discord/commands/interfaces/IHasExpandableEmbed';
 import type { FurudeLanguages } from '../../../../../localization/FurudeLocalizer';
-import { MessageButtonCreator } from '../../../../../modules/framework/creators/MessageButtonCreator';
-import BaseEmbed from '../../../../../modules/framework/embeds/BaseEmbed';
+import { MessageButtonCreator } from '../../../../../discord/creators/MessageButtonCreator';
+import BaseEmbed from '../../../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../../../utils/MessageCreator';
 import type IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
 import type IOsuUser from '../../../../../modules/osu/users/IOsuUser';

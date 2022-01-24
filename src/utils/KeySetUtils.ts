@@ -1,4 +1,4 @@
-import type IKeyValueSet from '../modules/framework/interfaces/IKeyValueSet';
+import type IKeyValueSet from '../discord/interfaces/IKeyValueSet';
 
 export default class KeySetUtils {
   public static getObject<K, V>(

@@ -5,13 +5,10 @@ import type {
   MessageButton,
 } from 'discord.js';
 import { InteractionUtils } from 'discowork';
-import type {
-  IListenerButton} from '../../../modules/framework/creators/MessageButtonCreator';
-import {
-  MessageButtonCreator,
-} from '../../../modules/framework/creators/MessageButtonCreator';
-import MessageButtonFactory from '../../../modules/framework/creators/MessageButtonFactory';
-import type BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
+import type { IListenerButton } from '../creators/MessageButtonCreator';
+import { MessageButtonCreator } from '../creators/MessageButtonCreator';
+import MessageButtonFactory from '../creators/MessageButtonFactory';
+import type BaseEmbed from '../embeds/BaseEmbed';
 
 type ButtonCustomizer = (button: MessageButton) => void;
 type ExpandingChangeListener = (button: MessageButton) => Promise<void>;

@@ -12,15 +12,15 @@ import type {
   Snowflake,
 } from 'discord.js';
 import { MessageActionRow, MessageButton } from 'discord.js';
-import Strings from '../../../containers/Strings';
-import MessageCreator from '../../../utils/MessageCreator';
+import Strings from '../../containers/Strings';
+import MessageCreator from '../../utils/MessageCreator';
 import InteractionCollectorCreator from './abstracts/InteractionCollectorCreator';
 import type OnButtonPageChange from './interfaces/OnButtonPageChange';
 import Symbols from './Symbols';
 import stdlibString from '@stdlib/string';
 import type { PageOption } from 'discowork';
 import { InteractionUtils, assertDefined } from 'discowork';
-import StringUtils from '../../../utils/StringUtils';
+import StringUtils from '../../utils/StringUtils';
 
 const { capitalize } = stdlibString;
 

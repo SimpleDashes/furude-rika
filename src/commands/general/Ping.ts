@@ -1,10 +1,10 @@
 import type { CommandInteraction } from 'discord.js';
 import type DefaultContext from '../../contexts/DefaultContext';
 import FurudeCommand from '../../discord/commands/FurudeCommand';
-import BaseEmbed from '../../modules/framework/embeds/BaseEmbed';
-import UserType from '../../modules/framework/enums/UserType';
-import PingContainer from '../../modules/framework/ping/PingContainer';
-import PingData from '../../modules/framework/ping/PingData';
+import BaseEmbed from '../../discord/embeds/BaseEmbed';
+import UserType from '../../discord/enums/UserType';
+import PingContainer from '../../discord/ping/PingContainer';
+import PingData from '../../discord/ping/PingData';
 import MessageCreator from '../../utils/MessageCreator';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import { InteractionUtils } from 'discowork';

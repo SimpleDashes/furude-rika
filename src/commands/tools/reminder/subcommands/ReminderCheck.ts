@@ -3,7 +3,7 @@ import CommandOptions from '../../../../containers/CommandOptions';
 import Strings from '../../../../containers/Strings';
 import DBReminder from '../../../../database/entity/DBReminder';
 import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
-import BaseEmbed from '../../../../modules/framework/embeds/BaseEmbed';
+import BaseEmbed from '../../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../../utils/MessageCreator';
 import type { TypedArgs } from 'discowork';
 import { assertDefined } from 'discowork';

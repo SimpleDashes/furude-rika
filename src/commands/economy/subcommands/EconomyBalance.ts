@@ -1,6 +1,6 @@
 import CommandOptions from '../../../containers/CommandOptions';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
-import BaseEmbed from '../../../modules/framework/embeds/BaseEmbed';
+import BaseEmbed from '../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../utils/MessageCreator';
 import EconomySubCommand from '../wrapper/EconomySubCommand';
 import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
