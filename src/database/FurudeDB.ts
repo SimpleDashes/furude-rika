@@ -5,10 +5,9 @@ import type {
   BaseEntity,
   Connection,
   FindManyOptions,
-  FindOneOptions} from 'typeorm';
-import {
-  createConnection
+  FindOneOptions,
 } from 'typeorm';
+import { createConnection } from 'typeorm';
 import { CacheCollection } from '../managers/abstracts/BaseFurudeCacheManager';
 import type SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
@@ -22,6 +21,7 @@ import type { ClassRepository } from './types/ClassRepository';
 
 export default class FurudeDB {
   public readonly uri: string;
+
   #connection?: Connection;
 
   public get Connection(): Connection | undefined {
@@ -29,7 +29,7 @@ export default class FurudeDB {
   }
 
   public constructor() {
-    this.uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@furude.9zjpv.mongodb.net/furude?retryWrites=true&w=majority`;
+    this.uri = process.env.DATABASE_URL;
   }
 
   public async connect(): Promise<void> {
@@ -44,36 +44,48 @@ export default class FurudeDB {
     });
   }
 
-  #assignNewEntityToEntity<T extends BaseEntity>(
+  /**
+   *
+   * @param constructor The entity repository.
+   * @param baseEntity The base entity to apply default values from constructor.
+   * @param onNotFound What to do when there isn't a baseEntity;
+   * @returns
+   */
+  #defaultEntity<T extends BaseEntity>(
     constructor: ClassRepository<T>,
-    findEntity: T | null,
+    baseEntity: T | undefined,
     onNotFound?: (o: T) => void
   ): T {
     const entity = new constructor();
-    if (findEntity) {
-      Object.assign(entity, findEntity);
+    if (baseEntity) {
+      Object.assign(entity, baseEntity);
+    } else if (onNotFound) {
+      onNotFound(entity);
     }
-    if (onNotFound && !findEntity) onNotFound(entity);
     return entity;
   }
 
+  /**
+   *
+   * @param constructor The entity repository.
+   * @param findEntity  Function that finds the entity.
+   * @param onNotFound  What to do if we can't find the entity.
+   * @returns The new entity.
+   */
   async #createEntityWhenNotFound<T extends BaseEntity>(
     constructor: ClassRepository<T>,
     findEntity: () => Promise<T | undefined>,
     onNotFound?: (o: T) => void
   ): Promise<T> {
-    let find: T | null = null;
-    try {
-      const found = await findEntity();
-      if (found) {
-        find = found;
-      }
-    } catch {
-      // We use a new entity if the entity isn't found.
-    }
-    return this.#assignNewEntityToEntity(constructor, find, onNotFound);
+    const find: T | undefined = await findEntity().catch();
+    return this.#defaultEntity(constructor, find, onNotFound);
   }
 
+  /**
+   *
+   * @param snowflakeable A snowflakeable entity.
+   * @returns A query for that snowflakeable entity.
+   */
   public getSnowFlakeQuery(
     snowflakeable: IHasSnowFlakeID
   ): FindOneOptions<SnowFlakeIDEntity> {
@@ -84,6 +96,12 @@ export default class FurudeDB {
     };
   }
 
+  /**
+   *
+   * @param entity  A snowflakeable entity.
+   * @param snowflakeable A snowflake id object to identity the entity with it's own id.
+   * @returns The {@link entity}
+   */
   #identifySnowflake<T extends SnowFlakeIDEntity>(
     entity: T,
     snowflakeable: IHasSnowFlakeID
@@ -94,6 +112,13 @@ export default class FurudeDB {
     return entity;
   }
 
+  /**
+   *
+   * @param snowflake A {@link IHasSnowFlakeID} to bases it id for the query.
+   * @param type The repository of the snowflake entity.
+   * @param query A extra query for more specific queries.
+   * @returns The entity found with that query.
+   */
   public async getSnowflake<T extends SnowFlakeIDEntity>(
     snowflake: IHasSnowFlakeID,
     type: ClassRepository<T>,
@@ -126,13 +151,19 @@ export default class FurudeDB {
     );
   }
 
+  /**
+   *
+   * @param type The entity repository.
+   * @param query An extra query for more specific queries.
+   * @returns Found entities with that query.
+   */
   public async getSnowflakes<T extends SnowFlakeIDEntity>(
     type: ClassRepository<T>,
     query?: FindManyOptions<T>
   ): Promise<T[]> {
     const snowFlakes: T[] = await type.find(query);
     for (const snowFlake of snowFlakes) {
-      this.#assignNewEntityToEntity(type, snowFlake);
+      this.#defaultEntity(type, snowFlake);
     }
     return snowFlakes;
   }

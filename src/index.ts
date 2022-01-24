@@ -3,7 +3,6 @@ import 'reflect-metadata';
 import FurudeRika from './client/FurudeRika';
 import dotenv from 'dotenv';
 
-
 dotenv.config();
 
 declare global {
@@ -12,8 +11,7 @@ declare global {
     interface ProcessEnv {
       BOT_TOKEN: string;
       DEV_GUILD_ID: string;
-      MONGODB_USER: string;
-      MONGODB_PASSWORD: string;
+      DATABASE_URL: string;
       BANCHO_API_KEY: string;
     }
   }

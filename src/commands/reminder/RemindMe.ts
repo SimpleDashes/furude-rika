@@ -1,7 +1,7 @@
 import { CommandPreconditions, Preconditions } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
-import type DefaultContext from '../../../contexts/DefaultContext';
-import FurudeCommand from '../../../discord/commands/FurudeCommand';
+import type DefaultContext from '../../contexts/DefaultContext';
+import FurudeCommand from '../../discord/commands/FurudeCommand';
 
 @CommandPreconditions(Preconditions.RequiresSubCommand)
 @CommandInformation({

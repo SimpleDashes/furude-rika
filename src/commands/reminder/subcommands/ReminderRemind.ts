@@ -1,14 +1,14 @@
-import type DefaultContext from '../../../../contexts/DefaultContext';
-import CommandOptions from '../../../../containers/CommandOptions';
-import TimeFrames from '../../../../containers/TimeFrames';
-import DBReminder from '../../../../database/entity/DBReminder';
-import FurudeOperations from '../../../../database/FurudeOperations';
-import type { TypedArgs} from 'discowork';
+import type DefaultContext from '../../../contexts/DefaultContext';
+import CommandOptions from '../../../containers/CommandOptions';
+import TimeFrames from '../../../containers/TimeFrames';
+import DBReminder from '../../../database/entity/DBReminder';
+import FurudeOperations from '../../../database/FurudeOperations';
+import type { TypedArgs } from 'discowork';
 import { assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import IntegerOption from 'discowork/lib/options/classes/IntegerOption';
 import StringOption from 'discowork/lib/options/classes/StringOption';
-import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
+import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 class ReminderTimeOption extends IntegerOption {
   public constructor(name: CommandOptions) {
     super();

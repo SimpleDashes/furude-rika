@@ -1,8 +1,8 @@
-import type DefaultContext from '../../../../contexts/DefaultContext';
-import CommandOptions from '../../../../containers/CommandOptions';
-import DBReminder from '../../../../database/entity/DBReminder';
-import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
-import MessageCreator from '../../../../utils/MessageCreator';
+import type DefaultContext from '../../../contexts/DefaultContext';
+import CommandOptions from '../../../containers/CommandOptions';
+import DBReminder from '../../../database/entity/DBReminder';
+import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
+import MessageCreator from '../../../utils/MessageCreator';
 import type { TypedArgs } from 'discowork';
 import { assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';

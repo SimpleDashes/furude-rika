@@ -1,10 +1,10 @@
-import type DefaultContext from '../../../../contexts/DefaultContext';
-import CommandOptions from '../../../../containers/CommandOptions';
-import Strings from '../../../../containers/Strings';
-import DBReminder from '../../../../database/entity/DBReminder';
-import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
-import BaseEmbed from '../../../../discord/embeds/BaseEmbed';
-import MessageCreator from '../../../../utils/MessageCreator';
+import type DefaultContext from '../../../contexts/DefaultContext';
+import CommandOptions from '../../../containers/CommandOptions';
+import Strings from '../../../containers/Strings';
+import DBReminder from '../../../database/entity/DBReminder';
+import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
+import BaseEmbed from '../../../discord/embeds/BaseEmbed';
+import MessageCreator from '../../../utils/MessageCreator';
 import type { TypedArgs } from 'discowork';
 import { assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
