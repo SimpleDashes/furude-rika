@@ -1,4 +1,4 @@
-import URLBuilder from '../apis/http/UrlBuilder';
+import URLBuilder from '../apis/http/URLBuilder';
 import type IRoute from './IRoute';
 import type Route from './Route';
 

@@ -1,12 +1,11 @@
-export default class UrlBuilder {
+export default class URLBuilder {
   /**
-   * Adds a sub path for the url
+   *
+   * Adds a sub path for the url.
    */
-  public static join(url: string, path: string): string {
+  public static join(url: string, pathname: string): string {
     let finalPath = url;
-    if (path) {
-      finalPath += `/${path}`;
-    }
+    if (pathname) finalPath += `/${pathname}`;
     return finalPath;
   }
 }

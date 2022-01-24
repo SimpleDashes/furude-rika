@@ -1,4 +1,4 @@
-import UrlBuilder from '../apis/http/UrlBuilder';
+import URLBuilder from '../apis/http/URLBuilder';
 import type ContentHost from '../ContentHost';
 import type IRoute from './IRoute';
 
@@ -11,6 +11,6 @@ export default class Route implements IRoute {
   public constructor(host: ContentHost, route: string) {
     this.#host = host;
     this.#route = route;
-    this.path = UrlBuilder.join(this.#host.Url, this.#route);
+    this.path = URLBuilder.join(this.#host.Url, this.#route);
   }
 }
