@@ -66,11 +66,11 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
       this.accounts.global = dbNewAccounts.global;
     }
 
-    for (const o of dbNewAccounts.locals) {
-      const server = OsuServers.servers.find((s) => s.name === o.key);
+    dbNewAccounts.locals.forEach((account) => {
+      const server = OsuServers.servers.find((s) => s.name === account.key);
       assertDefined(server);
-      this.accounts.setLocal(server, o.value);
-    }
+      this.accounts.setLocal(server, account.value);
+    });
 
     return FurudeOperations.success(
       localizer.getTranslationFromContext(context, (k) => k.osu.account.added, {

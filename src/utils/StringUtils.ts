@@ -22,11 +22,11 @@ export default class StringUtils {
       })
       .filter((set) => set.key != undefined && set.value != undefined);
     const collection: Collection<string, T> = new Collection();
-    for (const set of keyValueSets) {
+    keyValueSets.forEach((set) => {
       assertDefined(set.key);
       assertDefined(set.value);
       collection.set(set.key, set.value);
-    }
+    });
     return collection;
   }
 

@@ -1,5 +1,5 @@
 import { Collection } from 'discord.js';
-import { assertDefined } from 'discowork';
+import { assertDefined, assertDefinedGet } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import StringOption from 'discowork/lib/options/classes/StringOption';
 import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
@@ -133,14 +133,12 @@ export default class Calc extends FurudeCommand<Args, DefaultContext<Args>> {
     allVariables: string[],
     gotVariables: Collection<string, number>
   ): string[] {
-    const missingVariables = [];
-
-    for (const variable of allVariables) {
-      if (!gotVariables?.has(variable)) {
+    const missingVariables: string[] = [];
+    allVariables.forEach((variable) => {
+      if (!gotVariables.has(variable)) {
         missingVariables.push(variable);
       }
-    }
-
+    });
     return missingVariables;
   }
 
@@ -185,20 +183,21 @@ export default class Calc extends FurudeCommand<Args, DefaultContext<Args>> {
     if (gotVariablesRaw) {
       const split =
         StringUtils.toCollectionSplittedByEqualSignAsString(gotVariablesRaw);
-
-      for (const set of split) {
+      split.forEach((set) => {
+        const set_0 = assertDefinedGet(set[0]);
+        const set_1 = assertDefinedGet(set[1]);
         let value;
         try {
-          value = Parser.parse(set[1]).evaluate();
+          value = Parser.parse(set_1).evaluate();
         } catch {
           // invalid input.
         }
         if (value) {
-          if (gotExpression?.includes(set[0])) {
-            gotVariables?.set(set[0], value);
+          if (gotExpression?.includes(set_0)) {
+            gotVariables?.set(set_0, value);
           }
         }
-      }
+      });
     }
 
     return gotVariables;

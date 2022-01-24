@@ -10,22 +10,22 @@ export default class ReminderManager extends BaseFurudeManager {
 
   public async setupReminders(): Promise<void> {
     const reminders = await DBReminder.find();
-    const dbUsers = await this.rika.db.USER.find({
+    const users = await this.rika.db.USER.find({
       where: {
         s_id: { $in: reminders.map((r) => r.reminder_owner) },
       },
     });
-    for (const user of dbUsers) {
+    users.forEach((user) => {
       const userReminders = reminders.filter(
         (r) => r.reminder_owner === user.s_id
       );
       this.addReminders(user, ...userReminders);
-    }
+    });
   }
 
   public addReminders(databaseUser: DBUser, ...reminders: DBReminder[]): void {
     this.reminders.push(...reminders);
-    for (const reminder of reminders) {
+    reminders.forEach((reminder) => {
       setTimeout(async () => {
         if (!this.reminders.includes(reminder)) return;
 
@@ -51,7 +51,7 @@ export default class ReminderManager extends BaseFurudeManager {
 
         await this.removeReminder(reminder);
       }, differenceInMilliseconds(reminder.remind_end_date, new Date()));
-    }
+    });
   }
 
   public async removeReminder(reminder: DBReminder): Promise<void> {

@@ -67,16 +67,15 @@ export default abstract class BaseOsuUser<P> implements IOsuUser<P> {
     };
     this.total_seconds_played = parseInt(res.total_seconds_played);
     this.country = res.country;
-    this.events = [];
-    for (const event of res.events) {
-      this.events.push({
+    this.events = res.events.map((event) => {
+      return {
         display_html: event.display_html,
         beatmap_id: parseInt(event.beatmap_id),
         beatmap_set_id: parseInt(event.beatmap_set_id),
         date: new Date(event.date),
         epic_factor: new OsuUserEventsBindable(parseInt(event.epic_factor)),
-      });
-    }
+      };
+    });
   }
 
   public abstract fetchScores(

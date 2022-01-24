@@ -64,13 +64,14 @@ export default class CustomizeBlockedFromXPChannels extends FurudeSubCommand<
     )(context, channel);
 
     let blockedChannelsString = Strings.EMPTY;
-    for (const channel of dbGuild.blocked_xp_channels) {
+
+    dbGuild.blocked_xp_channels.forEach((channel) => {
       const cacheChannel = client.channels.cache.get(channel);
       if (cacheChannel) {
         blockedChannelsString += cacheChannel.toString();
         blockedChannelsString += '\n';
       }
-    }
+    });
 
     const embed = new BaseEmbed(
       {

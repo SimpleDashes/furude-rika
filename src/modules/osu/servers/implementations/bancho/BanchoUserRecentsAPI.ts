@@ -18,9 +18,9 @@ export default class BanchoUserRecentsAPI extends OsuUserRecentRoute<
       params
     )) as IBanchoAPIUserRecentScore[];
     const scores: IOsuScore[] = [];
-    for (const apiScore of apiScores) {
-      scores.push(new BanchoScore(apiScore, OsuServers.bancho));
-    }
+    apiScores.forEach((score) =>
+      scores.push(new BanchoScore(score, OsuServers.bancho))
+    );
     if (fetchBeatmaps) {
       for (const score of scores) {
         await score.fetchBeatmap();

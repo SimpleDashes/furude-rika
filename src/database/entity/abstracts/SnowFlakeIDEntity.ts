@@ -36,9 +36,7 @@ export default class SnowFlakeIDEntity
   public override async save(options?: SaveOptions): Promise<this> {
     this.justCreated = null;
     if (this.#onSaveListeners) {
-      for (const listener of this.#onSaveListeners) {
-        listener.beforeSaving();
-      }
+      this.#onSaveListeners.forEach((listener) => listener.beforeSaving());
     }
     return await super.save(options);
   }
