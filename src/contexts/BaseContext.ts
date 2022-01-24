@@ -11,7 +11,6 @@ export default abstract class BaseContext<A> implements CommandContext<A> {
   public readonly args!: TypedArgs<A>;
 
   public constructor(baseContext: CommandContextOnlyInteractionAndClient) {
-    // TODO FIX TYPING
     this.client = baseContext.client as FurudeRika;
     this.interaction = baseContext.interaction as CommandInteraction;
     this.db = this.client.db;

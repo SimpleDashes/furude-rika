@@ -58,7 +58,6 @@ export default class FurudeRika extends SimpleClient {
       (condition as CommandPrecondition).onFailMessage = (ctx): string =>
         MessageCreator.fail(
           this.localizer.getTranslationFromContext(
-            // TODO FIX TYPING, .... generics.....
             ctx as DefaultContext<unknown>,
             key,
             {}

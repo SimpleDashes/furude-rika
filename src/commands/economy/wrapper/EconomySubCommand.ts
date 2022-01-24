@@ -10,7 +10,6 @@ class MustHaveOpenAccountPrecondition extends CommandPrecondition {
   public constructor() {
     super();
     this.onFailMessage = (context): string => {
-      // TODO FIX TYPING
       const { localizer } = (context as CurrencyContext<unknown>).client;
       return MessageCreator.fail(
         localizer.getTranslationFromContext(

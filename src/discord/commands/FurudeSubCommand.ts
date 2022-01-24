@@ -10,7 +10,6 @@ export default abstract class FurudeCommand<A, CTX extends DefaultContext<A>>
 {
   public abstract override trigger(context: CTX): Promise<void>;
 
-  // TODO FIX TYPING
   public contextConstructor(): ConstructorType<
     [CommandContextOnlyInteractionAndClient],
     CTX
