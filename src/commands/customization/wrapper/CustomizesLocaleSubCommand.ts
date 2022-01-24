@@ -49,6 +49,8 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
         })()
       : undefined;
 
+    console.log(preferredLocale);
+
     const entityToLocalize = this.entityToLocalize(context);
 
     const operation = entityToLocalize.setPreferredLocale(
@@ -56,7 +58,7 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
       preferredLocale
     );
 
-    await entityToLocalize.save();
+    await FurudeOperations.saveWhenSuccess(entityToLocalize, operation);
     await FurudeOperations.answerInteraction(interaction, operation);
   }
 
