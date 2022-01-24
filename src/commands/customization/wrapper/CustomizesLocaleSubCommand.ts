@@ -49,8 +49,6 @@ export default abstract class CustomizesLocaleSubCommand extends FurudeSubComman
         })()
       : undefined;
 
-    console.log(preferredLocale);
-
     const entityToLocalize = this.entityToLocalize(context);
 
     const operation = entityToLocalize.setPreferredLocale(
