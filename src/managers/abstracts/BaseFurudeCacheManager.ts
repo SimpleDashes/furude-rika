@@ -1,7 +1,6 @@
 import type FurudeRika from '../../client/FurudeRika';
 import BaseFurudeManager from './BaseFurudeManager';
-import consola from 'consola';
-import { LimitedCapacityCollection } from 'discowork';
+import { LimitedCapacityCollection, Logger } from 'discowork';
 
 export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
   public readonly name: string;
@@ -35,7 +34,7 @@ export class CacheCollection<K, V> extends LimitedCapacityCollection<K, V> {
       this.#previousLogSize + this.capacity / this.#logPercentIncrease
     ) {
       this.#previousLogSize = this.size;
-      consola.log(
+      Logger.log(
         `[${this.name.toUpperCase()} CACHE]: reached ${this.size} items.`
       );
     }

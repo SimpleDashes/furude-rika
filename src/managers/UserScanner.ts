@@ -1,6 +1,6 @@
 import DBUser from '../database/entity/DBUser';
-import consola from 'consola';
 import BaseFurudeScanner from './abstracts/BaseFurudeScanner';
+import { Logger } from 'discowork';
 
 export default class UserScanner extends BaseFurudeScanner {
   protected scanningWhat = 'USER';
@@ -12,10 +12,10 @@ export default class UserScanner extends BaseFurudeScanner {
       try {
         discordUser = await this.rika.users.fetch(dbUser.s_id);
       } catch {
-        return;
+        continue;
       }
       dbUser.setUsername(discordUser.username);
-      consola.success(
+      Logger.success(
         `Dumped data about the user: ${dbUser.username} with the id: ${dbUser.s_id}`
       );
     }

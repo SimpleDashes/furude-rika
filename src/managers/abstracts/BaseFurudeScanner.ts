@@ -1,13 +1,13 @@
 import BaseFurudeManager from './BaseFurudeManager';
-import consola from 'consola';
 import { hoursToMilliseconds } from 'date-fns';
+import { Logger } from 'discowork';
 
 export default abstract class BaseFurudeScanner extends BaseFurudeManager {
   public startScan(): void {
     setInterval(async () => {
-      consola.success(`Started scanning ${this.scanningWhat}s`);
+      Logger.success(`Started scanning ${this.scanningWhat}s`);
       await this.runScan();
-      consola.success(`Finished scanning ${this.scanningWhat}s`);
+      Logger.success(`Finished scanning ${this.scanningWhat}s`);
     }, hoursToMilliseconds(this.executeEveryHours));
   }
 

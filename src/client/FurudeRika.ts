@@ -1,4 +1,3 @@
-import consola from 'consola';
 import { secondsToMilliseconds } from 'date-fns';
 import { BaseGuildTextChannel } from 'discord.js';
 import FurudeDB from '../database/FurudeDB';
@@ -93,7 +92,7 @@ export default class FurudeRika extends SimpleClient {
       const bytesToMegabytes = (bytes: number): number => {
         return bytes / 1024 / 1024;
       };
-      consola.success(
+      Logger.success(
         `Memory usage: ${bytesToMegabytes(
           process.memoryUsage().heapUsed
         ).toFixed()}MB`
