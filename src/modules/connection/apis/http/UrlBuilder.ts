@@ -1,4 +1,4 @@
-export default class URLBuilder {
+export default class UrlBuilder {
   /**
    *
    * Adds a sub path for the url.
