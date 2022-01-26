@@ -41,7 +41,6 @@ export default class FurudeDB {
         provider: () => new KeyvCacheProvider(),
         type: 'database',
         alwaysEnabled: true,
-        duration: hoursToMilliseconds(1),
       },
     });
   }
