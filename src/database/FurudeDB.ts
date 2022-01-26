@@ -1,6 +1,5 @@
 import { hoursToSeconds } from 'date-fns';
 import type { Guild, GuildChannel, Snowflake, User } from 'discord.js';
-import { assertDefined } from 'discowork';
 import type {
   BaseEntity,
   Connection,
@@ -11,11 +10,9 @@ import { createConnection } from 'typeorm';
 import { CacheCollection } from '../managers/abstracts/BaseFurudeCacheManager';
 import type SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
-import DBCitizen from './entity/DBCitizen';
 import DBGuild from './entity/DBGuild';
-import DBOsuPlayer from './entity/DBOsuPlayer';
-import DBUser from './entity/DBUser';
-import type IHasJustCreatedIdentifier from './interfaces/IHasJustCreatedIdentifier';
+import DBOsuPlayer from './entity/user/DBOsuPlayer';
+import DBUser from './entity/user/DBUser';
 import type IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
 import type { ClassRepository } from './types/ClassRepository';
 
@@ -34,13 +31,12 @@ export default class FurudeDB {
 
   public async connect(): Promise<void> {
     this.#connection = await createConnection({
-      type: 'mongodb',
+      type: 'cockroachdb',
       url: this.uri,
-      useNewUrlParser: true,
-      synchronize: false,
+      synchronize: true,
       logging: true,
-      useUnifiedTopology: true,
-      entities: ['dist/database/entity/*.js'],
+      ssl: true,
+      entities: ['dist/database/entity/user/*.js', 'dist/database/entity/*.js'],
     });
   }
 
@@ -77,8 +73,8 @@ export default class FurudeDB {
     findEntity: () => Promise<T | undefined>,
     onNotFound?: (o: T) => void
   ): Promise<T> {
-    const find: T | undefined = await findEntity().catch();
-    return this.#defaultEntity(constructor, find, onNotFound);
+    const found: T | undefined = await findEntity().catch();
+    return this.#defaultEntity(constructor, found, onNotFound);
   }
 
   /**
@@ -91,7 +87,7 @@ export default class FurudeDB {
   ): FindOneOptions<SnowFlakeIDEntity> {
     return {
       where: {
-        s_id: snowflakeable.id,
+        id: snowflakeable.id,
       },
     };
   }
@@ -106,8 +102,8 @@ export default class FurudeDB {
     entity: T,
     snowflakeable: IHasSnowFlakeID
   ): T {
-    if (!entity.s_id) {
-      entity.s_id = snowflakeable.id;
+    if (!entity.id) {
+      entity.id = snowflakeable.id;
     }
     return entity;
   }
@@ -124,29 +120,14 @@ export default class FurudeDB {
     type: ClassRepository<T>,
     query?: FindOneOptions<T>
   ): Promise<T> {
-    const identifyJustCreated = (
-      o: IHasJustCreatedIdentifier,
-      justCreated: boolean
-    ): void => {
-      o.justCreated = justCreated;
-    };
     return this.#identifySnowflake(
-      await this.#createEntityWhenNotFound(
-        type,
-        async () => {
-          const appliedQuery = {
-            ...this.getSnowFlakeQuery(snowflake),
-            ...query,
-          };
-          const found = await type.findOne(appliedQuery);
-          assertDefined(found);
-          identifyJustCreated(found, false);
-          return found;
-        },
-        (o) => {
-          identifyJustCreated(o, true);
-        }
-      ),
+      await this.#createEntityWhenNotFound(type, async () => {
+        const appliedQuery = {
+          ...this.getSnowFlakeQuery(snowflake),
+          ...query,
+        };
+        return await type.findOne(appliedQuery);
+      }),
       snowflake
     );
   }
@@ -167,8 +148,6 @@ export default class FurudeDB {
   }
 
   public USER = new UserGetter(this);
-
-  public CITIZEN = new CitizenGetter(this);
 
   public GUILD = new GuildGetter(this);
 
@@ -221,19 +200,23 @@ export abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
     that: BaseDatabaseGetter<T>,
     entity: T
   ): void {
-    that.cache.set(entity.s_id, entity);
+    that.cache.set(entity.id, entity);
   }
 
   protected static async findOne<
     K extends IHasSnowFlakeID | Snowflake,
     T extends SnowFlakeIDEntity
-  >(that: BaseDatabaseGetter<T>, key: K): Promise<T> {
+  >(
+    that: BaseDatabaseGetter<T>,
+    key: K,
+    query?: FindOneOptions<T>
+  ): Promise<T> {
     const newKey: IHasSnowFlakeID = {
       id: typeof key === 'string' ? key : key.id,
     };
     let entity = that.cache.get(newKey.id);
     if (!entity) {
-      entity = await that.db.getSnowflake<T>(newKey, that.typeObject());
+      entity = await that.db.getSnowflake<T>(newKey, that.typeObject(), query);
       this.addCache(that, entity);
     }
     return entity;
@@ -256,8 +239,11 @@ export abstract class DatabaseGetterGetOnly<
   extends BaseDatabaseGetter<T>
   implements IDatabaseGetterGetOnly<K, T>
 {
-  public async findOne(key: K | Snowflake): Promise<T> {
-    return await BaseDatabaseGetter.findOne(this, key);
+  public async findOne(
+    key: K | Snowflake,
+    query?: FindOneOptions<T>
+  ): Promise<T> {
+    return await BaseDatabaseGetter.findOne(this, key, query);
   }
 }
 
@@ -268,8 +254,11 @@ export abstract class DatabaseGetter<
   extends BaseDatabaseGetter<T>
   implements IDatabaseGetter<K, T>
 {
-  public async findOne(key: K | Snowflake): Promise<T> {
-    return await BaseDatabaseGetter.findOne(this, key);
+  public async findOne(
+    key: K | Snowflake,
+    query?: FindOneOptions<T>
+  ): Promise<T> {
+    return await BaseDatabaseGetter.findOne(this, key, query);
   }
   public async find(query?: FindManyOptions<T>): Promise<T[]> {
     return await BaseDatabaseGetter.find(this, query);
@@ -279,8 +268,11 @@ export abstract class DatabaseGetter<
 export abstract class UserBasedDatabaseGetter<
   T extends SnowFlakeIDEntity
 > extends DatabaseGetter<User, T> {
-  public override async findOne(user: User): Promise<T> {
-    return super.findOne(user);
+  public override async findOne(
+    user: User,
+    query?: FindOneOptions<T>
+  ): Promise<T> {
+    return super.findOne(user, query);
   }
   public override async find(query?: FindManyOptions<T>): Promise<T[]> {
     return super.find(query);
@@ -294,12 +286,6 @@ export class UserGetter extends UserBasedDatabaseGetter<DBUser> {
 
   public override cacheLimit(): number {
     return 1000;
-  }
-}
-
-export class CitizenGetter extends UserBasedDatabaseGetter<DBCitizen> {
-  protected typeObject(): ClassRepository<DBCitizen> {
-    return DBCitizen;
   }
 }
 

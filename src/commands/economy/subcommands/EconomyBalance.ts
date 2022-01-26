@@ -33,7 +33,8 @@ export default class EconomyOpen extends EconomySubCommand<Args> {
 
     assertDefined(user);
 
-    const citizen = await context.CITIZENS.default(user);
+    const dbUser = await context.USERS.default(user);
+    const { citizen } = dbUser;
 
     if (citizen.justCreated) {
       await InteractionUtils.reply(

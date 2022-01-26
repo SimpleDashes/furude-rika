@@ -1,26 +1,21 @@
-import { Snowflake } from 'discord.js';
+import { Snowflake } from 'discord-api-types';
 import type { SaveOptions } from 'typeorm';
-import { Column, Entity } from 'typeorm';
+import { ObjectIdColumn } from 'typeorm';
+import { Entity } from 'typeorm';
 import type BindableValue from '../../../modules/bindables/BindableValue';
-import type IHasJustCreatedIdentifier from '../../interfaces/IHasJustCreatedIdentifier';
 import type IOnSaveListener from '../../interfaces/IOnSaveListener';
-import GeneratedIDEntity from './GeneratedIDEntity';
+import WithJustCreatedIdentifierEntity from './WithJustCreatedIdentifierEntity';
 
 @Entity()
-export default class SnowFlakeIDEntity
-  extends GeneratedIDEntity
-  implements IHasJustCreatedIdentifier
-{
+export default class SnowFlakeIDEntity extends WithJustCreatedIdentifierEntity {
   #onSaveListeners: IOnSaveListener[] | null = [];
 
-  /**
-   * Secondary ID
-   */
-  @Column()
-  public s_id!: Snowflake;
+  @ObjectIdColumn({ type: 'string' })
+  public declare id: Snowflake;
 
-  @Column({ update: false, nullable: true, type: 'bool' })
-  public justCreated: boolean | null = null;
+  public constructor() {
+    super();
+  }
 
   public registerSaveListener<T extends IOnSaveListener>(listener: T): T {
     if (this.#onSaveListeners) {
@@ -34,7 +29,6 @@ export default class SnowFlakeIDEntity
   }
 
   public override async save(options?: SaveOptions): Promise<this> {
-    this.justCreated = null;
     if (this.#onSaveListeners) {
       this.#onSaveListeners.forEach((listener) => listener.beforeSaving());
     }

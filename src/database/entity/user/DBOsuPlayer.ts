@@ -1,15 +1,15 @@
-import MessageCreator from '../../utils/MessageCreator';
-import type { AnyServer } from '../../modules/osu/servers/OsuServers';
-import OsuServers from '../../modules/osu/servers/OsuServers';
-import type BanchoUser from '../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
-import type IOsuUser from '../../modules/osu/users/IOsuUser';
-import FurudeOperations from '../FurudeOperations';
-import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import HyperNumber from '../objects/hypervalues/HyperNumber';
-import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
-import type OsuContext from '../../contexts/osu/OsuContext';
-import { assertDefined } from 'discowork';
+import { assertDefined, assertDefinedGet } from 'discowork';
 import { Entity, Column } from 'typeorm';
+import type OsuContext from '../../../contexts/osu/OsuContext';
+import type BanchoUser from '../../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
+import type { AnyServer } from '../../../modules/osu/servers/OsuServers';
+import OsuServers from '../../../modules/osu/servers/OsuServers';
+import type IOsuUser from '../../../modules/osu/users/IOsuUser';
+import MessageCreator from '../../../utils/MessageCreator';
+import FurudeOperations from '../../FurudeOperations';
+import type IDatabaseOperation from '../../interfaces/IDatabaseOperation';
+import HyperNumber from '../../objects/hypervalues/HyperNumber';
+import SnowFlakeIDEntity from '../abstracts/SnowFlakeIDEntity';
 
 interface IOsuAccounts {
   bancho: unknown;
@@ -18,6 +18,7 @@ interface IOsuAccounts {
 interface IArgOsuAccounts extends IOsuAccounts {
   bancho: BanchoUser;
 }
+
 class OsuServerHyperValue extends HyperNumber<AnyServer> {
   public getLocalDecorationKey(key: AnyServer): string {
     return key.name;
@@ -66,11 +67,14 @@ export default class DBOsuPlayer extends SnowFlakeIDEntity {
       this.accounts.global = dbNewAccounts.global;
     }
 
-    dbNewAccounts.locals.forEach((account) => {
-      const server = OsuServers.servers.find((s) => s.name === account.key);
+    for (const key in dbNewAccounts.locals) {
+      const server = OsuServers.servers.find((s) => s.name === key);
       assertDefined(server);
-      this.accounts.setLocal(server, account.value);
-    });
+      this.accounts.setLocal(
+        server,
+        assertDefinedGet(dbNewAccounts.locals[key])
+      );
+    }
 
     return FurudeOperations.success(
       localizer.getTranslationFromContext(context, (k) => k.osu.account.added, {

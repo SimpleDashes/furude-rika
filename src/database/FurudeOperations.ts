@@ -6,7 +6,7 @@ import type {
   MessagePayload,
   WebhookEditMessageOptions,
 } from 'discord.js';
-import { InteractionUtils } from 'discowork';
+import { InteractionUtils, Logger } from 'discowork';
 import type { BaseEntity } from 'typeorm';
 import MessageCreator from '../utils/MessageCreator';
 import type IDatabaseOperation from './interfaces/IDatabaseOperation';
@@ -59,6 +59,7 @@ export default class FurudeOperations {
     ...operations: IDatabaseOperation[]
   ): Promise<boolean> {
     if (operations.every((o) => o.successfully)) {
+      Logger.log(`Saving entity: ${entity.constructor.name}`);
       await entity.save();
       return true;
     }

@@ -1,14 +1,14 @@
 import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import TimeFrames from '../../../containers/TimeFrames';
-import DBReminder from '../../../database/entity/DBReminder';
+import DBReminder from '../../../database/entity/user/DBReminder';
 import FurudeOperations from '../../../database/FurudeOperations';
 import type { TypedArgs } from 'discowork';
 import { assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import IntegerOption from 'discowork/lib/options/classes/IntegerOption';
 import StringOption from 'discowork/lib/options/classes/StringOption';
-import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
+import ReminderCommand from '../wrapper/ReminderCommand';
 class ReminderTimeOption extends IntegerOption {
   public constructor(name: CommandOptions) {
     super();
@@ -33,10 +33,7 @@ type Args = {
   description:
     'Setups a little reminder for you to get your lazy uwu working on next time.',
 })
-export default class ReminderReminderMe extends FurudeSubCommand<
-  Args,
-  DefaultContext<Args>
-> {
+export default class ReminderReminderMe extends ReminderCommand<Args> {
   public createArguments(): Args {
     return {
       what: new StringOption()
@@ -64,12 +61,13 @@ export default class ReminderReminderMe extends FurudeSubCommand<
   public async trigger(
     context: DefaultContext<TypedArgs<Args>>
   ): Promise<void> {
-    const { interaction, args } = context;
+    const { interaction, args, dbUser } = context;
     const { what, seconds, minutes, hours, days, weeks } = args;
 
     assertDefined(what);
 
-    const reminder = DBReminder.create().build(interaction.user, what);
+    const reminder = new DBReminder(dbUser, what);
+
     const operation = reminder.setupFire(context, {
       seconds,
       minutes,

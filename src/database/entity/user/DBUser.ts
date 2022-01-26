@@ -1,19 +1,22 @@
+import 'reflect-metadata';
 import { intervalToDuration } from 'date-fns';
-import type { Guild, GuildChannel, User } from 'discord.js';
+import type { Guild, GuildChannel, Snowflake, User } from 'discord.js';
 import { assertDefinedGet } from 'discowork';
-import { Column, Entity } from 'typeorm';
-import Globals from '../../containers/Globals';
-import Strings from '../../containers/Strings';
-import type FurudeLocalizer from '../../localization/FurudeLocalizer';
-import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
-import FurudeOperations from '../FurudeOperations';
-import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
-import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDate';
-import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
-import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
-import type DBGuild from './DBGuild';
-import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import Globals from '../../../containers/Globals';
+import Strings from '../../../containers/Strings';
+import type FurudeLocalizer from '../../../localization/FurudeLocalizer';
+import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
+import FurudeOperations from '../../FurudeOperations';
+import type IDatabaseOperation from '../../interfaces/IDatabaseOperation';
+import type IHasPreferredLocale from '../../interfaces/IHasPreferredLocale';
+import GuildHyperDate from '../../objects/hypervalues/concrets/guilds/GuildHyperDate';
+import GuildHyperNumber from '../../objects/hypervalues/concrets/guilds/GuildHyperNumber';
+import SnowFlakeIDEntity from '../abstracts/SnowFlakeIDEntity';
+import DBCitizen from '../DBCitizen';
+import type DBGuild from '../DBGuild';
+import DBReminder from './DBReminder';
+import EntityWithLocaleHelper from '../helpers/EntityWithLocaleHelper';
 
 export type IncrementLocalUserExperienceInfo = {
   rawGuild: Guild;
@@ -36,17 +39,27 @@ export default class DBUser
   public static MAX_MIN_SECONDS_FOR_EXPERIENCE = 60 * 60;
   public static MIN_SECONDS_FOR_EXPERIENCE_GLOBAL = 30;
 
-  @Column()
-  public preferred_locale?: FurudeLanguages | undefined;
+  @JoinColumn()
+  @OneToOne(() => DBCitizen, (citizen) => citizen.user)
+  public citizen!: DBCitizen;
+
+  @OneToMany(() => DBReminder, (reminder) => reminder.owner)
+  public reminders!: DBReminder[];
 
   @Column('string')
   public username: string = Strings.UNKNOWN;
+
+  @Column('string', { array: true, default: JSON.stringify({}) })
+  public guilds: Snowflake[] = [];
 
   @Column(() => GuildHyperNumber)
   public experience = new GuildHyperNumber();
 
   @Column(() => GuildHyperDate)
   public lastTimeGotExperience = new GuildHyperDate(null);
+
+  @Column('string', { nullable: true })
+  public preferred_locale?: FurudeLanguages | undefined;
 
   public setPreferredLocale(
     localizer: FurudeLocalizer,

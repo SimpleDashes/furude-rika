@@ -1,8 +1,7 @@
 import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import Strings from '../../../containers/Strings';
-import DBReminder from '../../../database/entity/DBReminder';
-import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
+import DBReminder from '../../../database/entity/user/DBReminder';
 import BaseEmbed from '../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../utils/MessageCreator';
 import type { TypedArgs } from 'discowork';
@@ -10,6 +9,7 @@ import { assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import UserOption from 'discowork/lib/options/classes/UserOption';
 import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
+import ReminderCommand from '../wrapper/ReminderCommand';
 
 type Args = {
   user: UserOption;
@@ -19,10 +19,7 @@ type Args = {
   name: 'check',
   description: 'Check all your pending reminders.',
 })
-export default class ReminderCheck extends FurudeSubCommand<
-  Args,
-  DefaultContext<Args>
-> {
+export default class ReminderCheck extends ReminderCommand<Args> {
   public static MAX_REMINDER_LENGTH = 16;
 
   public createArguments(): Args {

@@ -1,25 +1,18 @@
 import type { User } from 'discord.js';
-import type DBCitizen from '../../database/entity/DBCitizen';
-import DefaultContext, { UserBasedContextCreator } from '../DefaultContext';
+import DBCitizen from '../../database/entity/DBCitizen';
+import type DBUser from '../../database/entity/user/DBUser';
+import DefaultContext, { UsersCreator } from '../DefaultContext';
 
-class CitizenCreator extends UserBasedContextCreator<
-  CurrencyContext<unknown>,
-  DBCitizen
-> {
-  public async create(arg: User): Promise<DBCitizen> {
-    return this.context.db.CITIZEN.findOne(arg);
-  }
-  public default(arg: User): Promise<DBCitizen> {
-    return this.userDefault(arg, this.context.citizen);
+class CurrencyUserCreator extends UsersCreator {
+  public override async create(arg: User): Promise<DBUser> {
+    const user = await this.context.db.USER.findOne(arg, {
+      relations: ['citizen'],
+    });
+    user.citizen ??= new DBCitizen(user);
+    return user;
   }
 }
+
 export default class CurrencyContext<A> extends DefaultContext<A> {
-  public citizen!: DBCitizen;
-
-  public override async build(): Promise<void> {
-    await super.build();
-    this.citizen = await this.CITIZENS.create(this.interaction.user);
-  }
-
-  public CITIZENS: CitizenCreator = new CitizenCreator(this);
+  public override USERS: UsersCreator = new CurrencyUserCreator(this);
 }

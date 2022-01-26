@@ -470,7 +470,8 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
     pageOption: PageOption,
     duration: number,
     tableColumns: Column[],
-    fillTable: (item: T) => (string | undefined)[]
+    fillTable: (item: T) => (string | undefined)[],
+    defaultContent?: string
   ): Promise<Message<boolean>> {
     const internalColumns: Column[] = [{ name: '#', padding: 4 }];
     tableColumns = [...internalColumns, ...tableColumns];
@@ -537,7 +538,7 @@ export abstract class MessageButtonCreator extends InteractionCollectorCreator {
             }
 
             output += '\n';
-            options.content = '```c\n' + output + '```';
+            options.content = '```c\n' + (output ?? defaultContent) + '```';
           }
         );
       }

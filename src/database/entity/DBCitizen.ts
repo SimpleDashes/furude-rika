@@ -7,9 +7,10 @@ import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDate';
 import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
 import type { HyperTypes } from '../objects/hypervalues/HyperTypes';
-import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 import type CurrencyContext from '../../contexts/currency/CurrencyContext';
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToOne } from 'typeorm';
+import DBUser from './user/DBUser';
+import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
 
 interface IStreakOperation extends IDatabaseOperation {
   readonly lostStreak: boolean;
@@ -23,9 +24,11 @@ interface IStreakOperation extends IDatabaseOperation {
  */
 @Entity()
 export default class DBCitizen extends SnowFlakeIDEntity {
-  public static readonly STARTING_CAPITAL = 100;
   public static readonly WEEKLY_STREAK = 7;
   public static readonly AMOUNT_DAILY = 50;
+
+  @OneToOne(() => DBUser, (user) => user.citizen)
+  public user!: DBUser;
 
   @Column(() => GuildHyperNumber)
   public capital = new GuildHyperNumber();
@@ -35,6 +38,14 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
   @Column(() => GuildHyperDate)
   public lastTimeClaimedDaily = new GuildHyperDate(null);
+
+  public constructor(user: DBUser) {
+    super();
+    if (user) {
+      this.user = user;
+      this.id = user.id;
+    }
+  }
 
   #incrementCapital(
     interaction: CommandInteraction,
@@ -47,7 +58,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
     if (resultingCapital < 0) {
       return FurudeOperations.error(
-        `${this.s_id} couldn't complete increment capital operation, because he doesn't have enough ${CurrencyContainer.CURRENCY_NAME}`
+        `${this.user.id} couldn't complete increment capital operation, because he doesn't have enough ${CurrencyContainer.CURRENCY_NAME}`
       );
     }
 
@@ -55,7 +66,7 @@ export default class DBCitizen extends SnowFlakeIDEntity {
 
     this.capital.setValueSwitchedForType(interaction.guild, type, capital);
 
-    return FurudeOperations.success(`Incremented ${this.s_id} capital.`);
+    return FurudeOperations.success(`Incremented ${this.user.id} capital.`);
   }
 
   /**
@@ -186,40 +197,6 @@ export default class DBCitizen extends SnowFlakeIDEntity {
               .getValueSwitchedForType(interaction.guild, type)
               .toFixed()
           ),
-        }
-      )
-    );
-  }
-
-  /**
-   * Assigns a new account (this instance) to our parent (A DBUser).
-   * If the parent didn't had an open account beforehand.
-   */
-  public openAccount(context: CurrencyContext<unknown>): IDatabaseOperation {
-    const { client } = context;
-    const { localizer } = client;
-
-    if (!this.justCreated) {
-      return FurudeOperations.error(
-        localizer.getTranslationFromContext(
-          context,
-          (k) => k.economy.open.fail,
-          {
-            CURRENCY_NAME: CurrencyContainer.CURRENCY_NAME,
-          }
-        )
-      );
-    }
-
-    this.capital = new GuildHyperNumber();
-    this.capital.global = DBCitizen.STARTING_CAPITAL;
-
-    return FurudeOperations.success(
-      localizer.getTranslationFromContext(
-        context,
-        (k) => k.economy.open.success,
-        {
-          CURRENCY_NAME: CurrencyContainer.CURRENCY_NAME,
         }
       )
     );

@@ -1,13 +1,13 @@
 import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
-import DBReminder from '../../../database/entity/DBReminder';
-import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
+import DBReminder from '../../../database/entity/user/DBReminder';
 import MessageCreator from '../../../utils/MessageCreator';
 import type { TypedArgs } from 'discowork';
 import { assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import IntegerOption from 'discowork/lib/options/classes/IntegerOption';
 import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
+import ReminderCommand from '../wrapper/ReminderCommand';
 
 type Args = {
   index: IntegerOption;
@@ -17,10 +17,7 @@ type Args = {
   name: 'remove',
   description: 'Removes a reminder by a index.',
 })
-export default class ReminderRemove extends FurudeSubCommand<
-  Args,
-  DefaultContext<Args>
-> {
+export default class ReminderRemove extends ReminderCommand<Args> {
   public createArguments(): Args {
     return {
       index: new IntegerOption()

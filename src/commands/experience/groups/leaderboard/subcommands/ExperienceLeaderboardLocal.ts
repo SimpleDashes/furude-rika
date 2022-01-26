@@ -1,14 +1,9 @@
 import type DefaultContext from '../../../../../contexts/DefaultContext';
-import type DBUser from '../../../../../database/entity/DBUser';
+import DBUser from '../../../../../database/entity/user/DBUser';
 import type { LeaderboardArgs } from '../../../wrapper/ExperienceLeaderBoardSubCommand';
 import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
-import type {
-  TypedArgs} from 'discowork';
-import {
-  CommandPreconditions,
-  Preconditions,
-  assertDefined,
-} from 'discowork';
+import type { TypedArgs } from 'discowork';
+import { CommandPreconditions, Preconditions, assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 
 @CommandPreconditions(Preconditions.GuildOnly)
@@ -30,12 +25,10 @@ export default class ExperienceLeaderboardLocal extends ExperienceLeaderboardSub
     context: DefaultContext<TypedArgs<LeaderboardArgs>>
   ): Promise<DBUser[]> {
     assertDefined(context.interaction.guildId);
-    return await context.db.USER.find({
-      where: {
-        'experience.locals': {
-          $elemMatch: { key: context.interaction.guildId },
-        },
-      },
-    });
+    return await DBUser.createQueryBuilder('user')
+      .where('user.guilds @> :guilds', {
+        guilds: [context.interaction.guildId],
+      })
+      .getMany();
   }
 }

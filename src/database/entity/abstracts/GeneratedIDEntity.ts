@@ -1,7 +1,7 @@
-import { Entity, BaseEntity, ObjectIdColumn } from 'typeorm';
+import { Entity, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export default abstract class GeneratedIDEntity extends BaseEntity {
-  @ObjectIdColumn({ generated: true })
-  public _id!: number;
+  @PrimaryGeneratedColumn()
+  public id!: unknown;
 }

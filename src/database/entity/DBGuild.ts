@@ -7,7 +7,7 @@ import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
 import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
 import EntityExtension from '../objects/abstracts/EntityExtension';
 import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
-import DBUser from './DBUser';
+import DBUser from './user/DBUser';
 import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
 import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
 import type DefaultContext from '../../contexts/DefaultContext';
@@ -43,16 +43,16 @@ export default class DBGuild
   public static MIN_XP_CHANGE_VALUE = 0;
   public static MAX_XP_CHANGE_VALUE = 100;
 
-  @Column()
+  @Column('string', { nullable: true })
   public preferred_locale?: FurudeLanguages | undefined;
 
-  @Column('number')
+  @Column('int')
   public min_rewarded_xp_value?: number;
 
-  @Column('number')
+  @Column('int')
   public max_rewarded_xp_value?: number;
 
-  @Column('number')
+  @Column('int')
   public time_for_xp?: number;
 
   public setPreferredLocale(
@@ -72,7 +72,7 @@ export default class DBGuild
    * Guild channels which the guild users
    * are blocked from being rewarded experience on
    */
-  @Column('array')
+  @Column(() => Array)
   public blocked_xp_channels: Snowflake[] = [];
 
   #extension = new DBGuildExtension(this);

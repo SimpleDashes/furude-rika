@@ -11,7 +11,7 @@ export default class DBChannel
   extends SnowFlakeIDEntity
   implements IHasPreferredLocale
 {
-  @Column()
+  @Column('string', { nullable: true })
   public preferred_locale?: FurudeLanguages | undefined;
 
   public setPreferredLocale(

@@ -56,4 +56,8 @@ export default class ArrayUtils {
       {} as Record<T[K], T>
     );
   }
+
+  public static pushIfNotPresent<T>(array: T[], ...items: T[]): void {
+    array.push(...items.filter((item) => !array.includes(item)));
+  }
 }

@@ -1,6 +1,6 @@
 import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
-import type DBUser from '../../../database/entity/DBUser';
+import type DBUser from '../../../database/entity/user/DBUser';
 import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
 import { MessageButtonCreator } from '../../../discord/creators/MessageButtonCreator';
 import { PageOption } from 'discowork';
@@ -25,8 +25,9 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
   public async trigger(
     context: DefaultContext<LeaderboardArgs>
   ): Promise<void> {
-    const { interaction, args } = context;
+    const { interaction, client, args } = context;
     const { page } = args;
+    const { localizer } = client;
 
     const users = ArrayUtils.greatestToLowest(
       await this.getUsers(context),
@@ -46,7 +47,12 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
           item.username,
           (this.getAppliedExperienceFromUser(context, item) ?? 0).toString(),
         ];
-      }
+      },
+      localizer.getTranslationFromContext(
+        context,
+        (s) => s.errors.nothing_here,
+        {}
+      )
     );
   }
 

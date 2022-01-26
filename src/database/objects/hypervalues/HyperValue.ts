@@ -1,8 +1,6 @@
 import type { Snowflake } from 'discord.js';
 import { assertDefined } from 'discowork';
 import { Column } from 'typeorm';
-import KeySetUtils from '../../../utils/KeySetUtils';
-import type { SnowflakeSet } from '../../types/TSnowflakeSet';
 import { HyperTypes } from './HyperTypes';
 
 /**
@@ -11,11 +9,10 @@ import { HyperTypes } from './HyperTypes';
  * things such as XP which we nay have a guild exclusive
  * XP and a global XP, or even currency.
  */
-export default abstract class GlobalLocalValue<T, K> {
-  @Column('array')
-  public locals: SnowflakeSet<T>[] = [];
+export default abstract class HyperValue<T, K> {
+  @Column('jsonb')
+  public locals: Record<string, T | null> = {};
 
-  @Column('number')
   public global: T | null;
 
   #forceDefaultValue: T | null;
@@ -30,15 +27,15 @@ export default abstract class GlobalLocalValue<T, K> {
 
   public currentLocal(key: K): T | null {
     const realKey = this.getLocalDecorationKey(key);
-    const current = KeySetUtils.getValue(this.locals, realKey);
+    const current = this.locals[realKey];
     if (current) return current;
-    const newValue = this.#forceDefaultValue;
+    const newValue = this.#forceDefaultValue ?? this.defaultValue();
     this.setLocal(key, newValue);
     return newValue;
   }
 
   public setLocal(key: K, value: T | null): void {
-    KeySetUtils.setValue(this.locals, this.getLocalDecorationKey(key), value);
+    this.locals[this.getLocalDecorationKey(key)] = value;
   }
 
   public values(key: K): (T | null)[] {

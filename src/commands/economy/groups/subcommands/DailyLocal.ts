@@ -3,9 +3,8 @@ import CommandInformation from 'discowork/lib/commands/decorators/CommandInforma
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
 import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
 import DailySubCommand from '../../wrapper/DailySubCommand';
-import { MustHaveOpenAccount } from '../../wrapper/EconomySubCommand';
 
-@CommandPreconditions(Preconditions.GuildOnly, MustHaveOpenAccount)
+@CommandPreconditions(Preconditions.GuildOnly)
 @CommandInformation({
   name: HyperTypes.local,
   description: `Get your daily ${CurrencyContainer.CURRENCY_NAME} for the current guild you are in.`,

@@ -1,9 +1,8 @@
-import type { CommandWithPreconditions } from 'discowork';
 import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
 import FurudeOperations from '../../../database/FurudeOperations';
 import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
 import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
-import EconomySubCommand, { MustHaveOpenAccount } from './EconomySubCommand';
+import EconomySubCommand from './EconomySubCommand';
 
 export type DailyArgs = unknown;
 export default abstract class DailySubCommand extends EconomySubCommand<DailyArgs> {
@@ -11,22 +10,11 @@ export default abstract class DailySubCommand extends EconomySubCommand<DailyArg
     return {};
   }
 
-  public constructor() {
-    super();
-    if (
-      !(this as unknown as CommandWithPreconditions).preconditions.includes(
-        MustHaveOpenAccount
-      )
-    ) {
-      throw 'DailySubCommand implementations should include MustHaveOpenAccount precondition.';
-    }
-  }
-
   public async trigger(context: CurrencyContext<DailyArgs>): Promise<void> {
-    const { citizen, interaction } = context;
+    const { dbUser, interaction } = context;
+    const { citizen } = dbUser;
 
     const scope = this.dailyScope();
-
     const baseOperation = citizen.claimDaily(context, scope);
 
     const operation: IDatabaseOperation = {

@@ -1,15 +1,16 @@
 import { addDays, addHours, addMinutes, addSeconds, addWeeks } from 'date-fns';
 import type { Snowflake, User } from 'discord.js';
 
-import type FurudeRika from '../../client/FurudeRika';
-import Strings from '../../containers/Strings';
-import MessageCreator from '../../utils/MessageCreator';
-import NumberUtils from '../../utils/NumberUtils';
-import FurudeOperations from '../FurudeOperations';
-import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import GeneratedIDEntity from './abstracts/GeneratedIDEntity';
-import type DefaultContext from '../../contexts/DefaultContext';
-import { Entity, Column } from 'typeorm';
+import type FurudeRika from '../../../client/FurudeRika';
+import Strings from '../../../containers/Strings';
+import MessageCreator from '../../../utils/MessageCreator';
+import NumberUtils from '../../../utils/NumberUtils';
+import FurudeOperations from '../../FurudeOperations';
+import type IDatabaseOperation from '../../interfaces/IDatabaseOperation';
+import GeneratedIDEntity from '../abstracts/GeneratedIDEntity';
+import type DefaultContext from '../../../contexts/DefaultContext';
+import { Entity, Column, ManyToOne } from 'typeorm';
+import DBUser from './DBUser';
 
 @Entity()
 export default class DBReminder extends GeneratedIDEntity {
@@ -24,13 +25,15 @@ export default class DBReminder extends GeneratedIDEntity {
   @Column('string')
   public reminder: string = Strings.EMPTY;
 
-  @Column('string')
-  public reminder_owner: string = Strings.EMPTY;
+  @ManyToOne(() => DBUser, (user) => user.reminders)
+  public owner!: DBUser;
 
-  public build(user: User, remindWhat: string): this {
-    this.reminder_owner = user.id;
-    this.reminder = remindWhat;
-    return this;
+  public constructor(owner: DBUser, reminder: string) {
+    super();
+    if (owner && reminder) {
+      this.owner = owner;
+      this.reminder = reminder;
+    }
   }
 
   /**
@@ -70,7 +73,7 @@ export default class DBReminder extends GeneratedIDEntity {
 
     const userReminders = DBReminder.getAllRemindersForID(
       client,
-      this.reminder_owner
+      this.owner.id
     );
 
     if (userReminders.length > DBReminder.MAX_NUMBER_OF_REMINDERS) {
@@ -112,7 +115,8 @@ export default class DBReminder extends GeneratedIDEntity {
       NumberUtils.defaultOptionalNumber(end_time.weeks)
     );
 
-    client.reminderManager.addReminders(dbUser, this);
+    dbUser.reminders.push(this);
+    client.reminderManager.addReminders(this);
 
     return FurudeOperations.success(
       localizer.getTranslationFromContext(
@@ -127,17 +131,13 @@ export default class DBReminder extends GeneratedIDEntity {
     rika: FurudeRika,
     uid: Snowflake
   ): DBReminder[] {
-    return rika.reminderManager.reminders.filter(
-      (r) => r.reminder_owner == uid
-    );
+    return rika.reminderManager.reminders.filter((r) => r.owner.id == uid);
   }
 
   public static getAllRemindersForUser(
     rika: FurudeRika,
     user: User
   ): DBReminder[] {
-    return rika.reminderManager.reminders.filter(
-      (r) => r.reminder_owner == user.id
-    );
+    return rika.reminderManager.reminders.filter((r) => r.owner.id == user.id);
   }
 }

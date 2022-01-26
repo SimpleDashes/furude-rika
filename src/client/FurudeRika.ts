@@ -11,7 +11,7 @@ import ReminderManager from '../managers/ReminderManager';
 import DefaultContext from '../contexts/DefaultContext';
 import UserScanner from '../managers/UserScanner';
 import assert from 'assert';
-import type { IncrementLocalUserExperienceInfo } from '../database/entity/DBUser';
+import type { IncrementLocalUserExperienceInfo } from '../database/entity/user/DBUser';
 import type { CommandPrecondition, ResourceValue } from 'discowork';
 import {
   SimpleClient,
@@ -20,6 +20,7 @@ import {
   Logger,
   assertDefined,
 } from 'discowork';
+import ArrayUtils from '../utils/ArrayUtils';
 
 export default class FurudeRika extends SimpleClient {
   public readonly localizer = new FurudeLocalizer();
@@ -116,6 +117,7 @@ export default class FurudeRika extends SimpleClient {
         return;
       const user = await this.db.USER.findOne(message.member.user);
       user.setUsername(message.member.user.username);
+      ArrayUtils.pushIfNotPresent(user.guilds, message.guildId);
       const operation = user.incrementExperience(message.member.user, {
         rawGuild: message.guild,
         dbGuild: await this.db.GUILD.findOne(message.guild),

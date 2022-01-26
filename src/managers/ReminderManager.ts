@@ -1,9 +1,10 @@
 import { differenceInMilliseconds } from 'date-fns';
 import type { User } from 'discord.js';
-import DBReminder from '../database/entity/DBReminder';
+import DBReminder from '../database/entity/user/DBReminder';
 import MessageCreator from '../utils/MessageCreator';
 import BaseFurudeManager from './abstracts/BaseFurudeManager';
-import type DBUser from '../database/entity/DBUser';
+import { assertDefined } from 'discowork';
+import assert from 'assert';
 
 export default class ReminderManager extends BaseFurudeManager {
   public reminders: DBReminder[] = [];
@@ -12,18 +13,20 @@ export default class ReminderManager extends BaseFurudeManager {
     const reminders = await DBReminder.find();
     const users = await this.rika.db.USER.find({
       where: {
-        s_id: { $in: reminders.map((r) => r.reminder_owner) },
+        id: { $in: reminders.map((r) => r.owner) },
       },
     });
     users.forEach((user) => {
-      const userReminders = reminders.filter(
-        (r) => r.reminder_owner === user.s_id
-      );
-      this.addReminders(user, ...userReminders);
+      const userReminders = reminders.filter((r) => r.owner.id === user.id);
+      this.addReminders(...userReminders);
     });
   }
 
-  public addReminders(databaseUser: DBUser, ...reminders: DBReminder[]): void {
+  public addReminders(...reminders: DBReminder[]): void {
+    const firstEntry = reminders[0];
+    assertDefined(firstEntry);
+    const owner = firstEntry.owner;
+    assert(reminders.every((reminder) => reminder.owner === owner));
     this.reminders.push(...reminders);
     reminders.forEach((reminder) => {
       setTimeout(async () => {
@@ -31,7 +34,7 @@ export default class ReminderManager extends BaseFurudeManager {
 
         let user: User;
         try {
-          user = await this.rika.users.fetch(reminder.reminder_owner);
+          user = await this.rika.users.fetch(reminder.owner.id);
         } catch {
           await this.removeReminder(reminder);
           return;
@@ -40,7 +43,7 @@ export default class ReminderManager extends BaseFurudeManager {
         await user.send(
           MessageCreator.success(
             this.rika.localizer.getTranslation(
-              databaseUser.preferred_locale,
+              reminder.owner.preferred_locale,
               (k) => k.reminder.reminding,
               {
                 CONTENT: reminder.reminder,
