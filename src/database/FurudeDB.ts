@@ -1,4 +1,4 @@
-import { hoursToSeconds } from 'date-fns';
+import { hoursToMilliseconds } from 'date-fns';
 import type { Guild, GuildChannel, Snowflake, User } from 'discord.js';
 import type {
   BaseEntity,
@@ -7,7 +7,7 @@ import type {
   FindOneOptions,
 } from 'typeorm';
 import { createConnection } from 'typeorm';
-import { CacheCollection } from '../managers/abstracts/BaseFurudeCacheManager';
+import { KeyvCacheProvider } from 'typeorm-cache';
 import type SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBGuild from './entity/DBGuild';
@@ -37,6 +37,12 @@ export default class FurudeDB {
       logging: true,
       ssl: true,
       entities: ['dist/database/entity/user/*.js', 'dist/database/entity/*.js'],
+      cache: {
+        provider: () => new KeyvCacheProvider(),
+        type: 'database',
+        alwaysEnabled: true,
+        duration: hoursToMilliseconds(1),
+      },
     });
   }
 
@@ -177,30 +183,9 @@ export abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
   protected abstract typeObject(): ClassRepository<T>;
 
   protected db: FurudeDB;
-  protected cache: CacheCollection<Snowflake, T>;
-
-  protected cacheLimit(): number {
-    return 100;
-  }
-
-  protected cacheHours(): number {
-    return 1;
-  }
 
   public constructor(db: FurudeDB) {
     this.db = db;
-    this.cache = new CacheCollection(
-      this.cacheLimit(),
-      hoursToSeconds(this.cacheHours()),
-      this.typeObject().name
-    );
-  }
-
-  protected static addCache<T extends SnowFlakeIDEntity>(
-    that: BaseDatabaseGetter<T>,
-    entity: T
-  ): void {
-    that.cache.set(entity.id, entity);
   }
 
   protected static async findOne<
@@ -214,21 +199,14 @@ export abstract class BaseDatabaseGetter<T extends SnowFlakeIDEntity> {
     const newKey: IHasSnowFlakeID = {
       id: typeof key === 'string' ? key : key.id,
     };
-    let entity = that.cache.get(newKey.id);
-    if (!entity) {
-      entity = await that.db.getSnowflake<T>(newKey, that.typeObject(), query);
-      this.addCache(that, entity);
-    }
-    return entity;
+    return await that.db.getSnowflake<T>(newKey, that.typeObject(), query);
   }
 
   protected static async find<T extends SnowFlakeIDEntity>(
     that: BaseDatabaseGetter<T>,
     query?: FindManyOptions<T>
   ): Promise<T[]> {
-    const entities = await that.db.getSnowflakes(that.typeObject(), query);
-    entities.forEach((entity) => this.addCache(that, entity));
-    return entities;
+    return await that.db.getSnowflakes(that.typeObject(), query);
   }
 }
 
@@ -282,10 +260,6 @@ export abstract class UserBasedDatabaseGetter<
 export class UserGetter extends UserBasedDatabaseGetter<DBUser> {
   protected typeObject(): ClassRepository<DBUser> {
     return DBUser;
-  }
-
-  public override cacheLimit(): number {
-    return 1000;
   }
 }
 
