@@ -1,4 +1,3 @@
-import { hoursToMilliseconds } from 'date-fns';
 import type { Guild, GuildChannel, Snowflake, User } from 'discord.js';
 import type {
   BaseEntity,
@@ -7,7 +6,6 @@ import type {
   FindOneOptions,
 } from 'typeorm';
 import { createConnection } from 'typeorm';
-import { KeyvCacheProvider } from 'typeorm-cache';
 import type SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
 import DBChannel from './entity/DBChannel';
 import DBGuild from './entity/DBGuild';
@@ -15,6 +13,9 @@ import DBOsuPlayer from './entity/user/DBOsuPlayer';
 import DBUser from './entity/user/DBUser';
 import type IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
 import type { ClassRepository } from './types/ClassRepository';
+import InMemoryCacheProvider from 'typeorm-in-memory-cache';
+import NodeCache from 'node-cache';
+import { hoursToSeconds } from 'date-fns';
 
 export default class FurudeDB {
   public readonly uri: string;
@@ -38,9 +39,13 @@ export default class FurudeDB {
       ssl: true,
       entities: ['dist/database/entity/user/*.js', 'dist/database/entity/*.js'],
       cache: {
-        provider: () => new KeyvCacheProvider(),
+        provider: () => {
+          const options: NodeCache = new NodeCache({});
+          return new InMemoryCacheProvider(options);
+        },
         type: 'database',
         alwaysEnabled: true,
+        duration: hoursToSeconds(1),
       },
     });
   }
