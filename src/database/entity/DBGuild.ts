@@ -46,13 +46,13 @@ export default class DBGuild
   @Column('string', { nullable: true })
   public preferred_locale?: FurudeLanguages | undefined;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   public min_rewarded_xp_value?: number;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   public max_rewarded_xp_value?: number;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   public time_for_xp?: number;
 
   public setPreferredLocale(
