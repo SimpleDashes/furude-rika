@@ -48,9 +48,7 @@ export default class FurudeDB {
             savedCache
           ): Promise<void> {
             try {
-              return await originalMethod
-                .apply(this, [options, savedCache])
-                .catch();
+              return await originalMethod.apply(this, [options, savedCache]);
             } catch {
               return;
             }
