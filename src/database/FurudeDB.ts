@@ -17,8 +17,16 @@ import InMemoryCacheProvider from 'typeorm-in-memory-cache';
 import { secondsToMilliseconds } from 'date-fns';
 import type { QueryResultCacheOptions } from 'typeorm/cache/QueryResultCacheOptions';
 import DBTypeUtils from './types/DBTypeUtils';
+import NodeCache from 'node-cache';
 
 export class FurudeCache extends InMemoryCacheProvider {
+  protected baseCache: NodeCache;
+
+  public constructor(userCache: NodeCache) {
+    super(userCache);
+    this.baseCache = userCache;
+  }
+
   public override async storeInCache(
     options: QueryResultCacheOptions,
     savedCache: QueryResultCacheOptions | undefined
@@ -42,7 +50,8 @@ export class FurudeCache extends InMemoryCacheProvider {
 }
 export default class FurudeDB {
   public readonly uri: string;
-  public readonly cache = new FurudeCache();
+  public readonly baseCache = new NodeCache();
+  public readonly memoryCache = new FurudeCache(this.baseCache);
 
   #connection?: Connection;
 
@@ -63,10 +72,10 @@ export default class FurudeDB {
       ssl: true,
       entities: ['dist/database/entity/user/*.js', 'dist/database/entity/*.js'],
       cache: {
-        provider: () => this.cache,
+        provider: () => this.memoryCache,
         type: 'database',
         alwaysEnabled: true,
-        duration: secondsToMilliseconds(60),
+        duration: secondsToMilliseconds(1),
       },
     });
   }

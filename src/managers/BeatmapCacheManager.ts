@@ -1,25 +1,13 @@
-import { hoursToSeconds } from 'date-fns';
 import { assertDefined } from 'discowork';
 import type IOsuScore from '../modules/osu/scores/IOsuScore';
 import type IAPIOsuBeatmap from '../modules/osu/servers/beatmaps/IAPIOsuBeatmap';
 import DroidScore from '../modules/osu/servers/implementations/droid/objects/DroidScore';
 import OsuServers from '../modules/osu/servers/OsuServers';
-import BaseFurudeCacheManager from './abstracts/BaseFurudeCacheManager';
+import BaseFurudeManager from './abstracts/BaseFurudeManager';
 
-export default class BeatmapCacheManager extends BaseFurudeCacheManager<
-  string,
-  IAPIOsuBeatmap
-> {
+export default class BeatmapCacheManager extends BaseFurudeManager {
   public name(): string {
     return 'BEATMAP';
-  }
-
-  public cacheLimit(): number {
-    return 1000;
-  }
-
-  public cacheDuration(): number {
-    return hoursToSeconds(24);
   }
 
   public async fetchBeatmap(
@@ -30,24 +18,22 @@ export default class BeatmapCacheManager extends BaseFurudeCacheManager<
       });
     }
   ): Promise<IAPIOsuBeatmap | undefined> {
-    let beatmap: IAPIOsuBeatmap | undefined;
+    let selectedBeatmap: IAPIOsuBeatmap | undefined;
 
-    const key = this.collection.findKey(
-      (v) =>
-        v.md5 === beatmapIDOrHash || v.beatmapID.toString() === beatmapIDOrHash
-    );
+    const cacheBeatmap: IAPIOsuBeatmap | undefined = (selectedBeatmap =
+      this.rika.db.baseCache.get(beatmapIDOrHash));
 
-    if (key && this.collection.has(key)) {
-      beatmap = this.collection.get(key);
-    } else {
+    /**
+     * We also don't want to load cache from maps that we previously couldn't fetch.
+     */
+    if (!cacheBeatmap && cacheBeatmap !== null) {
       const beatmaps = await fetchBeatmaps();
-      beatmap = beatmaps[0];
-      if (beatmap) {
-        this.collection.set(beatmapIDOrHash, beatmap);
-      }
+      const newBeatmap = beatmaps[0];
+      this.rika.db.baseCache.set(beatmapIDOrHash, newBeatmap ?? null, 60);
+      selectedBeatmap = newBeatmap;
     }
 
-    return beatmap;
+    return selectedBeatmap;
   }
 
   public async fetchFromScore(

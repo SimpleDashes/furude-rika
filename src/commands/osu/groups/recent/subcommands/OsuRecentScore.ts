@@ -12,6 +12,7 @@ import type { OsuServerUserOptionWithDiscord } from '../../../wrapper/OsuSubComm
 import { assertDefined, InteractionUtils, assertDefinedGet } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
+
 type Args = unknown & OsuServerUserOptionWithDiscord;
 
 @CommandInformation({

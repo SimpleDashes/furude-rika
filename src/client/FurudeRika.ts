@@ -37,9 +37,75 @@ export default class FurudeRika extends SimpleClient {
       token: process.env['BOT_TOKEN'],
       developmentGuild: process.env['DEV_GUILD_ID'],
       ownerIDS: ['902963589898444800'],
+      catchCommandExceptions: true,
     });
     this.#setupMemoryLogger();
     this.#setupPreconditions();
+    this.#setupCommandProcessor();
+    this.#setupDiscordListeners();
+  }
+
+  #setupDiscordListeners(): void {
+    this.on('messageCreate', async (message) => {
+      if (
+        !message.guild ||
+        !message.member ||
+        message.member.user.bot ||
+        !message.inGuild() ||
+        !(message.channel instanceof BaseGuildTextChannel)
+      )
+        return;
+      const user = await this.db.USER.findOne(message.member.user);
+      user.setUsername(message.member.user.username);
+      ArrayUtils.pushIfNotPresent(user.guilds, message.guildId);
+      const operation = user.incrementExperience(message.member.user, {
+        rawGuild: message.guild,
+        dbGuild: await this.db.GUILD.findOne(message.guild),
+        channel: message.channel,
+      });
+      if (operation.successfully) {
+        Logger.success(operation.response);
+      }
+      await FurudeOperations.saveWhenSuccess(user, operation);
+    });
+  }
+
+  #setupCommandProcessor(): void {
+    this.commandProcessor.beforeCommandTrigger = async (
+      context
+    ): Promise<void> => {
+      await context.interaction.deferReply({ fetchReply: true });
+    };
+    this.commandProcessor.afterCommandTrigger = async (
+      context
+    ): Promise<void> => {
+      assert(context instanceof DefaultContext);
+
+      const { interaction, dbUser, dbGuild } = context;
+
+      const operation = dbUser.incrementExperience(
+        interaction.user,
+        interaction.inGuild() &&
+          interaction.channel instanceof BaseGuildTextChannel
+          ? ((): IncrementLocalUserExperienceInfo => {
+              assertDefined(interaction.guild);
+              assertDefined(dbGuild);
+              assertDefined(interaction.channel);
+              return {
+                rawGuild: interaction.guild,
+                dbGuild: dbGuild,
+                channel: interaction.channel,
+              };
+            })()
+          : undefined
+      );
+
+      if (operation.successfully) {
+        Logger.success(operation.response);
+      }
+
+      await FurudeOperations.saveWhenSuccess(dbUser, operation);
+    };
   }
 
   /**
@@ -106,62 +172,5 @@ export default class FurudeRika extends SimpleClient {
     await this.db.connect();
     await this.reminderManager.setupReminders();
     this.userScanner.startScan();
-    this.on('messageCreate', async (message) => {
-      if (
-        !message.guild ||
-        !message.member ||
-        message.member.user.bot ||
-        !message.inGuild() ||
-        !(message.channel instanceof BaseGuildTextChannel)
-      )
-        return;
-      const user = await this.db.USER.findOne(message.member.user);
-      user.setUsername(message.member.user.username);
-      ArrayUtils.pushIfNotPresent(user.guilds, message.guildId);
-      const operation = user.incrementExperience(message.member.user, {
-        rawGuild: message.guild,
-        dbGuild: await this.db.GUILD.findOne(message.guild),
-        channel: message.channel,
-      });
-      if (operation.successfully) {
-        Logger.success(operation.response);
-      }
-      await FurudeOperations.saveWhenSuccess(user, operation);
-    });
-    this.commandProcessor.beforeCommandTrigger = async (
-      context
-    ): Promise<void> => {
-      await context.interaction.deferReply({ fetchReply: true });
-    };
-    this.commandProcessor.afterCommandTrigger = async (
-      context
-    ): Promise<void> => {
-      assert(context instanceof DefaultContext);
-
-      const { interaction, dbUser, dbGuild } = context;
-
-      const operation = dbUser.incrementExperience(
-        interaction.user,
-        interaction.inGuild() &&
-          interaction.channel instanceof BaseGuildTextChannel
-          ? ((): IncrementLocalUserExperienceInfo => {
-              assertDefined(interaction.guild);
-              assertDefined(dbGuild);
-              assertDefined(interaction.channel);
-              return {
-                rawGuild: interaction.guild,
-                dbGuild: dbGuild,
-                channel: interaction.channel,
-              };
-            })()
-          : undefined
-      );
-
-      if (operation.successfully) {
-        Logger.success(operation.response);
-      }
-
-      await FurudeOperations.saveWhenSuccess(dbUser, operation);
-    };
   }
 }
