@@ -1,5 +1,5 @@
-import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import CurrencyContext from '../../../contexts/currency/CurrencyContext';
+import FurudeSubCommand from '../../../../discord/commands/FurudeSubCommand';
+import CurrencyContext from '../../../../contexts/currency/CurrencyContext';
 import type { ConstructorType } from 'discowork';
 import type { CommandContextOnlyInteractionAndClient } from 'discowork/lib/commands/interfaces/CommandContext';
 

@@ -1,7 +1,7 @@
-import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
-import FurudeOperations from '../../../database/FurudeOperations';
-import type IDatabaseOperation from '../../../database/interfaces/IDatabaseOperation';
-import type { HyperTypes } from '../../../database/objects/hypervalues/HyperTypes';
+import type CurrencyContext from '../../../../contexts/currency/CurrencyContext';
+import FurudeOperations from '../../../../database/FurudeOperations';
+import type IDatabaseOperation from '../../../../database/interfaces/IDatabaseOperation';
+import type { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
 import EconomySubCommand from './EconomySubCommand';
 
 export type DailyArgs = unknown;

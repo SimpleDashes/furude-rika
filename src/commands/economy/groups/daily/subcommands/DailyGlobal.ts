@@ -1,6 +1,6 @@
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
-import CurrencyContainer from '../../../../containers/CurrencyContainer';
-import { HyperTypes } from '../../../../database/objects/hypervalues/HyperTypes';
+import CurrencyContainer from '../../../../../containers/CurrencyContainer';
+import { HyperTypes } from '../../../../../database/objects/hypervalues/HyperTypes';
 import DailySubCommand from '../../wrapper/DailySubCommand';
 
 @CommandInformation({

@@ -1,10 +1,10 @@
-import type DefaultContext from '../../../contexts/DefaultContext';
-import CommandOptions from '../../../containers/CommandOptions';
-import type DBUser from '../../../database/entity/user/DBUser';
-import FurudeSubCommand from '../../../discord/commands/FurudeSubCommand';
-import { MessageButtonCreator } from '../../../discord/creators/MessageButtonCreator';
+import type DefaultContext from '../../../../../contexts/DefaultContext';
+import CommandOptions from '../../../../../containers/CommandOptions';
+import type DBUser from '../../../../../database/entity/user/DBUser';
+import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
+import { MessageButtonCreator } from '../../../../../discord/creators/MessageButtonCreator';
 import { PageOption } from 'discowork';
-import ArrayUtils from '../../../utils/ArrayUtils';
+import ArrayUtils from '../../../../../utils/ArrayUtils';
 
 export type LeaderboardArgs = {
   page: PageOption;

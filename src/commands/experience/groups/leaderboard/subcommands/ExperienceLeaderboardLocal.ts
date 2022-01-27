@@ -1,7 +1,7 @@
 import type DefaultContext from '../../../../../contexts/DefaultContext';
 import DBUser from '../../../../../database/entity/user/DBUser';
-import type { LeaderboardArgs } from '../../../wrapper/ExperienceLeaderBoardSubCommand';
-import ExperienceLeaderboardSubCommand from '../../../wrapper/ExperienceLeaderBoardSubCommand';
+import type { LeaderboardArgs } from '../wrapper/ExperienceLeaderBoardSubCommand';
+import ExperienceLeaderboardSubCommand from '../wrapper/ExperienceLeaderBoardSubCommand';
 import type { TypedArgs } from 'discowork';
 import { CommandPreconditions, Preconditions, assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';

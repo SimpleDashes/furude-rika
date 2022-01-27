@@ -2,7 +2,7 @@ import CommandOptions from '../../../containers/CommandOptions';
 import CurrencyContainer from '../../../containers/CurrencyContainer';
 import BaseEmbed from '../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../utils/MessageCreator';
-import EconomySubCommand from '../wrapper/EconomySubCommand';
+import EconomySubCommand from '../groups/wrapper/EconomySubCommand';
 import type CurrencyContext from '../../../contexts/currency/CurrencyContext';
 import { UserOption, assertDefined, InteractionUtils } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
