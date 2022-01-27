@@ -14,11 +14,35 @@ import DBUser from './entity/user/DBUser';
 import type IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
 import type { ClassRepository } from './types/ClassRepository';
 import InMemoryCacheProvider from 'typeorm-in-memory-cache';
-import NodeCache from 'node-cache';
-import { hoursToSeconds } from 'date-fns';
+import { secondsToMilliseconds } from 'date-fns';
+import type { QueryResultCacheOptions } from 'typeorm/cache/QueryResultCacheOptions';
+import DBTypeUtils from './types/DBTypeUtils';
 
+export class FurudeCache extends InMemoryCacheProvider {
+  public override async storeInCache(
+    options: QueryResultCacheOptions,
+    savedCache: QueryResultCacheOptions | undefined
+  ): Promise<void> {
+    try {
+      return await super.storeInCache(options, savedCache);
+    } catch {
+      return;
+    }
+  }
+
+  public override async getFromCache(
+    options: QueryResultCacheOptions
+  ): Promise<QueryResultCacheOptions | undefined> {
+    const object = super.getFromCache(options);
+    if (DBTypeUtils.isWIthJustCreatedIdentifier(object)) {
+      object.justCreated = false;
+    }
+    return object;
+  }
+}
 export default class FurudeDB {
   public readonly uri: string;
+  public readonly cache = new FurudeCache();
 
   #connection?: Connection;
 
@@ -39,25 +63,10 @@ export default class FurudeDB {
       ssl: true,
       entities: ['dist/database/entity/user/*.js', 'dist/database/entity/*.js'],
       cache: {
-        provider: () => {
-          const options: NodeCache = new NodeCache({});
-          const provider = new InMemoryCacheProvider(options);
-          const originalMethod = provider.storeInCache;
-          provider.storeInCache = async function (
-            options,
-            savedCache
-          ): Promise<void> {
-            try {
-              return await originalMethod.apply(this, [options, savedCache]);
-            } catch {
-              return;
-            }
-          };
-          return provider;
-        },
+        provider: () => this.cache,
         type: 'database',
         alwaysEnabled: true,
-        duration: hoursToSeconds(1),
+        duration: secondsToMilliseconds(60),
       },
     });
   }
