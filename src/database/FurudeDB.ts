@@ -41,7 +41,21 @@ export default class FurudeDB {
       cache: {
         provider: () => {
           const options: NodeCache = new NodeCache({});
-          return new InMemoryCacheProvider(options);
+          const provider = new InMemoryCacheProvider(options);
+          const originalMethod = provider.storeInCache;
+          provider.storeInCache = async function (
+            options,
+            savedCache
+          ): Promise<void> {
+            try {
+              return await originalMethod
+                .apply(this, [options, savedCache])
+                .catch();
+            } catch {
+              return;
+            }
+          };
+          return provider;
         },
         type: 'database',
         alwaysEnabled: true,
