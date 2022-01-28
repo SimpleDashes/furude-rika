@@ -1,10 +1,10 @@
 import { Entity, Column } from 'typeorm';
-import type FurudeLocalizer from '../../localization/FurudeLocalizer';
-import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
-import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
-import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
-import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
+import type FurudeLocalizer from '../../../localization/FurudeLocalizer';
+import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
+import type IDatabaseOperation from '../../interfaces/IDatabaseOperation';
+import type IHasPreferredLocale from '../../interfaces/IHasPreferredLocale';
+import SnowFlakeIDEntity from '../abstracts/SnowFlakeIDEntity';
+import EntityWithLocaleHelper from '../helpers/EntityWithLocaleHelper';
 
 @Entity()
 export default class DBChannel

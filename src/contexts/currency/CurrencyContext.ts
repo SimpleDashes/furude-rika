@@ -1,6 +1,6 @@
 import type { User } from 'discord.js';
-import DBCitizen from '../../database/entity/DBCitizen';
-import type DBUser from '../../database/entity/user/DBUser';
+import DBCitizen from '../../database/entity/discord/user/DBCitizen';
+import type DBUser from '../../database/entity/discord/user/DBUser';
 import DefaultContext, { UsersCreator } from '../DefaultContext';
 
 class CurrencyUserCreator extends UsersCreator {

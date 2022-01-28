@@ -11,7 +11,7 @@ import ReminderManager from '../managers/ReminderManager';
 import DefaultContext from '../contexts/DefaultContext';
 import UserScanner from '../managers/UserScanner';
 import assert from 'assert';
-import type { IncrementLocalUserExperienceInfo } from '../database/entity/user/DBUser';
+import type { IncrementLocalUserExperienceInfo } from '../database/entity/discord/user/DBUser';
 import type { CommandPrecondition, ResourceValue } from 'discowork';
 import {
   SimpleClient,
@@ -21,6 +21,7 @@ import {
   assertDefined,
 } from 'discowork';
 import ArrayUtils from '../utils/ArrayUtils';
+import { QueryFailedError } from 'typeorm';
 
 export default class FurudeRika extends SimpleClient {
   public readonly localizer = new FurudeLocalizer();
@@ -104,7 +105,20 @@ export default class FurudeRika extends SimpleClient {
         Logger.success(operation.response);
       }
 
-      await FurudeOperations.saveWhenSuccess(dbUser, operation);
+      /**
+       * An error may be thrown on specific edge cases.
+       * Such as an old deleted foreign key violation,
+       * which isn't being used anymore.
+       */
+      try {
+        await FurudeOperations.saveWhenSuccess(dbUser, operation);
+      } catch (e) {
+        if (e instanceof QueryFailedError) {
+          Logger.error(`Error updating user ${e.message}`);
+        } else {
+          throw e;
+        }
+      }
     };
   }
 
@@ -170,6 +184,9 @@ export default class FurudeRika extends SimpleClient {
     await super.onceLogin();
     await this.localizer.build();
     await this.db.connect();
+    this.db.Connection?.entityMetadatas.forEach((metadata) =>
+      Logger.log(`Loaded database entity: ${metadata.name}`)
+    );
     await this.reminderManager.setupReminders();
     this.userScanner.startScan();
   }

@@ -1,16 +1,16 @@
 import type { GuildChannel, Snowflake } from 'discord.js';
-import BindableInteger from '../../modules/bindables/BindableInteger';
-import MessageCreator from '../../utils/MessageCreator';
-import type FurudeLocalizer from '../../localization/FurudeLocalizer';
-import FurudeOperations from '../FurudeOperations';
-import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import type IHasPreferredLocale from '../interfaces/IHasPreferredLocale';
-import EntityExtension from '../objects/abstracts/EntityExtension';
-import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
+import BindableInteger from '../../../modules/bindables/BindableInteger';
+import MessageCreator from '../../../utils/MessageCreator';
+import type FurudeLocalizer from '../../../localization/FurudeLocalizer';
+import FurudeOperations from '../../FurudeOperations';
+import type IDatabaseOperation from '../../interfaces/IDatabaseOperation';
+import type IHasPreferredLocale from '../../interfaces/IHasPreferredLocale';
+import EntityExtension from '../../objects/abstracts/EntityExtension';
+import SnowFlakeIDEntity from '../abstracts/SnowFlakeIDEntity';
 import DBUser from './user/DBUser';
-import EntityWithLocaleHelper from './helpers/EntityWithLocaleHelper';
-import type { FurudeLanguages } from '../../localization/FurudeLocalizer';
-import type DefaultContext from '../../contexts/DefaultContext';
+import EntityWithLocaleHelper from '../helpers/EntityWithLocaleHelper';
+import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
+import type DefaultContext from '../../../contexts/DefaultContext';
 import { Entity, Column } from 'typeorm';
 
 class DBGuildExtension extends EntityExtension<DBGuild> {

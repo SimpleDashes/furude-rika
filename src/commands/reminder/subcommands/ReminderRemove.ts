@@ -1,6 +1,6 @@
 import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
-import DBReminder from '../../../database/entity/user/DBReminder';
+import DBReminder from '../../../database/entity/discord/user/DBReminder';
 import MessageCreator from '../../../utils/MessageCreator';
 import type { TypedArgs } from 'discowork';
 import { assertDefined } from 'discowork';

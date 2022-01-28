@@ -7,10 +7,9 @@ import type {
 } from 'typeorm';
 import { createConnection } from 'typeorm';
 import type SnowFlakeIDEntity from './entity/abstracts/SnowFlakeIDEntity';
-import DBChannel from './entity/DBChannel';
-import DBGuild from './entity/DBGuild';
-import DBOsuPlayer from './entity/user/DBOsuPlayer';
-import DBUser from './entity/user/DBUser';
+import DBChannel from './entity/discord/DBChannel';
+import DBGuild from './entity/discord/DBGuild';
+import DBUser from './entity/discord/user/DBUser';
 import type IHasSnowFlakeID from './interfaces/IHasSnowFlakeID';
 import type { ClassRepository } from './types/ClassRepository';
 import InMemoryCacheProvider from 'typeorm-in-memory-cache';
@@ -70,7 +69,10 @@ export default class FurudeDB {
       synchronize: true,
       logging: true,
       ssl: true,
-      entities: ['dist/database/entity/user/*.js', 'dist/database/entity/*.js'],
+      entities: [
+        'dist/database/entity/discord/**.js',
+        'dist/database/entity/discord/user/**.js',
+      ],
       cache: {
         provider: () => this.memoryCache,
         type: 'database',
@@ -192,8 +194,6 @@ export default class FurudeDB {
   public GUILD = new GuildGetter(this);
 
   public CHANNEL = new ChannelGetter(this);
-
-  public OSU_USERS = new OsuUserGetter(this);
 }
 
 export interface IDatabaseGetterGetOnly<
@@ -294,12 +294,6 @@ export abstract class UserBasedDatabaseGetter<
 export class UserGetter extends UserBasedDatabaseGetter<DBUser> {
   protected typeObject(): ClassRepository<DBUser> {
     return DBUser;
-  }
-}
-
-export class OsuUserGetter extends UserBasedDatabaseGetter<DBOsuPlayer> {
-  protected typeObject(): ClassRepository<DBOsuPlayer> {
-    return DBOsuPlayer;
   }
 }
 

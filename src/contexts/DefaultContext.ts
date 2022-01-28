@@ -1,8 +1,8 @@
 import { GuildChannel } from 'discord.js';
 import type { Guild, User } from 'discord.js';
-import type DBChannel from '../database/entity/DBChannel';
-import type DBGuild from '../database/entity/DBGuild';
-import type DBUser from '../database/entity/user/DBUser';
+import type DBChannel from '../database/entity/discord/DBChannel';
+import type DBGuild from '../database/entity/discord/DBGuild';
+import type DBUser from '../database/entity/discord/user/DBUser';
 import BaseContext from './BaseContext';
 import { assert } from 'console';
 import { assertDefined } from 'discowork';

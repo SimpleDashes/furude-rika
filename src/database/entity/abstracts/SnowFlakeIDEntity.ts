@@ -1,12 +1,10 @@
 import { Snowflake } from 'discord-api-types';
 import type { SaveOptions } from 'typeorm';
 import { ObjectIdColumn } from 'typeorm';
-import { Entity } from 'typeorm';
 import type BindableValue from '../../../modules/bindables/BindableValue';
 import type IOnSaveListener from '../../interfaces/IOnSaveListener';
 import WithJustCreatedIdentifierEntity from './WithJustCreatedIdentifierEntity';
 
-@Entity()
 export default class SnowFlakeIDEntity extends WithJustCreatedIdentifierEntity {
   #onSaveListeners: IOnSaveListener[] | null = [];
 

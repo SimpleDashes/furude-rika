@@ -1,7 +1,7 @@
 import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import Strings from '../../../containers/Strings';
-import DBReminder from '../../../database/entity/user/DBReminder';
+import DBReminder from '../../../database/entity/discord/user/DBReminder';
 import BaseEmbed from '../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../utils/MessageCreator';
 import type { TypedArgs } from 'discowork';

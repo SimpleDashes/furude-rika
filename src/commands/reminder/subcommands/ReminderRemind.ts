@@ -1,7 +1,7 @@
 import type DefaultContext from '../../../contexts/DefaultContext';
 import CommandOptions from '../../../containers/CommandOptions';
 import TimeFrames from '../../../containers/TimeFrames';
-import DBReminder from '../../../database/entity/user/DBReminder';
+import DBReminder from '../../../database/entity/discord/user/DBReminder';
 import FurudeOperations from '../../../database/FurudeOperations';
 import type { TypedArgs } from 'discowork';
 import { assertDefined } from 'discowork';

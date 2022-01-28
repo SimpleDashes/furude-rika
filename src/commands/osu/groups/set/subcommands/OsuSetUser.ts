@@ -29,7 +29,8 @@ export default class OsuSetUser extends OsuSubCommand<Args> {
   }
 
   public async trigger(context: OsuContext<Args>): Promise<void> {
-    const { interaction, osuPlayer, args } = context;
+    const { interaction, dbUser, args } = context;
+    const { osuPlayer } = dbUser;
     const { username } = args;
 
     assertDefined(username);

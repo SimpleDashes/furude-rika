@@ -1,16 +1,16 @@
 import { addDays, intervalToDuration } from 'date-fns';
 import type { CommandInteraction } from 'discord.js';
-import CurrencyContainer from '../../containers/CurrencyContainer';
-import MessageCreator from '../../utils/MessageCreator';
-import FurudeOperations from '../FurudeOperations';
-import type IDatabaseOperation from '../interfaces/IDatabaseOperation';
-import GuildHyperDate from '../objects/hypervalues/concrets/guilds/GuildHyperDate';
-import GuildHyperNumber from '../objects/hypervalues/concrets/guilds/GuildHyperNumber';
-import type { HyperTypes } from '../objects/hypervalues/HyperTypes';
-import type CurrencyContext from '../../contexts/currency/CurrencyContext';
+import CurrencyContainer from '../../../../containers/CurrencyContainer';
+import MessageCreator from '../../../../utils/MessageCreator';
+import FurudeOperations from '../../../FurudeOperations';
+import type IDatabaseOperation from '../../../interfaces/IDatabaseOperation';
+import GuildHyperDate from '../../../objects/hypervalues/concrets/guilds/GuildHyperDate';
+import GuildHyperNumber from '../../../objects/hypervalues/concrets/guilds/GuildHyperNumber';
+import type { HyperTypes } from '../../../objects/hypervalues/HyperTypes';
+import type CurrencyContext from '../../../../contexts/currency/CurrencyContext';
 import { Entity, Column, OneToOne } from 'typeorm';
-import DBUser from './user/DBUser';
-import SnowFlakeIDEntity from './abstracts/SnowFlakeIDEntity';
+import DBUser from './DBUser';
+import SnowFlakeIDEntity from '../../abstracts/SnowFlakeIDEntity';
 
 interface IStreakOperation extends IDatabaseOperation {
   readonly lostStreak: boolean;

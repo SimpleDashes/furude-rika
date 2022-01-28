@@ -1,32 +1,18 @@
 import { differenceInMilliseconds } from 'date-fns';
 import type { User } from 'discord.js';
-import DBReminder from '../database/entity/user/DBReminder';
+import DBReminder from '../database/entity/discord/user/DBReminder';
 import MessageCreator from '../utils/MessageCreator';
 import BaseFurudeManager from './abstracts/BaseFurudeManager';
-import { assertDefined } from 'discowork';
-import assert from 'assert';
 
 export default class ReminderManager extends BaseFurudeManager {
   public reminders: DBReminder[] = [];
 
   public async setupReminders(): Promise<void> {
     const reminders = await DBReminder.find();
-    const users = await this.rika.db.USER.find({
-      where: {
-        id: { $in: reminders.map((r) => r.owner) },
-      },
-    });
-    users.forEach((user) => {
-      const userReminders = reminders.filter((r) => r.owner.id === user.id);
-      this.addReminders(...userReminders);
-    });
+    this.addReminders(...reminders);
   }
 
   public addReminders(...reminders: DBReminder[]): void {
-    const firstEntry = reminders[0];
-    assertDefined(firstEntry);
-    const owner = firstEntry.owner;
-    assert(reminders.every((reminder) => reminder.owner === owner));
     this.reminders.push(...reminders);
     reminders.forEach((reminder) => {
       setTimeout(async () => {

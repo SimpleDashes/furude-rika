@@ -3,20 +3,21 @@ import { intervalToDuration } from 'date-fns';
 import type { Guild, GuildChannel, Snowflake, User } from 'discord.js';
 import { assertDefinedGet } from 'discowork';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
-import Globals from '../../../containers/Globals';
-import Strings from '../../../containers/Strings';
-import type FurudeLocalizer from '../../../localization/FurudeLocalizer';
-import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
-import FurudeOperations from '../../FurudeOperations';
-import type IDatabaseOperation from '../../interfaces/IDatabaseOperation';
-import type IHasPreferredLocale from '../../interfaces/IHasPreferredLocale';
-import GuildHyperDate from '../../objects/hypervalues/concrets/guilds/GuildHyperDate';
-import GuildHyperNumber from '../../objects/hypervalues/concrets/guilds/GuildHyperNumber';
-import SnowFlakeIDEntity from '../abstracts/SnowFlakeIDEntity';
-import DBCitizen from '../DBCitizen';
+import Globals from '../../../../containers/Globals';
+import Strings from '../../../../containers/Strings';
+import type FurudeLocalizer from '../../../../localization/FurudeLocalizer';
+import type { FurudeLanguages } from '../../../../localization/FurudeLocalizer';
+import FurudeOperations from '../../../FurudeOperations';
+import type IDatabaseOperation from '../../../interfaces/IDatabaseOperation';
+import type IHasPreferredLocale from '../../../interfaces/IHasPreferredLocale';
+import GuildHyperDate from '../../../objects/hypervalues/concrets/guilds/GuildHyperDate';
+import GuildHyperNumber from '../../../objects/hypervalues/concrets/guilds/GuildHyperNumber';
+import SnowFlakeIDEntity from '../../abstracts/SnowFlakeIDEntity';
+import DBCitizen from './DBCitizen';
 import type DBGuild from '../DBGuild';
 import DBReminder from './DBReminder';
-import EntityWithLocaleHelper from '../helpers/EntityWithLocaleHelper';
+import EntityWithLocaleHelper from '../../helpers/EntityWithLocaleHelper';
+import DBUserOsu from './DBUserOsu';
 
 export type IncrementLocalUserExperienceInfo = {
   rawGuild: Guild;
@@ -42,6 +43,10 @@ export default class DBUser
   @JoinColumn()
   @OneToOne(() => DBCitizen, (citizen) => citizen.user)
   public citizen!: DBCitizen;
+
+  @JoinColumn()
+  @OneToOne(() => DBUserOsu, (osuPlayer) => osuPlayer.user)
+  public osuPlayer!: DBUserOsu;
 
   @OneToMany(() => DBReminder, (reminder) => reminder.owner)
   public reminders!: DBReminder[];

@@ -1,7 +1,7 @@
 import { CommandPreconditions, Preconditions } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import CurrencyContainer from '../../../../containers/CurrencyContainer';
-import DBCitizen from '../../../../database/entity/DBCitizen';
+import DBCitizen from '../../../../database/entity/discord/user/DBCitizen';
 import FurudeCommandGroup from '../../../../discord/commands/FurudeCommandGroup';
 
 @CommandPreconditions(Preconditions.RequiresSubCommand)

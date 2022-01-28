@@ -1,15 +1,17 @@
 import { assertDefined, assertDefinedGet } from 'discowork';
-import { Entity, Column } from 'typeorm';
-import type OsuContext from '../../../contexts/osu/OsuContext';
-import type BanchoUser from '../../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
-import type { AnyServer } from '../../../modules/osu/servers/OsuServers';
-import OsuServers from '../../../modules/osu/servers/OsuServers';
-import type IOsuUser from '../../../modules/osu/users/IOsuUser';
-import MessageCreator from '../../../utils/MessageCreator';
-import FurudeOperations from '../../FurudeOperations';
-import type IDatabaseOperation from '../../interfaces/IDatabaseOperation';
-import HyperNumber from '../../objects/hypervalues/HyperNumber';
-import SnowFlakeIDEntity from '../abstracts/SnowFlakeIDEntity';
+import { Entity, Column, OneToOne } from 'typeorm';
+import type OsuContext from '../../../../contexts/osu/OsuContext';
+import type BanchoUser from '../../../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
+import OsuServer from '../../../../modules/osu/servers/OsuServer';
+import { AnyServer } from '../../../../modules/osu/servers/OsuServers';
+import OsuServers from '../../../../modules/osu/servers/OsuServers';
+import type IOsuUser from '../../../../modules/osu/users/IOsuUser';
+import MessageCreator from '../../../../utils/MessageCreator';
+import FurudeOperations from '../../../FurudeOperations';
+import type IDatabaseOperation from '../../../interfaces/IDatabaseOperation';
+import HyperNumber from '../../../objects/hypervalues/HyperNumber';
+import SnowFlakeIDEntity from '../../abstracts/SnowFlakeIDEntity';
+import DBUser from './DBUser';
 
 interface IOsuAccounts {
   bancho: unknown;
@@ -26,9 +28,33 @@ class OsuServerHyperValue extends HyperNumber<AnyServer> {
 }
 
 @Entity()
-export default class DBOsuPlayer extends SnowFlakeIDEntity {
+export default class DBUserOsu extends SnowFlakeIDEntity {
+  @OneToOne(() => DBUser, (user) => user.osuPlayer)
+  public user!: DBUser;
+
   @Column(() => OsuServerHyperValue)
   public accounts: OsuServerHyperValue = new OsuServerHyperValue();
+
+  @Column(() => OsuServer)
+  public preferredServer?: AnyServer;
+
+  public constructor(user: DBUser) {
+    super();
+    if (user) {
+      this.user = user;
+      this.id = user.id;
+    }
+  }
+
+  public setPreferredServer(
+    _context: OsuContext<unknown>,
+    server: AnyServer
+  ): IDatabaseOperation {
+    this.preferredServer = server;
+    return FurudeOperations.success(
+      `Changed preferred server to ${server.name}`
+    );
+  }
 
   public getAccount(server: AnyServer): number {
     let account: number | null | undefined;

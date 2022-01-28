@@ -12,7 +12,6 @@ import type IDroidOsuUserRecentsParam from '../../../modules/osu/servers/impleme
 import type { AnyServer } from '../../../modules/osu/servers/OsuServers';
 import OsuServers from '../../../modules/osu/servers/OsuServers';
 import type IOsuUser from '../../../modules/osu/users/IOsuUser';
-
 import UserOption from 'discowork/lib/options/classes/UserOption';
 import type ConstructorType from 'discowork/lib/types/ConstructorType';
 import InteractionUtils from 'discowork/lib/utils/InteractionUtils';
@@ -22,12 +21,13 @@ import type { CommandContextOnlyInteractionAndClient } from 'discowork/lib/comma
 import MessageCreator from '../../../utils/MessageCreator';
 import OsuServerUtils from '../../../utils/OsuServerUtils';
 
-type OsuServerOption = Omit<StringOption, 'setAutocomplete'>;
-
-export type OsuServerUserOptions = {
-  username: StringOption;
-  server: OsuServerOption;
+export type OsuServerOptions = {
+  [CommandOptions.server]: Omit<StringOption, 'setAutocomplete'>;
 };
+
+export type OsuUserOnlyOptions = { [CommandOptions.username]: StringOption };
+
+export type OsuServerUserOptions = OsuUserOnlyOptions & OsuServerOptions;
 
 export type OsuServerUserOptionWithDiscord = OsuServerUserOptions & {
   discordUser: UserOption;
@@ -37,20 +37,26 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
   A,
   OsuContext<A>
 > {
-  protected getServerOptions(): OsuServerOption {
-    return new StringOption()
-      .setName(CommandOptions.server)
-      .addChoices(OsuServers.servers.map((s) => [s.name, s.name]));
+  protected getServerOptions(): OsuServerOptions {
+    return {
+      [CommandOptions.server]: new StringOption()
+        .setName(CommandOptions.server)
+        .addChoices(OsuServers.servers.map((s) => [s.name, s.name])),
+    };
   }
 
-  protected getOsuUserOption(): StringOption {
-    return new StringOption().setName(CommandOptions.username);
+  protected getOsuUserOption(): OsuUserOnlyOptions {
+    return {
+      [CommandOptions.username]: new StringOption().setName(
+        CommandOptions.username
+      ),
+    };
   }
 
   protected getOsuServerUserOptions(): OsuServerUserOptions {
     return {
-      username: this.getOsuUserOption(),
-      server: this.getServerOptions(),
+      ...this.getOsuUserOption(),
+      ...this.getServerOptions(),
     };
   }
 
@@ -66,13 +72,17 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
   protected applyToServerOption(
     context: OsuContext<TypedArgs<A & OsuServerUserOptions>>
   ): AnyServer {
-    const { args } = context;
+    const { args, dbUser } = context;
     const { server } = args;
+    const { osuPlayer } = dbUser;
+    const defaultServer = (): AnyServer => {
+      return osuPlayer.preferredServer ?? OsuServers.bancho;
+    };
     return server
       ? (OsuServers as unknown as Record<string, AnyServer>)[
           server.toString()
-        ] ?? OsuServers.bancho
-      : OsuServers.bancho;
+        ] ?? defaultServer()
+      : defaultServer();
   }
 
   protected async sendOsuUserNotFound(
@@ -99,8 +109,9 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
     username: string | null = context.args.username as string
   ): Promise<IOsuUser<unknown> | undefined> {
     if (!username) {
-      const dbOsuPlayer = await context.OSU_PLAYER.default(user);
-      const dbUsername = dbOsuPlayer.getAccount(server);
+      const dbUser = await context.USERS.default(user);
+      const { osuPlayer } = dbUser;
+      const dbUsername = osuPlayer.getAccount(server);
       if (dbUsername) {
         username = dbUsername.toString();
       }

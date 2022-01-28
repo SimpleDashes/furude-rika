@@ -1,4 +1,4 @@
-import DBUser from '../database/entity/user/DBUser';
+import DBUser from '../database/entity/discord/user/DBUser';
 import BaseFurudeScanner from './abstracts/BaseFurudeScanner';
 import { Logger } from 'discowork';
 

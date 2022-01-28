@@ -7,7 +7,7 @@ import {
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import CommandOptions from '../../../../../containers/CommandOptions';
 import type DefaultContext from '../../../../../contexts/DefaultContext';
-import DBUser from '../../../../../database/entity/user/DBUser';
+import DBUser from '../../../../../database/entity/discord/user/DBUser';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 

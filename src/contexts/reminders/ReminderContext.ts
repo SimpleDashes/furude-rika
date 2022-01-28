@@ -1,5 +1,5 @@
 import type { User } from 'discord.js';
-import type DBUser from '../../database/entity/user/DBUser';
+import type DBUser from '../../database/entity/discord/user/DBUser';
 import DefaultContext, { UsersCreator } from '../DefaultContext';
 
 class ReminderUserCreator extends UsersCreator {

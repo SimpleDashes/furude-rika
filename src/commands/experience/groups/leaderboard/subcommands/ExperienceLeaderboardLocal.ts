@@ -1,5 +1,5 @@
 import type DefaultContext from '../../../../../contexts/DefaultContext';
-import DBUser from '../../../../../database/entity/user/DBUser';
+import DBUser from '../../../../../database/entity/discord/user/DBUser';
 import type { LeaderboardArgs } from '../wrapper/ExperienceLeaderBoardSubCommand';
 import ExperienceLeaderboardSubCommand from '../wrapper/ExperienceLeaderBoardSubCommand';
 import type { TypedArgs } from 'discowork';

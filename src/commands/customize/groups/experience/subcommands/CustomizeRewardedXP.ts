@@ -1,6 +1,6 @@
 import type DefaultContext from '../../../../../contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
-import DBGuild from '../../../../../database/entity/DBGuild';
+import DBGuild from '../../../../../database/entity/discord/DBGuild';
 import FurudeOperations from '../../../../../database/FurudeOperations';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import {

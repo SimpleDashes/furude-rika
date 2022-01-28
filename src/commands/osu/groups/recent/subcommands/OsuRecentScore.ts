@@ -52,6 +52,7 @@ export default class OsuRecentScore
       await this.sendOsuUserNotFound(context);
       return;
     }
+
     const recentScores = await this.getUserRecentFromServer(osuUser, false);
     const recentScore = recentScores[0];
 

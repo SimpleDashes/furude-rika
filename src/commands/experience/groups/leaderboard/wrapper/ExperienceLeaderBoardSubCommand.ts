@@ -1,6 +1,6 @@
 import type DefaultContext from '../../../../../contexts/DefaultContext';
 import CommandOptions from '../../../../../containers/CommandOptions';
-import type DBUser from '../../../../../database/entity/user/DBUser';
+import type DBUser from '../../../../../database/entity/discord/user/DBUser';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import { MessageButtonCreator } from '../../../../../discord/creators/MessageButtonCreator';
 import { PageOption } from 'discowork';
