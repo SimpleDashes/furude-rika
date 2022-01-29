@@ -171,6 +171,10 @@ type FurudeResourceStructure = {
         not_found: ResourceValue;
       };
     };
+    preferred_server: {
+      changed: ResourceValue<OSU_SERVER>;
+      already_prefer_this_server: ResourceValue;
+    };
   };
 
   errors: {

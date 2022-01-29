@@ -30,4 +30,8 @@ export default class OsuServers {
     this.servers.push(server);
     return server;
   }
+
+  public static getFromString(serverName: string): AnyServer | undefined {
+    return this.servers.find((server) => server.name === serverName);
+  }
 }

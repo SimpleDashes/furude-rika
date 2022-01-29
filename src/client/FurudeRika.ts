@@ -21,7 +21,7 @@ import {
   assertDefined,
 } from 'discowork';
 import ArrayUtils from '../utils/ArrayUtils';
-import { QueryFailedError } from 'typeorm';
+import { QueryFailedError, RepositoryNotFoundError } from 'typeorm';
 
 export default class FurudeRika extends SimpleClient {
   public readonly localizer = new FurudeLocalizer();
@@ -31,6 +31,8 @@ export default class FurudeRika extends SimpleClient {
   public readonly userScanner = new UserScanner(this);
   public readonly beatmapCache = new BeatmapCacheManager(this);
 
+  public readonly deploy = true;
+
   public constructor() {
     FurudeRika.init();
     super({
@@ -39,6 +41,7 @@ export default class FurudeRika extends SimpleClient {
       developmentGuild: process.env['DEV_GUILD_ID'],
       ownerIDS: ['902963589898444800'],
       catchCommandExceptions: true,
+      debug: false,
     });
     this.#setupMemoryLogger();
     this.#setupPreconditions();
@@ -56,18 +59,28 @@ export default class FurudeRika extends SimpleClient {
         !(message.channel instanceof BaseGuildTextChannel)
       )
         return;
-      const user = await this.db.USER.findOne(message.member.user);
-      user.setUsername(message.member.user.username);
-      ArrayUtils.pushIfNotPresent(user.guilds, message.guildId);
-      const operation = user.incrementExperience(message.member.user, {
-        rawGuild: message.guild,
-        dbGuild: await this.db.GUILD.findOne(message.guild),
-        channel: message.channel,
-      });
-      if (operation.successfully) {
-        Logger.success(operation.response);
+      /**
+       * TODO FIGURE OUT WHY THIS TRY CATCH IS NEEDED PROBABLY WE GOTTA
+       *  ONLY RUN INTERACTION LISTENERS AFTER RUNONCE IS RAN
+       */
+      try {
+        const user = await this.db.USER.findOne(message.member.user);
+        user.setUsername(message.member.user.username);
+        ArrayUtils.pushIfNotPresent(user.guilds, message.guildId);
+        const operation = user.incrementExperience(message.member.user, {
+          rawGuild: message.guild,
+          dbGuild: await this.db.GUILD.findOne(message.guild),
+          channel: message.channel,
+        });
+        if (operation.successfully) {
+          Logger.success(operation.response);
+        }
+        await FurudeOperations.saveWhenSuccess(user, operation);
+      } catch (e) {
+        if (e instanceof RepositoryNotFoundError) {
+          Logger.error(e.message);
+        }
       }
-      await FurudeOperations.saveWhenSuccess(user, operation);
     });
   }
 
@@ -181,13 +194,20 @@ export default class FurudeRika extends SimpleClient {
   }
 
   public override async onceLogin(): Promise<void> {
-    await super.onceLogin();
     await this.localizer.build();
+
     await this.db.connect();
     this.db.Connection?.entityMetadatas.forEach((metadata) =>
       Logger.log(`Loaded database entity: ${metadata.name}`)
     );
+
     await this.reminderManager.setupReminders();
     this.userScanner.startScan();
+
+    await super.onceLogin();
+    if (this.deploy) {
+      await this.Deployer.deployAll();
+      Logger.success('Deployed commands...');
+    }
   }
 }

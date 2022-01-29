@@ -76,12 +76,13 @@ export default abstract class OsuSubCommand<A> extends FurudeSubCommand<
     const { server } = args;
     const { osuPlayer } = dbUser;
     const defaultServer = (): AnyServer => {
-      return osuPlayer.preferredServer ?? OsuServers.bancho;
+      return osuPlayer.preferredServer
+        ? OsuServers.getFromString(osuPlayer.preferredServer) ??
+            OsuServers.bancho
+        : OsuServers.bancho;
     };
     return server
-      ? (OsuServers as unknown as Record<string, AnyServer>)[
-          server.toString()
-        ] ?? defaultServer()
+      ? OsuServers.getFromString(server.toString()) ?? defaultServer()
       : defaultServer();
   }
 

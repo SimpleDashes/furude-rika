@@ -287,6 +287,17 @@ export default class extends FurudeResource {
             ),
           },
         },
+        preferred_server: {
+          changed: new ResourceValue(
+            (b) => `Changed you preferred osu! server to ${b.OSU_SERVER}`,
+            [ResourceArguments.OSU_SERVER]
+          ),
+          already_prefer_this_server: new ResourceValue(
+            () =>
+              'You already have the selected server as your preferred server...',
+            []
+          ),
+        },
       },
 
       errors: {

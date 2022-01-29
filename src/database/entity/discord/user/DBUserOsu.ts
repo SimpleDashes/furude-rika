@@ -2,8 +2,7 @@ import { assertDefined, assertDefinedGet } from 'discowork';
 import { Entity, Column, OneToOne } from 'typeorm';
 import type OsuContext from '../../../../contexts/osu/OsuContext';
 import type BanchoUser from '../../../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
-import OsuServer from '../../../../modules/osu/servers/OsuServer';
-import { AnyServer } from '../../../../modules/osu/servers/OsuServers';
+import type { AnyServer } from '../../../../modules/osu/servers/OsuServers';
 import OsuServers from '../../../../modules/osu/servers/OsuServers';
 import type IOsuUser from '../../../../modules/osu/users/IOsuUser';
 import MessageCreator from '../../../../utils/MessageCreator';
@@ -35,8 +34,8 @@ export default class DBUserOsu extends SnowFlakeIDEntity {
   @Column(() => OsuServerHyperValue)
   public accounts: OsuServerHyperValue = new OsuServerHyperValue();
 
-  @Column(() => OsuServer)
-  public preferredServer?: AnyServer;
+  @Column('string', { nullable: true })
+  public preferredServer?: string;
 
   public constructor(user: DBUser) {
     super();
@@ -47,12 +46,32 @@ export default class DBUserOsu extends SnowFlakeIDEntity {
   }
 
   public setPreferredServer(
-    _context: OsuContext<unknown>,
+    context: OsuContext<unknown>,
     server: AnyServer
   ): IDatabaseOperation {
-    this.preferredServer = server;
+    const { client } = context;
+    const { localizer } = client;
+
+    console.log(this.preferredServer);
+
+    if (this.preferredServer === server.name) {
+      return FurudeOperations.error(
+        localizer.getTranslationFromContext(
+          context,
+          (k) => k.osu.preferred_server.already_prefer_this_server,
+          {}
+        )
+      );
+    }
+
+    this.preferredServer = server.name;
+
     return FurudeOperations.success(
-      `Changed preferred server to ${server.name}`
+      localizer.getTranslationFromContext(
+        context,
+        (k) => k.osu.preferred_server.changed,
+        { OSU_SERVER: MessageCreator.block(this.preferredServer) }
+      )
     );
   }
 

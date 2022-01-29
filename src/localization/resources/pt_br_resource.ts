@@ -293,6 +293,18 @@ export default class extends FurudeResource {
             ),
           },
         },
+        preferred_server: {
+          changed: new ResourceValue(
+            (b) =>
+              `Mudei o seu servidor padrão do osu! pro ${b.OSU_SERVER}... :D`,
+            [ResourceArguments.OSU_SERVER]
+          ),
+          already_prefer_this_server: new ResourceValue(
+            () =>
+              'Você já usa o servidor selecionado como o seu servidor padrão...',
+            []
+          ),
+        },
       },
 
       errors: {
