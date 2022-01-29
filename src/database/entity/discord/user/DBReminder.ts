@@ -16,10 +16,10 @@ import DBUser from './DBUser';
 export default class DBReminder extends GeneratedIDEntity {
   public static readonly MAX_NUMBER_OF_REMINDERS = 10;
 
-  @Column('date')
+  @Column('timestamp')
   public remind_start_date: Date = new Date();
 
-  @Column('date')
+  @Column('timestamp')
   public remind_end_date: Date = new Date();
 
   @Column('string')

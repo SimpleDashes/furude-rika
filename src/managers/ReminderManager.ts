@@ -8,7 +8,7 @@ export default class ReminderManager extends BaseFurudeManager {
   public reminders: DBReminder[] = [];
 
   public async setupReminders(): Promise<void> {
-    const reminders = await DBReminder.find();
+    const reminders = await DBReminder.find({ relations: ['owner'] });
     this.addReminders(...reminders);
   }
 
