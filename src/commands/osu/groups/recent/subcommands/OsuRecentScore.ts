@@ -6,8 +6,8 @@ import type { FurudeLanguages } from '../../../../../localization/FurudeLocalize
 import { MessageButtonCreator } from '../../../../../discord/creators/MessageButtonCreator';
 import BaseEmbed from '../../../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../../../utils/MessageCreator';
-import type IOsuScore from '../../../../../modules/osu/scores/IOsuScore';
-import type IOsuUser from '../../../../../modules/osu/users/IOsuUser';
+import type IOsuScore from '../../../../../modules/osu/base/api/scores/IOsuScore';
+import type IOsuUser from '../../../../../modules/osu/base/api/users/IOsuUser';
 import type { OsuServerUserOptionWithDiscord } from '../../../wrapper/OsuSubCommand';
 import { assertDefined, InteractionUtils, assertDefinedGet } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';

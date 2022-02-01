@@ -6,7 +6,7 @@ import type IHasExpandableEmbed from '../../../discord/commands/interfaces/IHasE
 import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
 import BaseEmbed from '../../../discord/embeds/BaseEmbed';
 import MessageCreator from '../../../utils/MessageCreator';
-import type IOsuUser from '../../../modules/osu/users/IOsuUser';
+import type IOsuUser from '../../../modules/osu/base/api/users/IOsuUser';
 import type { OsuServerUserOptionWithDiscord } from '../wrapper/OsuSubCommand';
 import OsuSubCommand from '../wrapper/OsuSubCommand';
 

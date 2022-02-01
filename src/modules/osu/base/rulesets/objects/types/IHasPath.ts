@@ -1,0 +1,1 @@
+export default interface IHasPath extends IHas

@@ -3,7 +3,7 @@ import { assertDefined } from 'discowork';
 import CommandInformation from 'discowork/lib/commands/decorators/CommandInformation';
 import type OsuContext from '../../../../../contexts/osu/OsuContext';
 import FurudeOperations from '../../../../../database/FurudeOperations';
-import OsuServers from '../../../../../modules/osu/servers/OsuServers';
+import OsuServers from '../../../../../modules/osu/base/api/servers/OsuServers';
 import type { OsuServerOptions } from '../../../wrapper/OsuSubCommand';
 import OsuSubCommand from '../../../wrapper/OsuSubCommand';
 

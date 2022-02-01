@@ -1,8 +1,8 @@
 import { assertDefined } from 'discowork';
-import type IOsuScore from '../modules/osu/scores/IOsuScore';
-import type IAPIOsuBeatmap from '../modules/osu/servers/beatmaps/IAPIOsuBeatmap';
-import DroidScore from '../modules/osu/servers/implementations/droid/objects/DroidScore';
-import OsuServers from '../modules/osu/servers/OsuServers';
+import type IOsuScore from '../modules/osu/base/api/scores/IOsuScore';
+import type IAPIOsuBeatmap from '../modules/osu/base/api/servers/beatmaps/IAPIOsuBeatmap';
+import DroidScore from '../modules/osu/base/api/servers/implementations/droid/objects/DroidScore';
+import OsuServers from '../modules/osu/base/api/servers/OsuServers';
 import BaseFurudeManager from './abstracts/BaseFurudeManager';
 
 export default class BeatmapCacheManager extends BaseFurudeManager {

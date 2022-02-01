@@ -1,5 +1,4 @@
 import type { GuildChannel, Snowflake } from 'discord.js';
-import BindableInteger from '../../../modules/bindables/BindableInteger';
 import MessageCreator from '../../../utils/MessageCreator';
 import type FurudeLocalizer from '../../../localization/FurudeLocalizer';
 import FurudeOperations from '../../FurudeOperations';
@@ -12,10 +11,11 @@ import EntityWithLocaleHelper from '../helpers/EntityWithLocaleHelper';
 import type { FurudeLanguages } from '../../../localization/FurudeLocalizer';
 import type DefaultContext from '../../../contexts/DefaultContext';
 import { Entity, Column } from 'typeorm';
+import BindableInteger from '../../../modules/osu/base/bindables/BindableInteger';
 
 class DBGuildExtension extends EntityExtension<DBGuild> {
   #getBindableRewardedXP(): BindableInteger {
-    return new BindableInteger(undefined, undefined, {
+    return new BindableInteger(undefined, {
       minValue: DBGuild.MIN_XP_CHANGE_VALUE,
       maxValue: DBGuild.MAX_XP_CHANGE_VALUE,
     });
@@ -25,14 +25,10 @@ class DBGuildExtension extends EntityExtension<DBGuild> {
 
   public max_rewarded_xp: BindableInteger = this.#getBindableRewardedXP();
 
-  public time_for_xp: BindableInteger = new BindableInteger(
-    undefined,
-    undefined,
-    {
-      minValue: DBUser.MIN_MIN_SECONDS_FOR_EXPERIENCE,
-      maxValue: DBUser.MAX_MIN_SECONDS_FOR_EXPERIENCE,
-    }
-  );
+  public time_for_xp: BindableInteger = new BindableInteger(undefined, {
+    minValue: DBUser.MIN_MIN_SECONDS_FOR_EXPERIENCE,
+    maxValue: DBUser.MAX_MIN_SECONDS_FOR_EXPERIENCE,
+  });
 }
 
 @Entity()
@@ -156,16 +152,14 @@ export default class DBGuild
   }
 
   public setMinXPValue(value: number): IDatabaseOperation {
-    this.min_rewarded_xp_value = this.#extension.min_rewarded_xp.Current =
-      value;
+    this.min_rewarded_xp_value = this.#extension.min_rewarded_xp.Value = value;
     return FurudeOperations.success(
       'Changed minimal rewarded xp successfully!'
     );
   }
 
   public setMaxXPValue(value: number): IDatabaseOperation {
-    this.max_rewarded_xp_value = this.#extension.max_rewarded_xp.Current =
-      value;
+    this.max_rewarded_xp_value = this.#extension.max_rewarded_xp.Value = value;
     return FurudeOperations.success(
       'Changed maximal rewarded xp successfully!'
     );
@@ -178,7 +172,7 @@ export default class DBGuild
     const { client } = context;
     const { localizer } = client;
 
-    this.time_for_xp = this.#extension.time_for_xp.Current = time;
+    this.time_for_xp = this.#extension.time_for_xp.Value = time;
     return FurudeOperations.success(
       localizer.getTranslationFromContext(
         context,

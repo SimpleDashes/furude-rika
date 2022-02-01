@@ -4,7 +4,7 @@ import type DBUser from '../../../../../database/entity/discord/user/DBUser';
 import FurudeSubCommand from '../../../../../discord/commands/FurudeSubCommand';
 import { MessageButtonCreator } from '../../../../../discord/creators/MessageButtonCreator';
 import { PageOption } from 'discowork';
-import ArrayUtils from '../../../../../utils/ArrayUtils';
+import _ from 'lodash';
 
 export type LeaderboardArgs = {
   page: PageOption;
@@ -29,16 +29,18 @@ export default abstract class ExperienceLeaderboardSubCommand extends FurudeSubC
     const { page } = args;
     const { localizer } = client;
 
-    const users = ArrayUtils.greatestToLowest(
-      await this.getUsers(context),
-      (item) => this.getAppliedExperienceFromUser(context, item)
+    const allUsers = await this.getUsers(context);
+    const sortedUsers = _.orderBy(
+      allUsers,
+      (u) => this.getAppliedExperienceFromUser(context, u),
+      'desc'
     );
 
     await MessageButtonCreator.createButtonBasedTable(
       interaction,
       {},
       [interaction.user.id],
-      users,
+      sortedUsers,
       page,
       60,
       [{ name: 'Username' }, { name: 'Experience' }],

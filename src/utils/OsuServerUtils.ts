@@ -1,8 +1,8 @@
 import assert from 'assert';
-import BanchoServer from '../modules/osu/servers/implementations/bancho/BanchoServer';
-import DroidServer from '../modules/osu/servers/implementations/droid/DroidServer';
-import type { AnyServer } from '../modules/osu/servers/OsuServers';
-import OsuServers from '../modules/osu/servers/OsuServers';
+import BanchoServer from '../modules/osu/base/api/servers/implementations/bancho/BanchoServer';
+import DroidServer from '../modules/osu/base/api/servers/implementations/droid/DroidServer';
+import type { AnyServer } from '../modules/osu/base/api/servers/OsuServers';
+import OsuServers from '../modules/osu/base/api/servers/OsuServers';
 
 export type OsuServerSwitcher<S extends AnyServer, T> = { (server: S): T };
 

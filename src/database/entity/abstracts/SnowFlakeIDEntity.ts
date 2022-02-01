@@ -1,7 +1,7 @@
 import { Snowflake } from 'discord-api-types';
 import type { SaveOptions } from 'typeorm';
 import { ObjectIdColumn } from 'typeorm';
-import type BindableValue from '../../../modules/bindables/BindableValue';
+import type BindableValue from '../../../modules/osu/bindables/BindableValue';
 import type IOnSaveListener from '../../interfaces/IOnSaveListener';
 import WithJustCreatedIdentifierEntity from './WithJustCreatedIdentifierEntity';
 
@@ -23,7 +23,7 @@ export default class SnowFlakeIDEntity extends WithJustCreatedIdentifierEntity {
   }
 
   public assignBindableCurrentValue<T>(bindable: BindableValue<T>): T {
-    return bindable.Current;
+    return bindable.Value;
   }
 
   public override async save(options?: SaveOptions): Promise<this> {

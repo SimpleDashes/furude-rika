@@ -1,10 +1,10 @@
 import { assertDefined, assertDefinedGet } from 'discowork';
 import { Entity, Column, OneToOne } from 'typeorm';
 import type OsuContext from '../../../../contexts/osu/OsuContext';
-import type BanchoUser from '../../../../modules/osu/servers/implementations/bancho/objects/BanchoUser';
-import type { AnyServer } from '../../../../modules/osu/servers/OsuServers';
-import OsuServers from '../../../../modules/osu/servers/OsuServers';
-import type IOsuUser from '../../../../modules/osu/users/IOsuUser';
+import type BanchoUser from '../../../../modules/osu/base/api/servers/implementations/bancho/objects/BanchoUser';
+import type { AnyServer } from '../../../../modules/osu/base/api/servers/OsuServers';
+import OsuServers from '../../../../modules/osu/base/api/servers/OsuServers';
+import type IOsuUser from '../../../../modules/osu/base/api/users/IOsuUser';
 import MessageCreator from '../../../../utils/MessageCreator';
 import FurudeOperations from '../../../FurudeOperations';
 import type IDatabaseOperation from '../../../interfaces/IDatabaseOperation';
